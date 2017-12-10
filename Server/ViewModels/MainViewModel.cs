@@ -33,7 +33,16 @@ namespace Server.ViewModels
                     new Screen("Settings", PackIconKind.Settings),
                 };
                 _itemsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
-                _itemsView.CurrentChanged += (sender, args) => Instance.IsLeftDrawerOpen = false;
+                _itemsView.CurrentChanging += (s, args) =>
+                {
+                    var cur = ((Screen)_itemsView.CurrentItem);
+                    if (cur == null) return;
+                    cur.IsDialogOpen = false;
+                };
+                _itemsView.CurrentChanged += (sender, args) =>
+                {
+                    Instance.IsLeftDrawerOpen = false;
+                };
                 return _itemsView;
             }
         }

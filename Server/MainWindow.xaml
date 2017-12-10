@@ -120,8 +120,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ToggleButton Style="{StaticResource MaterialDesignExpanderToggleButton}"
                                       Cursor="Hand"
@@ -156,6 +156,7 @@
                         </md:Transitioner>
 
                         <md:Transitioner Grid.Column="2"
+                                         HorizontalAlignment="Right"
                                          Margin="10 0"
                                          ItemsSource="{Binding Screens}"
                                          IsSynchronizedWithCurrentItem="True">
@@ -170,6 +171,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Command="{Binding Command}"
                                                         Margin="7 0">
                                                     <StackPanel Orientation="Horizontal">
                                                         <md:PackIcon Kind="{Binding Icon}"

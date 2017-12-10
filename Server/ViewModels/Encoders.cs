@@ -12,7 +12,24 @@ namespace Server.ViewModels
         {
             Commands.Add(new ScreenMenu("ADD NEW", PackIconKind.AccountPlus)
             {
+                Command = new DelegateCommand(async d =>
+                {
 
+                    var newUser = new NewUserDialog();
+                    newUser.AcceptCommand = new DelegateCommand(dd =>
+                    {
+                        IsDialogOpen = false;
+                        var encoder = new Models.Encoder();
+                        encoder.Username = newUser.Username;
+                        encoder.FullName = newUser.FullName;
+                        encoder.Save();
+                    }, dd =>
+                    {
+                        return !string.IsNullOrWhiteSpace(newUser.Username) && !Models.Encoder.UsernameExists(newUser.Username);
+                    });
+
+                    await DialogHost.Show(new Views.NewUserDialog() { DataContext = newUser }, "Encoders");
+                }, d => !IsDialogOpen)
             });
 
             Commands.Add(new ScreenMenu("DELETE ALL", PackIconKind.AccountMultipleMinus)

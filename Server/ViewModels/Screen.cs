@@ -17,6 +17,19 @@ namespace Server.ViewModels
         private List<ScreenMenu> _Commands;
         public List<ScreenMenu> Commands => _Commands ?? (_Commands = new List<ScreenMenu>());
 
+        private bool _IsDialogOpen;
+
+        public bool IsDialogOpen
+        {
+            get => _IsDialogOpen;
+            set
+            {
+                if (value == _IsDialogOpen) return;
+                _IsDialogOpen = value;
+                OnPropertyChanged(nameof(IsDialogOpen));
+            }
+        }
+
 
         private Visibility _Visibility = Visibility.Visible;
 
