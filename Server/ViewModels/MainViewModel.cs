@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
 
@@ -22,14 +23,14 @@ namespace Server.ViewModels
                 if (_itemsView != null) return _itemsView;
                 _items = new ObservableCollection<Screen>()
                 {
-                    //new Screen("Dashboard", PackIconKind.ViewDashboard) {Visibility = Visibility.Collapsed},
+                    new Screen("Dashboard", PackIconKind.ViewDashboard) {Visibility = Visibility.Collapsed},
                     new Encoders(),
-                    //new Screen("Terminals", PackIconKind.MonitorMultiple),
-                    //new Screen("Subjects", PackIconKind.BookOpenVariant, new Views.Subjects() { DataContext = new Subjects()}) ,
-                    //new Screen("Class Schedules", PackIconKind.CalendarToday),
-                    //new Screen("Requests", PackIconKind.Bell),
-                    //new Screen("Activity", PackIconKind.Clock),
-                    //new Screen("Settings", PackIconKind.Settings),
+                    new Screen("Terminals", PackIconKind.MonitorMultiple),
+                    new Screen("Subjects", PackIconKind.BookOpenVariant, new Views.Subjects() { DataContext = new Subjects()}) ,
+                    new Screen("Class Schedules", PackIconKind.CalendarToday),
+                    new Screen("Requests", PackIconKind.Bell),
+                    new Screen("Activity", PackIconKind.Clock),
+                    new Screen("Settings", PackIconKind.Settings),
                 };
                 _itemsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
                 _itemsView.CurrentChanged += (sender, args) => Instance.IsLeftDrawerOpen = false;
@@ -38,7 +39,9 @@ namespace Server.ViewModels
         }
 
         private SnackbarMessageQueue _messageQueue;
-        public SnackbarMessageQueue MessageQueue => _messageQueue ?? (_messageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(7)));
+
+        public SnackbarMessageQueue MessageQueue =>
+            _messageQueue ?? (_messageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(7)));
 
         private bool _isLeftDrawerOpen;
 
@@ -51,5 +54,6 @@ namespace Server.ViewModels
                 OnPropertyChanged(nameof(IsLeftDrawerOpen));
             }
         }
+
     }
 }

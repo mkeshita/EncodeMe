@@ -5,7 +5,7 @@ using MaterialDesignThemes.Wpf;
 
 namespace Server.ViewModels
 {
-    abstract class Screen : ViewModelBase
+    class Screen : ViewModelBase
     {
         public Screen(string name, PackIconKind icon, UserControl content = null)
         {

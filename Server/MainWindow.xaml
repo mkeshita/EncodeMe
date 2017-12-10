@@ -17,6 +17,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="555" MinHeight="471"
         WindowState="Maximized"
+        DataContext="{Binding Source={x:Static viewModels:MainViewModel.Instance}}"
         Title="EncodeMe Server" Height="471" Width="555">
     <Window.Resources>
         <ResourceDictionary>
@@ -112,6 +113,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" SharedSizeGroup="a"/>
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
 
@@ -134,7 +136,7 @@
                         </ToggleButton>
 
                         <md:Transitioner Grid.Column="1"
-                            ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
+                            ItemsSource="{Binding Screens}"
                             IsSynchronizedWithCurrentItem="True">
                             <md:Transitioner.ItemTemplate>
                                 <DataTemplate>
@@ -155,7 +157,7 @@
 
                         <md:Transitioner Grid.Column="2"
                                          Margin="10 0"
-                                         ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
+                                         ItemsSource="{Binding Screens}"
                                          IsSynchronizedWithCurrentItem="True">
                             <md:Transitioner.ItemTemplate>
                                 <DataTemplate>
@@ -194,7 +196,7 @@
 
                     <ScrollViewer Grid.Row="1"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Auto">
+                                  VerticalScrollBarVisibility="Visible">
                         <md:Transitioner ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
                                          IsSynchronizedWithCurrentItem="True">
                             <md:Transitioner.ItemTemplate>
@@ -205,9 +207,13 @@
                         </md:Transitioner>
                     </ScrollViewer>
 
-                    <md:Snackbar MessageQueue="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=MessageQueue}" x:Name="MainSnackbar"
+                    <md:Snackbar x:Name="MainSnackbar"
+                                 MessageQueue="{Binding MessageQueue}"
                                  VerticalAlignment="Bottom"
-                                 Grid.Row="1" />
+                                 HorizontalAlignment="Stretch"
+                                 
+                                 Grid.Row="2" >
+                    </md:Snackbar>
                 </Grid>
             </Grid>
         </md:DrawerHost>

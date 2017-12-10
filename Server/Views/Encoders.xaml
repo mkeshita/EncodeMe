@@ -47,8 +47,8 @@
                                                Style="{StaticResource MaterialDesignSubheadingTextBlock}" />
                                     <UniformGrid Columns="2" HorizontalAlignment="Center">
                                         <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                Command="{x:Static materialDesign:Flipper.FlipCommand}"
-                                Margin="0 4 4 0"
+                                                Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                                                Margin="0 4 4 0"
                                                 Content="{materialDesign:PackIcon Pencil}"
                                                 ToolTip="Edit"/>
                                         <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -69,33 +69,49 @@
                                 <materialDesign:ColorZone Mode="Accent" Padding="6">
                                     <StackPanel Orientation="Horizontal">
                                         <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                Command="{x:Static materialDesign:Flipper.FlipCommand}"
-                                HorizontalAlignment="Left">
-                                            <materialDesign:PackIcon Kind="ArrowLeft" HorizontalAlignment="Right" />
+                                                ToolTip="Save" 
+                                                Command="{Binding SaveCommand}" 
+                                                HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="ContentSave" HorizontalAlignment="Right" />
                                         </Button>
-                                        <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">EDIT USER</TextBlock>
+                                        <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">EDIT ENCODER</TextBlock>
                                     </StackPanel>
                                 </materialDesign:ColorZone>
-                                <Grid Grid.Row="1" Margin="0 6 0 0" HorizontalAlignment="Center" VerticalAlignment="Top"
-                          Width="172">
+                                <Grid Grid.Row="1" Margin="0 6 0 0" HorizontalAlignment="Center" Width="172">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBox materialDesign:HintAssist.Hint="First name" materialDesign:HintAssist.IsFloating="True"
-                                 Margin="0 12 0 0">James</TextBox>
-                                    <TextBox Grid.Row="1" materialDesign:HintAssist.Hint="Last name" materialDesign:HintAssist.IsFloating="True"
-                                 Margin="0 12 0 0">Willock</TextBox>
-                                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 12 0 0" HorizontalAlignment="Right">
-                                        <TextBlock VerticalAlignment="Center">Email Contact</TextBlock>
-                                        <ToggleButton Margin="8 0 0 0"></ToggleButton>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 12 0 0" HorizontalAlignment="Right">
-                                        <TextBlock VerticalAlignment="Center">Telephone Contact</TextBlock>
-                                        <ToggleButton Margin="8 0 0 0"></ToggleButton>
-                                    </StackPanel>
+                                    <TextBox materialDesign:HintAssist.Hint="Username"
+                                             materialDesign:HintAssist.IsFloating="True"
+                                             Margin="0 12 0 0"
+                                             Text="{Binding Username,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBox materialDesign:HintAssist.Hint="Full Name"
+                                             materialDesign:HintAssist.IsFloating="True"
+                                             Grid.Row="1"
+                                             Margin="0 12 0 0"
+                                             Text="{Binding FullName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <UniformGrid Grid.Row="2" Columns="3" HorizontalAlignment="Center"
+                                                 Margin="4 4 4 8"
+                                                 VerticalAlignment="Bottom">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                Command="{Binding ChangePasswordCommand}"
+                                                Margin="0 0 4 0"
+                                                Content="{materialDesign:PackIcon KeyChange}"
+                                                ToolTip="Change Password" />
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                Content="{materialDesign:PackIcon Image}"
+                                                Command="{Binding ChangePictureCommand}"
+                                                Margin="4 0"
+                                                ToolTip="Change Picture" />
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                Content="{materialDesign:PackIcon Close}"
+                                                Command="{Binding DeleteCommand}"
+                                                Margin="4 0 0 0"
+                                                ToolTip="Delete" />
+                                    </UniformGrid>
                                 </Grid>
                             </Grid>
                         </materialDesign:Flipper.BackContent>

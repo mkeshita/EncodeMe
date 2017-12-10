@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace Server
 {
@@ -10,6 +11,9 @@ namespace Server
         public MainWindow()
         {
             InitializeComponent();
+
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),
+                new FrameworkPropertyMetadata { DefaultValue = 20 });
         }
     }
 }

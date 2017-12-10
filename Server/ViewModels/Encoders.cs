@@ -22,20 +22,23 @@ namespace Server.ViewModels
 
             Messenger.Default.AddListener<Models.Encoder>(Messages.EncoderFlipped, encoder =>
             {
-                if (_previousFlipped != null)
+                if (_previousFlipped != null && !_previousFlipped.Equals(encoder))
                     _previousFlipped.IsFlipped = false;
                 _previousFlipped = encoder;
             });
 
             Messenger.Default.AddListener<Models.Encoder>(Messages.ModelDeleted, encoder =>
             {
-                MainViewModel.Instance.MessageQueue
-                    .Enqueue($"{encoder.Username} is deleted.", "UNDO", en =>
-                     {
-                         en.Update(nameof(en.IsDeleted), false);
-                         Models.Encoder.Cache.Add(en);
-                         _items.Refresh();
-                     }, encoder, true);
+
+                MainViewModel.Instance.MessageQueue.Enqueue(
+                    $"{encoder.FullName} ({encoder.Username}) is successfully removed from the encoders list.)",
+                    "UNDO", en =>
+                    {
+                        en.Update(nameof(en.IsDeleted), false);
+                        Models.Encoder.Cache.Add(en);
+                        _items.Refresh();
+                    }, encoder, true);
+
             });
         }
 
