@@ -7,5 +7,10 @@ namespace Server
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            awooo.IsRunning = true;
+            base.OnStartup(e);
+        }
     }
 }

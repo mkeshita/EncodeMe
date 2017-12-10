@@ -1,5 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
 
@@ -22,20 +22,23 @@ namespace Server.ViewModels
                 if (_itemsView != null) return _itemsView;
                 _items = new ObservableCollection<Screen>()
                 {
-                    new Screen("Dashboard", PackIconKind.ViewDashboard) {Visibility = Visibility.Collapsed},
-                    new Screen("Encoders", PackIconKind.AccountMultiple, new Views.Encoders() { DataContext = new Encoders()}),
-                    new Screen("Terminals", PackIconKind.MonitorMultiple),
-                    new Screen("Subjects", PackIconKind.BookOpenVariant, new Views.Subjects() { DataContext = new Subjects()}) ,
-                    new Screen("Class Schedules", PackIconKind.CalendarToday),
-                    new Screen("Requests", PackIconKind.Bell),
-                    new Screen("Activity", PackIconKind.Clock),
-                    new Screen("Settings", PackIconKind.Settings),
+                    //new Screen("Dashboard", PackIconKind.ViewDashboard) {Visibility = Visibility.Collapsed},
+                    new Encoders(),
+                    //new Screen("Terminals", PackIconKind.MonitorMultiple),
+                    //new Screen("Subjects", PackIconKind.BookOpenVariant, new Views.Subjects() { DataContext = new Subjects()}) ,
+                    //new Screen("Class Schedules", PackIconKind.CalendarToday),
+                    //new Screen("Requests", PackIconKind.Bell),
+                    //new Screen("Activity", PackIconKind.Clock),
+                    //new Screen("Settings", PackIconKind.Settings),
                 };
                 _itemsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
                 _itemsView.CurrentChanged += (sender, args) => Instance.IsLeftDrawerOpen = false;
                 return _itemsView;
             }
         }
+
+        private SnackbarMessageQueue _messageQueue;
+        public SnackbarMessageQueue MessageQueue => _messageQueue ?? (_messageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(7)));
 
         private bool _isLeftDrawerOpen;
 

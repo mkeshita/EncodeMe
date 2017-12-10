@@ -34,15 +34,7 @@
     </Window.Resources>
     <md:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
         <md:DrawerHost IsRightDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
-            <md:DrawerHost.RightDrawerContent>
-                <DockPanel MinWidth="212">
-                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
-                                    DockPanel.Dock="Top"
-                                    HorizontalAlignment="Right" Margin="16"
-                                    IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
-                    
-                </DockPanel>
-            </md:DrawerHost.RightDrawerContent>
+         
             <Grid IsSharedSizeScope="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -140,6 +132,59 @@
                                                  CenterY="0.5"/>
                             </ToggleButton.LayoutTransform>
                         </ToggleButton>
+
+                        <md:Transitioner Grid.Column="1"
+                            ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
+                            IsSynchronizedWithCurrentItem="True">
+                            <md:Transitioner.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <md:PackIcon Kind="{Binding Icon}"
+                                         Height="24"
+                                         Width="24"
+                                         Margin="10 0"
+                                         VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Name}"
+                                       Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                                       VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </md:Transitioner.ItemTemplate>
+                            
+                        </md:Transitioner>
+
+                        <md:Transitioner Grid.Column="2"
+                                         Margin="10 0"
+                                         ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
+                                         IsSynchronizedWithCurrentItem="True">
+                            <md:Transitioner.ItemTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding Commands}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Margin="7 0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <md:PackIcon Kind="{Binding Icon}"
+                                                             VerticalAlignment="Center" />
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   Margin="4 0 0 0"
+                                                           VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </md:Transitioner.ItemTemplate>
+
+                        </md:Transitioner>
+
                         <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" 
                                 Grid.Column="0" 
                                 Grid.ColumnSpan="3"/>
@@ -147,10 +192,9 @@
 
 
 
-                    <ScrollViewer Grid.Row="1" 
-                                  HorizontalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.HorizontalScrollBarVisibilityRequirement}"
-                                  VerticalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.VerticalScrollBarVisibilityRequirement}" 
-                                  Padding="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.MarginRequirement}">
+                    <ScrollViewer Grid.Row="1"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
                         <md:Transitioner ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
                                          IsSynchronizedWithCurrentItem="True">
                             <md:Transitioner.ItemTemplate>
@@ -161,8 +205,9 @@
                         </md:Transitioner>
                     </ScrollViewer>
 
-                    <md:Snackbar MessageQueue="{md:MessageQueue}" x:Name="MainSnackbar"
-                                            Grid.Row="1" />
+                    <md:Snackbar MessageQueue="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=MessageQueue}" x:Name="MainSnackbar"
+                                 VerticalAlignment="Bottom"
+                                 Grid.Row="1" />
                 </Grid>
             </Grid>
         </md:DrawerHost>

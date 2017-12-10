@@ -1,21 +1,23 @@
 ﻿using System.Windows.Input;
+using NORSU.EncodeMe;
 using NORSU.EncodeMe.Models;
 
 namespace Server
 {
-    static class Commands
+    class Commands
     {
-        private static ICommand _SaveCommand;
+        private Commands() { }
 
-        public static ICommand Save => _SaveCommand ??
-                                       (_SaveCommand =
-                                           new DelegateCommand<ModelBase>(m => m.Save(), m => m.CanSave()));
+        private static ICommand _delete;
 
-        private static ICommand _deleteCommand;
+        public static ICommand Delete => _delete ?? (_delete = new DelegateCommand(d =>
+        {
+            ((ModelBase)d).Delete();
+        }, d =>
+        {
+            return ((ModelBase)d)?.CanDelete() ?? false;
+        }));
 
-        public static ICommand Delete => _deleteCommand ??
-                                         (_deleteCommand =
-                                             new DelegateCommand<ModelBase>(m => m.Delete(),
-                                                 m => m.CanDelete()));
+
     }
 }
