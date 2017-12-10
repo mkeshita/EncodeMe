@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace NORSU.EncodeMe
+namespace Server
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
