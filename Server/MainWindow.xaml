@@ -173,6 +173,20 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
+                    <ScrollViewer Grid.Row="1"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Visible">
+                        <md:Transitioner
+                            ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
+                            IsSynchronizedWithCurrentItem="True">
+                            <md:Transitioner.ItemTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Content}" />
+                                </DataTemplate>
+                            </md:Transitioner.ItemTemplate>
+                        </md:Transitioner>
+                    </ScrollViewer>
+
                     <md:ColorZone md:ShadowAssist.ShadowDepth="Depth1"
                                   md:ShadowAssist.Darken="False"
                                   VerticalAlignment="Stretch">
@@ -254,18 +268,7 @@
                         </Grid>
                     </md:ColorZone>
 
-                    <ScrollViewer Grid.Row="1"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Visible">
-                        <md:Transitioner ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
-                                         IsSynchronizedWithCurrentItem="True">
-                            <md:Transitioner.ItemTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Content}"/>
-                                </DataTemplate>
-                            </md:Transitioner.ItemTemplate>
-                        </md:Transitioner>
-                    </ScrollViewer>
+                    
 
                   
                 </Grid>
