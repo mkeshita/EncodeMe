@@ -47,6 +47,20 @@ namespace Server.ViewModels
             }
         }
 
+        public static void EnqueueMessage(string message, bool promote = false)
+        {
+            Instance.MessageQueue.Enqueue(message, promote);
+        }
+
+        public static void EnqueueMessage<T>(string message, string action, Action<T> actionHandler, T param, bool promote = false)
+        {
+            Instance.MessageQueue.Enqueue(message, action, actionHandler, param, promote);
+        }
+        public static void EnqueueMessage(string message, string action, Action actionHandler, bool promote = false)
+        {
+            Instance.MessageQueue.Enqueue(message, action, actionHandler, promote);
+        }
+
         private SnackbarMessageQueue _messageQueue;
 
         public SnackbarMessageQueue MessageQueue =>
