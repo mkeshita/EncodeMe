@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
 
@@ -23,10 +22,10 @@ namespace Server.ViewModels
                 if (_itemsView != null) return _itemsView;
                 _items = new ObservableCollection<Screen>()
                 {
-                    new Screen("Dashboard", PackIconKind.ViewDashboard) {Visibility = Visibility.Collapsed},
+                    new Screen("Dashboard", PackIconKind.Home),
                     new Encoders(),
                     new Screen("Terminals", PackIconKind.MonitorMultiple),
-                    new Screen("Subjects", PackIconKind.BookOpenVariant, new Views.Subjects() { DataContext = new Subjects()}) ,
+                    Subjects.Instance,
                     new Screen("Class Schedules", PackIconKind.CalendarToday),
                     new Screen("Requests", PackIconKind.Bell),
                     new Screen("Activity", PackIconKind.Clock),
@@ -36,8 +35,7 @@ namespace Server.ViewModels
                 _itemsView.CurrentChanging += (s, args) =>
                 {
                     var cur = ((Screen)_itemsView.CurrentItem);
-                    if (cur == null) return;
-                    cur.IsDialogOpen = false;
+                    cur?.Close();
                 };
                 _itemsView.CurrentChanged += (sender, args) =>
                 {

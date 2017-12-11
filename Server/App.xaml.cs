@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Server.Properties;
 
 namespace Server
 {
@@ -11,6 +12,12 @@ namespace Server
         {
             awooo.IsRunning = true;
             base.OnStartup(e);
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Settings.Default.Save();
+            base.OnExit(e);
         }
     }
 }

@@ -22,5 +22,29 @@ namespace Server.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SideBarOpen {
+            get {
+                return ((bool)(this["SideBarOpen"]));
+            }
+            set {
+                this["SideBarOpen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string OpenFileLocation {
+            get {
+                return ((string)(this["OpenFileLocation"]));
+            }
+            set {
+                this["OpenFileLocation"] = value;
+            }
+        }
     }
 }

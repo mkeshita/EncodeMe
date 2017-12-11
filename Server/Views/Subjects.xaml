@@ -4,9 +4,82 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Server.Views"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:server="clr-namespace:Server"
+             xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data"
+             xmlns:vm="clr-namespace:Server.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TreeView.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <GroupBox Header="SUBJECTS FILTERS" Style="{StaticResource MaterialDesignCardGroupBox}"
+                  Margin="20">
             
+            <StackPanel Orientation="Horizontal"
+                        Margin="4 0">
+                <CheckBox Content="Course"
+                          x:Name="CourseFilter"/>
+                <ComboBox ItemsSource="{Binding Courses}" DisplayMemberPath="Acronym"
+                          IsEnabled="{Binding ElementName=CourseFilter,Path=IsChecked}"
+                          Margin="10 0 40 0"/>
+                
+            
+                    <CheckBox Content="Year Level" 
+                              x:Name="YearLevelFilter"/>
+                    <ComboBox ItemsSource="{server:EnumBinding {x:Type models:YearLevels}}"
+                              IsEnabled="{Binding ElementName=YearLevelFilter,Path=IsChecked}"
+                              Margin="10 0 0 0"
+                              IsSynchronizedWithCurrentItem="True"/>
+                </StackPanel>
+            
+        </GroupBox>
+
+        <md:ColorZone md:ShadowAssist.ShadowDepth="Depth2" Grid.Row="1" Grid.Column="0"
+                      VerticalAlignment="Stretch"
+                      Margin="20">
+            <DataGrid ItemsSource="{Binding Items}"
+                      AutoGenerateColumns="False"
+                      CanUserDeleteRows="False">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn
+                        CanUserSort="False"
+                        Binding="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                        CanUserResize="False"
+                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                       <DataGridCheckBoxColumn.Header>
+                            <CheckBox
+                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.AllSubjectsSelected}"
+                                Style="{StaticResource MaterialDesignCheckBox}" />
+                        </DataGridCheckBoxColumn.Header>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn Header="Subject Code" Binding="{Binding Code}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                    <DataGridTextColumn Header="Descriptive Title" Binding="{Binding Description}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                    <md:MaterialDataGridComboBoxColumn ItemsSource="{server:EnumBinding {x:Type models:YearLevels}}" 
+                                            SelectedItemBinding="{Binding YearLevel}"
+                                            
+                                            Header="Year Level"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </md:ColorZone>
     </Grid>
 </UserControl>

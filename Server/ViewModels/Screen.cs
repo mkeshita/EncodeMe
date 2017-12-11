@@ -7,11 +7,11 @@ namespace Server.ViewModels
 {
     class Screen : ViewModelBase
     {
-        public Screen(string name, PackIconKind icon, UserControl content = null)
+        public Screen(string name, PackIconKind icon)
         {
             Name = name;
             Icon = icon;
-            Content = content;
+         //   Content = content;
         }
 
         private List<ScreenMenu> _Commands;
@@ -30,6 +30,39 @@ namespace Server.ViewModels
             }
         }
 
+        private bool _IsRightDrawerOpen;
+
+        public bool IsRightDrawerOpen
+        {
+            get => _IsRightDrawerOpen;
+            set
+            {
+                if (value == _IsRightDrawerOpen) return;
+                _IsRightDrawerOpen = value;
+                OnPropertyChanged(nameof(IsRightDrawerOpen));
+            }
+        }
+
+        private UserControl _RightDrawerContent;
+
+        public UserControl RightDrawerContent
+        {
+            get => _RightDrawerContent;
+            set
+            {
+                if (value == _RightDrawerContent) return;
+                _RightDrawerContent = value;
+                OnPropertyChanged(nameof(RightDrawerContent));
+            }
+        }
+
+
+
+        public virtual void Close()
+        {
+            IsDialogOpen = false;
+            IsRightDrawerOpen = false;
+        }
 
         private Visibility _Visibility = Visibility.Visible;
 
@@ -69,18 +102,18 @@ namespace Server.ViewModels
             }
         }
 
-        private UserControl _content;
+        //private UserControl _content;
 
-        public UserControl Content
-        {
-            get => _content;
-            set
-            {
-                _content = value;
-                if (value != null)
-                    _content.DataContext = this;
-                OnPropertyChanged(nameof(Content));
-            }
-        }
+        //public UserControl Content
+        //{
+        //    get => _content;
+        //    set
+        //    {
+        //        _content = value;
+        //        if (value != null)
+        //            _content.DataContext = this;
+        //        OnPropertyChanged(nameof(Content));
+        //    }
+        //}
     }
 }

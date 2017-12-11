@@ -14,6 +14,8 @@
         xmlns:cnv="clr-namespace:Server.Converters"
         xmlns:viewModels="clr-namespace:Server.ViewModels"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:properties="clr-namespace:Server.Properties"
+        xmlns:views="clr-namespace:Server.Views"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="555" MinHeight="471"
@@ -105,33 +107,9 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <md:ColorZone Padding="7"
-                                  x:Name="HeaderColorZone"
-                              VerticalAlignment="Stretch"
-                                            Mode="PrimaryDark">
-                        <Grid Margin="7">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <md:PackIcon Kind="Server" Height="32"
-                                     Width="32"
-                                     Padding="0" Margin="0"
-                                     VerticalAlignment="Center" />
-                            <TextBlock Text="EncodeMe Server"
-                                       Grid.Column="1"
-                                       Visibility="{Binding ElementName=HeaderToggle,Path=IsChecked,Converter={cnv:BooleanToVisibility Collapsed,Visible}}"
-                                   Margin="10 0 20 0"
-                                       Style="{StaticResource MaterialDesignHeadlineTextBlock}"
-                                   VerticalAlignment="Center" />
-                        </Grid>
-                    </md:ColorZone>
-                    <Grid Grid.Row="1"
+                    <md:ColorZone Grid.Row="1"
+                                  Mode="Dark"
                                   VerticalAlignment="Stretch">
-                        <Rectangle HorizontalAlignment="Stretch"
-                                   Opacity="0.9"
-                                   VerticalAlignment="Stretch"
-                                   Fill="{Binding ElementName=HeaderColorZone,Path=Background}"/>
                         <ListBox IsSynchronizedWithCurrentItem="True"
                                  x:Name="DemoItemsListBox"
                                  Foreground="{StaticResource MaterialDesignDarkForeground}"
@@ -164,114 +142,148 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                    </Grid>
+                    </md:ColorZone>
+                    
+                    <md:ColorZone Padding="7"
+                                  md:ShadowAssist.ShadowDepth="Depth1"
+                                  x:Name="HeaderColorZone"
+                              VerticalAlignment="Stretch"
+                                            Mode="PrimaryDark">
+                        <Grid Margin="7" HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <md:PackIcon Kind="Server" Height="24"
+                                     Width="24"
+                                     Padding="0" Margin="0"
+                                     VerticalAlignment="Center" />
+                            <TextBlock Text="EncodeMe Server"
+                                       Grid.Column="1"
+                                       FontSize="12pt"
+                                       Visibility="{Binding ElementName=HeaderToggle,Path=IsChecked,Converter={cnv:BooleanToVisibility Collapsed,Visible}}"
+                                   Margin="10 0 20 0"
+                                       Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                                   VerticalAlignment="Center" />
+                        </Grid>
+                    </md:ColorZone>
+                    
                 </Grid>
-                <Grid Grid.Column="1" Grid.Row="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" SharedSizeGroup="a"/>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                <md:DrawerHost Grid.Column="1" Grid.Row="0"
+                               IsRightDrawerOpen="{Binding Screens/IsRightDrawerOpen}"
+                               RightDrawerContent="{Binding Screens/RightDrawerContent}">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" SharedSizeGroup="a"/>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    <ScrollViewer Grid.Row="1"
+                        <ScrollViewer Grid.Row="1"
+                                  Background="#1f1f1f1f"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Visible">
-                        <md:Transitioner
-                            ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}"
+                            <md:Transitioner
+                            ItemsSource="{Binding Screens}"
                             IsSynchronizedWithCurrentItem="True">
-                            <md:Transitioner.ItemTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Content}" />
-                                </DataTemplate>
-                            </md:Transitioner.ItemTemplate>
-                        </md:Transitioner>
-                    </ScrollViewer>
+                                <md:Transitioner.Resources>
+                                    <DataTemplate DataType="{x:Type viewModels:Encoders}">
+                                        <views:Encoders DataContext="{Binding}"/>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:Subjects}">
+                                        <views:Subjects DataContext="{Binding}"/>
+                                    </DataTemplate>
+                                </md:Transitioner.Resources>
+                            </md:Transitioner>
+                        </ScrollViewer>
 
-                    <md:ColorZone md:ShadowAssist.ShadowDepth="Depth1"
+                        <md:ColorZone md:ShadowAssist.ShadowDepth="Depth1"
+                                  Grid.Row="0"
                                   md:ShadowAssist.Darken="False"
                                   VerticalAlignment="Stretch">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <ToggleButton Style="{StaticResource MaterialDesignExpanderToggleButton}"
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Style="{StaticResource MaterialDesignExpanderToggleButton}"
                                       Cursor="Hand"
+                                          IsChecked="{Binding Source={x:Static properties:Settings.Default},Path=SideBarOpen,Mode=TwoWay}"
                                       x:Name="HeaderToggle"
                                       VerticalAlignment="Center"
                                       Margin="20 0">
-                                <ToggleButton.LayoutTransform>
-                                    <RotateTransform Angle="90"
+                                    <ToggleButton.LayoutTransform>
+                                        <RotateTransform Angle="90"
                                                  CenterX="0.5"
                                                  CenterY="0.5"/>
-                                </ToggleButton.LayoutTransform>
-                            </ToggleButton>
+                                    </ToggleButton.LayoutTransform>
+                                </ToggleButton>
 
-                            <md:Transitioner Grid.Column="1"
-                            ItemsSource="{Binding Screens}"
-                            IsSynchronizedWithCurrentItem="True">
-                                <md:Transitioner.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <md:PackIcon Kind="{Binding Icon}"
+                                <md:Transitioner Grid.Column="1"
+                                                ItemsSource="{Binding Screens}"
+                                                IsSynchronizedWithCurrentItem="True">
+                                    <md:Transitioner.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <md:PackIcon Kind="{Binding Icon}"
                                          Height="24"
                                          Width="24"
                                          Margin="10 0"
                                          VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Name}"
+                                                <TextBlock Text="{Binding Name}"
                                        Style="{StaticResource MaterialDesignHeadlineTextBlock}"
                                        VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </md:Transitioner.ItemTemplate>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </md:Transitioner.ItemTemplate>
 
-                            </md:Transitioner>
+                                </md:Transitioner>
 
-                            <md:Transitioner Grid.Column="2"
+                                <md:Transitioner Grid.Column="3"
                                          HorizontalAlignment="Right"
                                          Margin="10 0"
                                          ItemsSource="{Binding Screens}"
                                          IsSynchronizedWithCurrentItem="True">
-                                <md:Transitioner.ItemTemplate>
-                                    <DataTemplate>
-                                        <ItemsControl ItemsSource="{Binding Commands}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal"/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    <md:Transitioner.ItemTemplate>
+                                        <DataTemplate>
+                                            <ItemsControl ItemsSource="{Binding Commands}" HorizontalAlignment="Right">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Command="{Binding Command}"
                                                         Margin="7 0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <md:PackIcon Kind="{Binding Icon}"
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <md:PackIcon Kind="{Binding Icon}"
                                                              VerticalAlignment="Center" />
-                                                            <TextBlock Text="{Binding Name}"
+                                                                <TextBlock Text="{Binding Name}"
                                                                    Margin="4 0 0 0"
                                                            VerticalAlignment="Center" />
-                                                        </StackPanel>
-                                                    </Button>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </DataTemplate>
-                                </md:Transitioner.ItemTemplate>
+                                                            </StackPanel>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DataTemplate>
+                                    </md:Transitioner.ItemTemplate>
 
-                            </md:Transitioner>
+                                </md:Transitioner>
 
-                            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" 
-                                Grid.Column="0" 
-                                Grid.ColumnSpan="3"/>
-                        </Grid>
-                    </md:ColorZone>
 
-                    
+                            </Grid>
+                        </md:ColorZone>
 
-                  
-                </Grid>
+
+
+
+                    </Grid>
+                </md:DrawerHost>
 
                 <md:Snackbar x:Name="MainSnackbar"
                              MessageQueue="{Binding MessageQueue}"

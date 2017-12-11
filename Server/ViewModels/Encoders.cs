@@ -8,13 +8,14 @@ using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using NORSU.EncodeMe;
+using Server.Properties;
 using Models = NORSU.EncodeMe.Models;
 
 namespace Server.ViewModels
 {
     class Encoders : Screen
     {
-        public Encoders() : base("Encoders", PackIconKind.AccountMultiple, new Views.Encoders())
+        public Encoders() : base("Encoders", PackIconKind.AccountMultiple)
         {
             Commands.Add(new ScreenMenu("ADD NEW", PackIconKind.AccountPlus, AddNewCommand));
             Commands.Add(new ScreenMenu("DELETE ALL", PackIconKind.AccountMultipleMinus, DeleteAllCommand));
@@ -109,9 +110,15 @@ namespace Server.ViewModels
                                GIF Files|*.GIF|
                                PNG Files|*.PNG";
 
-                dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                if (string.IsNullOrWhiteSpace(Settings.Default.OpenFileLocation))
+                    dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                else
+                    dlg.InitialDirectory = Settings.Default.OpenFileLocation;
 
                 if (!dlg.ShowDialog(App.Current.MainWindow) ?? false) return;
+
+                Settings.Default.OpenFileLocation = Path.GetDirectoryName(dlg.FileName);
+                Settings.Default.Save();
 
                 try
                 {
