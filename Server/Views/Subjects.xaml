@@ -121,6 +121,7 @@
         </GroupBox>
 
         <GroupBox Grid.Column="1"
+                  IsEnabled="{Binding Items/,Converter={converters:IsNullConverter Invert=True}}"
                   Header="{Binding Items/}"
                   Margin="20"
                   Style="{StaticResource MaterialDesignCardGroupBox}"

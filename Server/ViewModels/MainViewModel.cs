@@ -46,7 +46,7 @@ namespace Server.ViewModels
                 _items = new ObservableCollection<Screen>()
                 {
                     new Screen("Dashboard", PackIconKind.Home),
-                    new Encoders(),
+                    Encoders.Instance,
                     new Screen("Terminals", PackIconKind.MonitorMultiple),
                     Subjects.Instance,
                     new Screen("Class Schedules", PackIconKind.CalendarToday),
@@ -62,6 +62,7 @@ namespace Server.ViewModels
                 };
                 _itemsView.CurrentChanged += (sender, args) =>
                 {
+                    (_itemsView.CurrentItem as Screen)?.Open();
                     Instance.IsLeftDrawerOpen = false;
                     OnPropertyChanged(nameof(CurrentScreen));
                 };

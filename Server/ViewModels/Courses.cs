@@ -46,7 +46,7 @@ namespace Server.ViewModels
                 d =>
                 {
                     Subjects.Instance.RightDrawerContent = new Prospectus((Course) Items.CurrentItem);
-                }));
+                },d=>d?.Id>0));
 
         private ICommand _deleteCoursesCommand;
 
@@ -56,7 +56,8 @@ namespace Server.ViewModels
                                                         var list = GetSelectedCourses();
                                                         foreach (var course in list)
                                                         {
-                                                            NORSU.EncodeMe.Models.Course.Cache.Remove(course);
+                                                            course.Delete(false);
+                                                            //NORSU.EncodeMe.Models.Course.Cache.Remove(course);
                                                         }
                                                     }, d => GetSelectedCourses()?.Count() > 0));
 

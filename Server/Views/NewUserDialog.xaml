@@ -7,6 +7,7 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:server="clr-namespace:Server"
+             xmlns:viewModels="clr-namespace:Server.ViewModels"
              mc:Ignorable="d" 
              MinWidth="471"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -58,6 +59,7 @@
                 ACCEPT
             </Button>
             <Button IsCancel="True" Margin="8 0 0 0" Style="{DynamicResource MaterialDesignFlatAccentButton}"
+                    IsEnabled="{Binding Source={x:Static viewModels:Encoders.Instance},Path=HasEncoders}"
                     Command="{x:Static wpf:DialogHost.CloseDialogCommand}">
                 CANCEL
             </Button>

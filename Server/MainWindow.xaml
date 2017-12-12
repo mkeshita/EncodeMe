@@ -53,6 +53,7 @@
                 </Grid.RowDefinitions>
                 <views:SideBar Grid.RowSpan="2"/>
             <md:DialogHost Identifier="InnerDialog"
+                           SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}"
                            IsOpen="{Binding Screens/IsDialogOpen}"
                            Grid.Column="1" Grid.Row="0">
                 <md:DrawerHost IsRightDrawerOpen="{Binding Screens/IsRightDrawerOpen}">
@@ -197,9 +198,7 @@
             <md:Snackbar x:Name="MainSnackbar"
                              MessageQueue="{Binding MessageQueue}"
                              VerticalAlignment="Bottom"
-                             HorizontalAlignment="Center"
-                             MaxWidth="777"
-                         MinWidth="555"
+                             HorizontalAlignment="Stretch"
                              Grid.Column="0"
                              Grid.Row="1"
                              Grid.ColumnSpan="2">

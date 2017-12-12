@@ -9,8 +9,7 @@
              xmlns:server="clr-namespace:Server"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <materialDesign:DialogHost Identifier="Encoders" CloseOnClickAway="True"
-                               IsOpen="{Binding IsDialogOpen}">
+    
     <Grid Margin="10"
           x:Name="Grid">
         <ItemsControl ItemsSource="{Binding Items}">
@@ -118,5 +117,5 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
     </Grid>
-    </materialDesign:DialogHost>
+    
 </UserControl>

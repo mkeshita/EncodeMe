@@ -40,6 +40,8 @@ namespace Server.ViewModels
                 _FilterByCourse = value;
                 OnPropertyChanged(nameof(FilterByCourse));
                 Items.Filter = FilterSubjects;
+                if (!value && Items.CurrentItem == null)
+                    Items.MoveCurrentToFirst();
             }
         }
 
@@ -164,6 +166,14 @@ namespace Server.ViewModels
             }
         }
 
+        public override void Open()
+        {
+            if (Models.Course.Cache.Count == 0)
+            {
+                ShowCoursesCommand.Execute(null);
+            }
+        }
+
         private ListCollectionView _schedulesView;
         public ListCollectionView Schedules
         {
@@ -172,8 +182,6 @@ namespace Server.ViewModels
                 if (_schedulesView != null) return _schedulesView;
                 _schedulesView = new ListCollectionView(Models.ClassSchedule.Cache);
                 _schedulesView.Filter = FilterSchedule;
-                _schedulesView.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtBeginning;
-
                 return _schedulesView;
             }
         }

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
@@ -15,7 +16,7 @@ namespace Server.ViewModels
 {
     class Encoders : Screen
     {
-        public Encoders() : base("Encoders", PackIconKind.AccountMultiple)
+        private Encoders() : base("Encoders", PackIconKind.AccountMultiple)
         {
             Commands.Add(new ScreenMenu("ADD NEW", PackIconKind.AccountPlus, AddNewCommand));
             Commands.Add(new ScreenMenu("DELETE ALL", PackIconKind.AccountMultipleMinus, DeleteAllCommand));
@@ -32,11 +33,27 @@ namespace Server.ViewModels
             Messenger.Default.AddListener<Models.Encoder>(Messages.ChangeEncoderPassword, ChangeEncoderPassword);
         }
 
+        private static Encoders _instance;
+        public static Encoders Instance => _instance ?? (_instance = new Encoders());
+
+        public override async void Open()
+        {
+            if (Models.Encoder.Cache.Count == 0)
+            {
+                await TaskEx.Delay(300);
+                
+               AddNew();
+            }
+        }
+
+        public bool HasEncoders => Models.Encoder.Cache.Count > 0;
+
         private static ICommand _addNewCommand;
 
-        private ICommand AddNewCommand => _addNewCommand ?? (_addNewCommand = new DelegateCommand(async d =>
-        {
+        private ICommand AddNewCommand => _addNewCommand ?? (_addNewCommand = new DelegateCommand(d =>AddNew(), d => !IsDialogOpen));
 
+        private async void AddNew()
+        {
             var newUser = new NewUserDialog();
             newUser.AcceptCommand = new DelegateCommand(dd =>
             {
@@ -45,13 +62,12 @@ namespace Server.ViewModels
                 encoder.Username = newUser.Username;
                 encoder.FullName = newUser.FullName;
                 encoder.Save();
-            }, dd =>
-            {
-                return !string.IsNullOrWhiteSpace(newUser.Username) && !Models.Encoder.UsernameExists(newUser.Username);
-            });
+            }, dd => !string.IsNullOrWhiteSpace(newUser.Username) && !Models.Encoder.UsernameExists(newUser.Username));
 
-            await DialogHost.Show(new Views.NewUserDialog() { DataContext = newUser }, "Encoders");
-        }, d => !IsDialogOpen));
+            await DialogHost.Show(new Views.NewUserDialog() {DataContext = newUser}, "InnerDialog");
+            
+            OnPropertyChanged(nameof(HasEncoders));
+        }
 
         private static ICommand _deleteAllCommand;
         private ICommand DeleteAllCommand => _deleteAllCommand ?? (_deleteAllCommand = new DelegateCommand(async d =>
@@ -67,22 +83,28 @@ namespace Server.ViewModels
                 {
                     Models.Encoder.DeleteAll();
                     IsDialogOpen = false;
+                    Open();
                 })
-            }, "Encoders");
+            }, "InnerDialog");
+            OnPropertyChanged(nameof(HasEncoders));
+            Open();
 
         }, d => !IsDialogOpen && Items.Count > 0));
 
 
         private void EncoderDeleted(Models.Encoder encoder)
         {
+            Open();
             MainViewModel.EnqueueMessage(
-                $"{encoder.FullName} ({encoder.Username}) is successfully removed from the encoders list.)",
+                $"{encoder.FullName} ({encoder.Username}) is successfully deleted.",
                 "UNDO", en =>
                 {
                     en.Update(nameof(en.IsDeleted), false);
                     Models.Encoder.Cache.Add(en);
                     _items.Refresh();
+                    OnPropertyChanged(nameof(HasEncoders));
                 }, encoder, true);
+            OnPropertyChanged(nameof(HasEncoders));
         }
 
         private void ChangeEncoderPassword(Models.Encoder encoder)

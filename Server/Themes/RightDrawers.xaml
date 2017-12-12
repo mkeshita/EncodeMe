@@ -4,7 +4,8 @@
                     xmlns:views="clr-namespace:Server.Views"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:server="clr-namespace:Server"
-                    xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data">
+                    xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data"
+                    xmlns:converters="clr-namespace:Server.Converters">
     <DataTemplate DataType="{x:Type viewModels:Prospectus}">
         <Grid Background="{StaticResource MaterialDesignPaper}">
             <Grid.RowDefinitions>
@@ -104,6 +105,7 @@
                 </DataGrid.ItemContainerStyle>
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Binding="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                            IsReadOnly="{Binding Converter={converters:IsTypeConverter Type={x:Type models:Course}}}"
                                         CanUserResize="False"
                                         CanUserSort="False"
                                         ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
