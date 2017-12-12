@@ -1,0 +1,54 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:Server.ViewModels"
+                    xmlns:views="clr-namespace:Server.Views">
+    <DataTemplate DataType="{x:Type viewModels:Courses}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <DataGrid Grid.Row="0"
+                  AutoGenerateColumns="False"
+                  CanUserResizeRows="False"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  x:Name="DataGrid"
+                  CanUserDeleteRows="False"
+                  ItemsSource="{Binding Items}">
+                <DataGrid.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource MaterialDesignDataGridRow}" TargetType="DataGridRow">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                    </Style>
+                </DataGrid.ItemContainerStyle>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Binding="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                        CanUserResize="False"
+                                        CanUserSort="False"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                        <DataGridCheckBoxColumn.Header>
+                            <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.AllCoursesSelected}"
+                                  Style="{StaticResource MaterialDesignCheckBox}"/>
+                        </DataGridCheckBoxColumn.Header>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn Header="Acronym" Binding="{Binding Acronym}"
+                                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"/>
+                    <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}"
+                                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button Grid.Row="1" Command="{Binding DeleteCoursesCommand}"
+                Style="{StaticResource MaterialDesignRaisedAccentButton}">
+                DELETE SELECTED
+            </Button>
+        </Grid>
+    </DataTemplate>
+    
+    
+    <DataTemplate DataType="{x:Type viewModels:Schedules}">
+        <Grid/>
+    </DataTemplate>
+</ResourceDictionary>

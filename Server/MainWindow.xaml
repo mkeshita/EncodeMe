@@ -9,7 +9,7 @@
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"        
+        TextOptions.TextRenderingMode="Auto"
         xmlns:encodeMe="clr-namespace:Server"
         xmlns:cnv="clr-namespace:Server.Converters"
         xmlns:viewModels="clr-namespace:Server.ViewModels"
@@ -33,165 +33,85 @@
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Menu.xaml" />
+                <ResourceDictionary Source="/Themes/MessageDialog.xaml"/>
+                <ResourceDictionary Source="/Themes/RightDrawers.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <DataTemplate DataType="{x:Type viewModels:MessageDialog}">
-                <Grid MaxWidth="777" MinWidth="444">
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <md:PackIcon Kind="{Binding Icon}"
-                                 Height="64"
-                                 Width="64"
-                                 Grid.RowSpan="2"
-                                 Margin="20 20 10 10"/>
-                    
-                    <TextBlock Text="{Binding Title}"
-                               Style="{StaticResource MaterialDesignTitleTextBlock}"
-                               Grid.Column="1"
-                               Grid.Row="0"
-                               Margin="10 20 40 10"/>
-
-                    <TextBlock Text="{Binding Message}"
-                               TextWrapping="Wrap"
-                               Style="{StaticResource MaterialDesignSubheadingTextBlock}"
-                               Grid.Column="1"
-                               Grid.Row="1"
-                               Margin="10 10 40 20" />
-
-                    <UniformGrid Columns="2" HorizontalAlignment="Right"
-                                 Grid.Row="2"
-                                 Grid.Column="0"
-                                 Grid.ColumnSpan="2"
-                                Margin="10 47 10 10">
-                        <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
-                                Foreground="{StaticResource MaterialDesignDarkForeground}"
-                                Background="{DynamicResource SecondaryAccentBrush}"
-                                Command="{Binding AffirmativeCommand}"
-                                Content="{Binding Affirmative}"/>
-
-
-                        <Button IsCancel="True" Margin="8 0 0 0" Style="{DynamicResource MaterialDesignFlatAccentButton}"
-                                Command="{Binding NegativeCommand}"
-                                Content="{Binding Negative}"/>
-                            
-                        
-                    </UniformGrid>
-                </Grid>
-            </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
     <md:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
-        <md:DrawerHost IsRightDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
-         
+
             <Grid IsSharedSizeScope="True">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid Grid.RowSpan="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" SharedSizeGroup="a"/>
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <md:ColorZone Grid.Row="1"
-                                  Mode="Dark"
-                                  VerticalAlignment="Stretch">
-                        <ListBox IsSynchronizedWithCurrentItem="True"
-                                 x:Name="DemoItemsListBox"
-                                 Foreground="{StaticResource MaterialDesignDarkForeground}"
-                                 Margin="0 20 0 0"
-                                 ItemsSource="{Binding Source={x:Static viewModels:MainViewModel.Instance},Path=Screens}">
-                            <ListBox.ItemContainerStyle>
-                                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
-                                       TargetType="ListBoxItem">
-                                    <Setter Property="Visibility" Value="{Binding Visibility}"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="viewModels:Screen">
-                                    <Grid Margin="7 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <md:PackIcon Kind="{Binding Icon}"
-                                                     Width="24"
-                                                     Height="24"
-                                                     HorizontalAlignment="Center"
-                                                     VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Name}" Margin="32 0 32 0"
-                                                   FontSize="11pt"
-                                                   Visibility="{Binding ElementName=HeaderToggle,Path=IsChecked,Converter={cnv:BooleanToVisibility Collapsed,Visible}}"
-                                                   VerticalAlignment="Center"
-                                                   Grid.Column="1" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </md:ColorZone>
-                    
-                    <md:ColorZone Padding="7"
-                                  md:ShadowAssist.ShadowDepth="Depth1"
-                                  x:Name="HeaderColorZone"
-                              VerticalAlignment="Stretch"
-                                            Mode="PrimaryDark">
-                        <Grid Margin="7" HorizontalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="Icon"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <md:PackIcon Kind="Server" Height="24"
-                                     Width="24"
-                                     Padding="0" Margin="0"
-                                     VerticalAlignment="Center" />
-                            <TextBlock Text="EncodeMe Server"
-                                       Grid.Column="1"
-                                       FontSize="12pt"
-                                       Visibility="{Binding ElementName=HeaderToggle,Path=IsChecked,Converter={cnv:BooleanToVisibility Collapsed,Visible}}"
-                                   Margin="10 0 20 0"
-                                       Style="{StaticResource MaterialDesignHeadlineTextBlock}"
-                                   VerticalAlignment="Center" />
-                        </Grid>
-                    </md:ColorZone>
-                    
-                </Grid>
+                <views:SideBar Grid.RowSpan="2"/>
                 <md:DrawerHost Grid.Column="1" Grid.Row="0"
-                               IsRightDrawerOpen="{Binding Screens/IsRightDrawerOpen}"
-                               RightDrawerContent="{Binding Screens/RightDrawerContent}">
-                    <Grid >
+                               IsRightDrawerOpen="{Binding Screens/IsRightDrawerOpen}">
+                    <md:DrawerHost.RightDrawerContent>
+                        <Grid Margin="20"
+                              DataContext="{Binding Screens/}"
+                              MinWidth="444">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <md:PackIcon Kind="{Binding RightDrawerContent.Icon}" Height="32" Width="32"
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Margin="0 0 10 0" />
+                                <TextBlock Text="{Binding RightDrawerContent.Title}"
+                                               Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                                           Grid.Column="1"
+                                           VerticalAlignment="Center" />
+                                <ToggleButton Grid.Column="2"
+                                              Cursor="Hand"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding IsRightDrawerOpen}"
+                                              Style="{StaticResource MaterialDesignExpanderToggleButton}">
+                                    <ToggleButton.RenderTransform>
+                                        <RotateTransform CenterX="0.5"
+                                                         CenterY="0.5"
+                                                         Angle="90" />
+                                    </ToggleButton.RenderTransform>
+                                </ToggleButton>
+                            </Grid>
+
+                            <ContentControl Content="{Binding RightDrawerContent}"
+                                            Margin="0 40 0 0"
+                                            Grid.Row="1"/>
+                        </Grid>
+                    </md:DrawerHost.RightDrawerContent>
+                    <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" SharedSizeGroup="a"/>
+                            <RowDefinition Height="Auto" SharedSizeGroup="a" />
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <ScrollViewer Grid.Row="1"
-                                  Background="#1f1f1f1f"
+                                  Background="#1f474747"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Visible">
+                                  VerticalScrollBarVisibility="Auto">
                             <md:Transitioner
                             ItemsSource="{Binding Screens}"
                             IsSynchronizedWithCurrentItem="True">
                                 <md:Transitioner.Resources>
                                     <DataTemplate DataType="{x:Type viewModels:Encoders}">
-                                        <views:Encoders DataContext="{Binding}"/>
+                                        <views:Encoders DataContext="{Binding}" />
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type viewModels:Subjects}">
-                                        <views:Subjects DataContext="{Binding}"/>
+                                        <views:Subjects DataContext="{Binding}" />
                                     </DataTemplate>
                                 </md:Transitioner.Resources>
                             </md:Transitioner>
@@ -203,21 +123,20 @@
                                   VerticalAlignment="Stretch">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <ToggleButton Style="{StaticResource MaterialDesignExpanderToggleButton}"
                                       Cursor="Hand"
                                           IsChecked="{Binding Source={x:Static properties:Settings.Default},Path=SideBarOpen,Mode=TwoWay}"
-                                      x:Name="HeaderToggle"
                                       VerticalAlignment="Center"
                                       Margin="20 0">
                                     <ToggleButton.LayoutTransform>
                                         <RotateTransform Angle="90"
                                                  CenterX="0.5"
-                                                 CenterY="0.5"/>
+                                                 CenterY="0.5" />
                                     </ToggleButton.LayoutTransform>
                                 </ToggleButton>
 
@@ -231,14 +150,13 @@
                                          Height="24"
                                          Width="24"
                                          Margin="10 0"
-                                         VerticalAlignment="Center"/>
+                                         VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding Name}"
                                        Style="{StaticResource MaterialDesignHeadlineTextBlock}"
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </md:Transitioner.ItemTemplate>
-
                                 </md:Transitioner>
 
                                 <md:Transitioner Grid.Column="3"
@@ -251,7 +169,7 @@
                                             <ItemsControl ItemsSource="{Binding Commands}" HorizontalAlignment="Right">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal"/>
+                                                        <StackPanel Orientation="Horizontal" />
                                                     </ItemsPanelTemplate>
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
@@ -272,16 +190,9 @@
                                             </ItemsControl>
                                         </DataTemplate>
                                     </md:Transitioner.ItemTemplate>
-
                                 </md:Transitioner>
-
-
                             </Grid>
                         </md:ColorZone>
-
-
-
-
                     </Grid>
                 </md:DrawerHost>
 
@@ -295,6 +206,6 @@
                              Grid.ColumnSpan="2">
                 </md:Snackbar>
             </Grid>
-        </md:DrawerHost>
+
     </md:DialogHost>
 </Window>

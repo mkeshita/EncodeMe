@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using MaterialDesignThemes.Wpf;
 
 namespace Server.ViewModels
@@ -11,7 +10,7 @@ namespace Server.ViewModels
         {
             Name = name;
             Icon = icon;
-         //   Content = content;
+            //   Content = content;
         }
 
         private List<ScreenMenu> _Commands;
@@ -43,9 +42,9 @@ namespace Server.ViewModels
             }
         }
 
-        private UserControl _RightDrawerContent;
+        private object _RightDrawerContent;
 
-        public UserControl RightDrawerContent
+        public object RightDrawerContent
         {
             get => _RightDrawerContent;
             set

@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe;
-using Server.Views;
 using Models = NORSU.EncodeMe.Models;
 
 namespace Server.ViewModels
@@ -24,36 +22,30 @@ namespace Server.ViewModels
             {
                 if (_instance != null) return _instance;
                 _instance = new Subjects();
-                var rd = new Courses() { DataContext = _instance };
-                _instance.RightDrawerContent = rd;
 
-                Messenger.Default.AddListener<Models.Course>(Messages.ModelSelected, d =>
-                {
-                    _instance.CourseSelectionChanged();
-                });
                 return _instance;
             }
         }
 
-        private void CourseSelectionChanged()
-        {
-            OnPropertyChanged(nameof(AllCoursesSelected));
-        }
-
-        private void SubjectSelectionChanged()
-        {
-            OnPropertyChanged(nameof(AllSubjectsSelected));
-        }
-
         private static ICommand _showCoursesCommand;
-
+        private static readonly Courses _courses = new Courses();
         public ICommand ShowCoursesCommand => _showCoursesCommand ?? (_showCoursesCommand = new DelegateCommand(d =>
         {
-            IsRightDrawerOpen = !IsRightDrawerOpen;
+            IsRightDrawerOpen = true;
+            RightDrawerContent = _courses;
         }));
 
-        private ListCollectionView _courses;
-        public ListCollectionView Courses => _courses ?? (_courses = new ListCollectionView(Models.Course.Cache));
+        private static ICommand _showSchedulesCommand;
+        private static readonly Schedules _schedules = new Schedules();
+
+        public ICommand ShowSchedulesCommand => _showSchedulesCommand ?? (_showSchedulesCommand = new DelegateCommand(
+        d =>
+        {
+            IsRightDrawerOpen = true;
+            RightDrawerContent = _schedules;
+        }));
+
+
 
         private ICommand _addCourseCommand;
 
@@ -75,37 +67,9 @@ namespace Server.ViewModels
             }
         }
 
-        private ICommand _deleteCoursesCommand;
 
-        public ICommand DeleteCoursesCommand => _deleteCoursesCommand ?? (_deleteCoursesCommand = new DelegateCommand(
-                    d =>
-                    {
-                        var list = GetSelectedCourses();
-                        foreach (var course in list)
-                        {
-                            Models.Course.Cache.Remove(course);
-                        }
-                    }, d => GetSelectedCourses()?.Count() > 0));
 
-        public IEnumerable<Models.Course> GetSelectedCourses()
-        {
-            return Models.Course.Cache.Where(x => x.IsSelected).ToList();
-        }
 
-        private bool _AllCoursesSelected;
-
-        public bool AllCoursesSelected
-        {
-            get => Models.Course.Cache.All(x => x.IsSelected);
-            set
-            {
-                foreach (var course in Models.Course.Cache)
-                {
-                    course.IsSelected = value;
-                }
-                OnPropertyChanged(nameof(AllCoursesSelected));
-            }
-        }
 
         private bool _AllSubjectsSelected;
 

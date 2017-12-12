@@ -20,38 +20,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <GroupBox Header="SUBJECTS FILTERS" Style="{StaticResource MaterialDesignCardGroupBox}"
-                  Margin="20">
-            
-            <StackPanel Orientation="Horizontal"
-                        Margin="4 0">
-                <CheckBox Content="Course"
-                          x:Name="CourseFilter"/>
-                <ComboBox ItemsSource="{Binding Courses}" DisplayMemberPath="Acronym"
-                          IsEnabled="{Binding ElementName=CourseFilter,Path=IsChecked}"
-                          Margin="10 0 40 0"/>
-                
-            
-                    <CheckBox Content="Year Level" 
-                              x:Name="YearLevelFilter"/>
-                    <ComboBox ItemsSource="{server:EnumBinding {x:Type models:YearLevels}}"
-                              IsEnabled="{Binding ElementName=YearLevelFilter,Path=IsChecked}"
-                              Margin="10 0 0 0"
-                              IsSynchronizedWithCurrentItem="True"/>
-                </StackPanel>
-            
-        </GroupBox>
-
-        <md:ColorZone md:ShadowAssist.ShadowDepth="Depth2" Grid.Row="1" Grid.Column="0"
+        <md:ColorZone md:ShadowAssist.ShadowDepth="Depth2" Grid.Column="0"
                       VerticalAlignment="Stretch"
                       Margin="20">
             <DataGrid ItemsSource="{Binding Items}"
@@ -80,6 +54,25 @@
                                             Header="Year Level"/>
                 </DataGrid.Columns>
             </DataGrid>
+        </md:ColorZone>
+
+        <md:ColorZone Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                      VerticalAlignment="Stretch"
+                      Margin="20" md:ShadowAssist.ShadowDepth="Depth2">
+            <Grid>
+                <ListView>
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn Header="Room"/>
+                                <GridViewColumn Header="Instructor"/>
+                                <GridViewColumn Header="Schedule"/>
+                                <GridViewColumn Header="Slots"/>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
         </md:ColorZone>
     </Grid>
 </UserControl>
