@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
@@ -14,6 +15,44 @@ namespace Server.ViewModels
         private Subjects() : base("Subjects", PackIconKind.BookOpen)
         {
             Commands.Add(new ScreenMenu("COURSES", PackIconKind.Library, ShowCoursesCommand));
+            
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            
+            Messenger.Default.AddListener<Models.Course>(Messages.ModelSelected, m =>
+            {
+                if (FilterByCourse)
+                {
+                    Items.Filter = FilterSubjects;
+                }
+            });
+        }
+
+
+        private bool _FilterByCourse;
+
+        public bool FilterByCourse
+        {
+            get => _FilterByCourse;
+            set
+            {
+                if (value == _FilterByCourse) return;
+                _FilterByCourse = value;
+                OnPropertyChanged(nameof(FilterByCourse));
+                Items.Filter = FilterSubjects;
+            }
+        }
+
+        private bool FilterSubjects(object o)
+        {
+            if (!FilterByCourse) return true;
+            var subject = o as Models.Subject;
+            if (subject == null) return false;
+            
+            var cs =  Models.CourseSubject.Cache.FirstOrDefault(x => x.SubjectId == subject.Id);
+            if (cs == null) return false;
+            var course = Models.Course.Cache.FirstOrDefault(x => x.Id == cs.CourseId);
+            return course?.IsSelected ?? false;
         }
 
         private static Subjects _instance;
@@ -29,12 +68,55 @@ namespace Server.ViewModels
             }
         }
 
+        private static ICommand _deleteSubjectsCommand;
+
+        public ICommand ClearSubjectsCommand =>
+            _deleteSubjectsCommand ?? (_deleteSubjectsCommand = new DelegateCommand(
+                d =>
+                {
+                    DialogHost.Show(new MessageDialog()
+                    {
+                        Icon = PackIconKind.DeleteVariant,
+                        Message = "Are you sure you want to delete all subjects?\nThis action cannot be undone.",
+                        Title = "CONFIRM DELETE",
+                        Affirmative = "DELETE ALL",
+                        Negative = "CANCEL",
+                        AffirmativeAction = ()=> Models.Subject.DeleteAll()
+                    }, "InnerDialog");
+                }, d=>Models.Subject.Cache.Count>0));
+
+        private static ICommand _clearSchedulesCommand;
+
+        public ICommand ClearSchedulesCommand =>
+            _clearSchedulesCommand ?? (_clearSchedulesCommand = new DelegateCommand(
+                d =>
+                {
+                    var subject = (Models.Subject) Items.CurrentItem;
+                    DialogHost.Show(new MessageDialog()
+                    {
+                        Icon = PackIconKind.DeleteVariant,
+                        Message = $"Are you sure you want to delete all class schedules for {subject.Code}?\nThis action cannot be undone.",
+                        Title = "CONFIRM DELETE",
+                        Affirmative = "DELETE ALL",
+                        Negative = "CANCEL",
+                        AffirmativeAction = () =>
+                        {
+                            Models.ClassSchedule.DeleteWhere(nameof(Models.ClassSchedule.SubjectId), subject.Id);
+                            IsDialogOpen = false;
+                        }
+                    }, "InnerDialog");
+                }, d =>
+                {
+                    if (!(Items.CurrentItem is Models.Subject subject)) return false;
+                    return Models.ClassSchedule.Cache.Count(x=>x.SubjectId==subject.Id) > 0;
+                }));
+
         private static ICommand _showCoursesCommand;
-        private static readonly Courses _courses = new Courses();
+        
         public ICommand ShowCoursesCommand => _showCoursesCommand ?? (_showCoursesCommand = new DelegateCommand(d =>
         {
             IsRightDrawerOpen = true;
-            RightDrawerContent = _courses;
+            RightDrawerContent = Courses.Instance;
         }));
 
         private static ICommand _showSchedulesCommand;
@@ -72,9 +154,10 @@ namespace Server.ViewModels
             {
                 if (_items != null) return _items;
                 _items = new ListCollectionView(Models.Subject.Cache);
+                _items.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtBeginning;
                 _items.CurrentChanged += (sender, args) =>
                 {
-                    Models.Subject.CurrentItem = (Models.Subject) _items.CurrentItem;
+                    Models.Subject.CurrentItem =  _items.CurrentItem as Models.Subject;
                     Schedules.Filter = FilterSchedule;
                 };
                 return _items;
@@ -97,6 +180,7 @@ namespace Server.ViewModels
 
         private bool FilterSchedule(object o)
         {
+            if (!(Items.CurrentItem is Models.Subject)) return false;
             var sched = (Models.ClassSchedule) o;
             return sched.SubjectId == ((Models.Subject) Items.CurrentItem)?.Id;
         }

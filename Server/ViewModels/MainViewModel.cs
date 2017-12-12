@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
+using NORSU.EncodeMe;
+using NORSU.EncodeMe.Models;
 
 namespace Server.ViewModels
 {
@@ -10,16 +12,37 @@ namespace Server.ViewModels
         private static MainViewModel _instance;
         public static MainViewModel Instance => _instance ?? (_instance = new MainViewModel());
 
-        private MainViewModel() { }
+        private MainViewModel()
+        {
+            Messenger.Default.AddListener<ClassSchedule>(Messages.ModelDeleted, s =>
+            {
+                EnqueueMessage("Class schedule has been deleted.","UNDO",
+                    sc =>
+                    {
+                        sc.Update(nameof(sc.IsDeleted),false);
+                        ClassSchedule.Cache.Add(sc);
+                    },s,true);
+            });
 
-        private static ObservableCollection<Screen> _items;
-        private static ListCollectionView _itemsView;
+            Messenger.Default.AddListener<Subject>(Messages.ModelDeleted, s =>
+            {
+                EnqueueMessage($"{s.Code} has been deleted.", "UNDO",
+                    sc =>
+                    {
+                        sc.Update(nameof(sc.IsDeleted), false);
+                        Subject.Cache.Add(sc);
+                    }, s, true);
+            });
+        }
 
-        public static ListCollectionView Screens
+        private ObservableCollection<Screen> _items;
+        private ListCollectionView _itemsView;
+
+        public ObservableCollection<Screen> Screens
         {
             get
             {
-                if (_itemsView != null) return _itemsView;
+                if (_itemsView != null) return _items;//View;
                 _items = new ObservableCollection<Screen>()
                 {
                     new Screen("Dashboard", PackIconKind.Home),
@@ -40,10 +63,13 @@ namespace Server.ViewModels
                 _itemsView.CurrentChanged += (sender, args) =>
                 {
                     Instance.IsLeftDrawerOpen = false;
+                    OnPropertyChanged(nameof(CurrentScreen));
                 };
-                return _itemsView;
+                return _items;//View;
             }
         }
+
+        public Screen CurrentScreen => (Screen) CollectionViewSource.GetDefaultView(Screens).CurrentItem;
 
         public static void EnqueueMessage(string message, bool promote = false)
         {

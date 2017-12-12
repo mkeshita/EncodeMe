@@ -35,12 +35,14 @@
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Menu.xaml" />
                 <ResourceDictionary Source="/Themes/MessageDialog.xaml"/>
                 <ResourceDictionary Source="/Themes/RightDrawers.xaml"/>
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     <md:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
 
-            <Grid IsSharedSizeScope="True">
+            <Grid IsSharedSizeScope="True"
+                  Background="#4f474747">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -50,8 +52,10 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <views:SideBar Grid.RowSpan="2"/>
-                <md:DrawerHost Grid.Column="1" Grid.Row="0"
-                               IsRightDrawerOpen="{Binding Screens/IsRightDrawerOpen}">
+            <md:DialogHost Identifier="InnerDialog"
+                           IsOpen="{Binding Screens/IsDialogOpen}"
+                           Grid.Column="1" Grid.Row="0">
+                <md:DrawerHost IsRightDrawerOpen="{Binding Screens/IsRightDrawerOpen}">
                     <md:DrawerHost.RightDrawerContent>
                         <Grid Margin="20"
                               DataContext="{Binding Screens/}"
@@ -66,28 +70,20 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <md:PackIcon Kind="{Binding RightDrawerContent.Icon}" Height="32" Width="32"
-                                            Grid.Column="0"
-                                            VerticalAlignment="Center"
-                                            Margin="0 0 10 0" />
+                                <Button Height="Auto" Style="{StaticResource MaterialDesignToolButton}"
+                                        Command="{Binding RightDrawerContent.BackCommand}">
+                                    <md:PackIcon Kind="ChevronLeft" Height="32" Width="32"
+                                                Grid.Column="0"
+                                                VerticalAlignment="Center"
+                                                Margin="0 0 10 0" />
+                                </Button>
                                 <TextBlock Text="{Binding RightDrawerContent.Title}"
                                                Style="{StaticResource MaterialDesignHeadlineTextBlock}"
                                            Grid.Column="1"
                                            VerticalAlignment="Center" />
-                                <ToggleButton Grid.Column="2"
-                                              Cursor="Hand"
-                                              VerticalAlignment="Center"
-                                              IsChecked="{Binding IsRightDrawerOpen}"
-                                              Style="{StaticResource MaterialDesignExpanderToggleButton}">
-                                    <ToggleButton.RenderTransform>
-                                        <RotateTransform CenterX="0.5"
-                                                         CenterY="0.5"
-                                                         Angle="90" />
-                                    </ToggleButton.RenderTransform>
-                                </ToggleButton>
                             </Grid>
 
-                            <ContentControl Content="{Binding RightDrawerContent}"
+                            <md:TransitioningContent Content="{Binding RightDrawerContent}"
                                             Margin="0 40 0 0"
                                             Grid.Row="1"/>
                         </Grid>
@@ -100,9 +96,8 @@
                         </Grid.RowDefinitions>
 
                         <ScrollViewer Grid.Row="1"
-                                  Background="#1f474747"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  VerticalScrollBarVisibility="Auto">
+                                  HorizontalScrollBarVisibility="{Binding Screens/HorizontalScrollBarVisibility}"
+                                  VerticalScrollBarVisibility="{Binding Screens/VerticalScrollBarVisibility}">
                             <md:Transitioner
                             ItemsSource="{Binding Screens}"
                             IsSynchronizedWithCurrentItem="True">
@@ -118,15 +113,15 @@
                         </ScrollViewer>
 
                         <md:ColorZone md:ShadowAssist.ShadowDepth="Depth1"
+                                      Background="{DynamicResource MaterialDesignPaper}"
                                   Grid.Row="0"
                                   md:ShadowAssist.Darken="False"
                                   VerticalAlignment="Stretch">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <ToggleButton Style="{StaticResource MaterialDesignExpanderToggleButton}"
                                       Cursor="Hand"
@@ -141,35 +136,37 @@
                                 </ToggleButton>
 
                                 <md:Transitioner Grid.Column="1"
-                                                ItemsSource="{Binding Screens}"
-                                                IsSynchronizedWithCurrentItem="True">
+                                                 HorizontalAlignment="Left"
+                                                 ItemsSource="{Binding Screens}"
+                                                 IsSynchronizedWithCurrentItem="True">
                                     <md:Transitioner.ItemTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                                 <md:PackIcon Kind="{Binding Icon}"
-                                                             Height="24"
-                                                             Width="24"
+                                                             Height="32"
+                                                             Width="32"
                                                              Margin="10 0"
                                                              VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding Name}"
-                                       Style="{StaticResource MaterialDesignHeadlineTextBlock}"
-                                       VerticalAlignment="Center" />
+                                                           Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                                                           VerticalAlignment="Center" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </md:Transitioner.ItemTemplate>
                                 </md:Transitioner>
-
-                                <md:Transitioner Grid.Column="3"
+                                
+                                <md:Transitioner Grid.Column="2"
                                          HorizontalAlignment="Right"
                                          Margin="10 0"
                                          ItemsSource="{Binding Screens}"
                                          IsSynchronizedWithCurrentItem="True">
                                     <md:Transitioner.ItemTemplate>
                                         <DataTemplate>
-                                            <ItemsControl ItemsSource="{Binding Commands}" HorizontalAlignment="Right">
+                                            <ItemsControl ItemsSource="{Binding Commands}"
+                                                          HorizontalAlignment="Right">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal" />
+                                                        <StackPanel Orientation="Horizontal"/>
                                                     </ItemsPanelTemplate>
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
@@ -195,12 +192,14 @@
                         </md:ColorZone>
                     </Grid>
                 </md:DrawerHost>
-
-                <md:Snackbar x:Name="MainSnackbar"
+            </md:DialogHost>
+                
+            <md:Snackbar x:Name="MainSnackbar"
                              MessageQueue="{Binding MessageQueue}"
                              VerticalAlignment="Bottom"
                              HorizontalAlignment="Center"
                              MaxWidth="777"
+                         MinWidth="555"
                              Grid.Column="0"
                              Grid.Row="1"
                              Grid.ColumnSpan="2">

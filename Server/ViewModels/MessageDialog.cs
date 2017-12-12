@@ -1,5 +1,7 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
+using NORSU.EncodeMe;
 
 namespace Server.ViewModels
 {
@@ -99,7 +101,23 @@ namespace Server.ViewModels
         }
 
 
+        private Action _AffirmativeAction;
 
+        public Action AffirmativeAction
+        {
+            get => _AffirmativeAction;
+            set
+            {
+                if (value == _AffirmativeAction) return;
+                _AffirmativeAction = value;
+                if (value != null)
+                {
+                    AffirmativeCommand = new DelegateCommand(d=>value.Invoke());
+                }
+            }
+        }
+
+        
 
     }
 }

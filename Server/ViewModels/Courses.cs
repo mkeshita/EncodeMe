@@ -4,18 +4,22 @@ using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe;
+using NORSU.EncodeMe.Models;
 
 namespace Server.ViewModels
 {
     class Courses : ViewModelBase
     {
-        public Courses()
+        private Courses()
         {
             Messenger.Default.AddListener<NORSU.EncodeMe.Models.Course>(Messages.ModelSelected, d =>
             {
                 OnPropertyChanged(nameof(AllCoursesSelected));
             });
         }
+
+        private static Courses _instance;
+        public static Courses Instance => _instance ?? (_instance = new Courses());
 
         private ListCollectionView _courses;
         public ListCollectionView Items => _courses ?? (_courses = new ListCollectionView(NORSU.EncodeMe.Models.Course.Cache));
@@ -34,6 +38,15 @@ namespace Server.ViewModels
                 OnPropertyChanged(nameof(AllCoursesSelected));
             }
         }
+
+        private ICommand _viewProspectusCommand;
+
+        public ICommand ViewProspectusCommand =>
+            _viewProspectusCommand ?? (_viewProspectusCommand = new DelegateCommand<Course>(
+                d =>
+                {
+                    Subjects.Instance.RightDrawerContent = new Prospectus((Course) Items.CurrentItem);
+                }));
 
         private ICommand _deleteCoursesCommand;
 
@@ -54,5 +67,12 @@ namespace Server.ViewModels
 
         public PackIconKind Icon => PackIconKind.Library;
         public string Title => "Courses";
+
+        private ICommand _backCommand;
+
+        public ICommand BackCommand => _backCommand ?? (_backCommand = new DelegateCommand(d =>
+        {
+            Subjects.Instance.IsRightDrawerOpen = false;
+        }));
     }
 }

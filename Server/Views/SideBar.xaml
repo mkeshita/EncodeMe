@@ -28,14 +28,17 @@
                     <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
                                        TargetType="ListBoxItem">
                         <Setter Property="Visibility" Value="{Binding Visibility}" />
+                        <Setter Property="ClipToBounds" Value="False"/>
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="viewModels:Screen">
+                       
                         <Grid Margin="7 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" SharedSizeGroup="Label"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <materialDesign:PackIcon Kind="{Binding Icon}"
                                                      Width="24"
@@ -47,6 +50,10 @@
                                                    Visibility="{Binding Source={x:Static properties:Settings.Default},Path=SideBarOpen,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
                                                    VerticalAlignment="Center"
                                                    Grid.Column="1" />
+                            <materialDesign:Badged Badge="{Binding Badge}" BadgeColorZoneMode="Accent"
+                                                   VerticalAlignment="Center"
+                                                   Margin="4"
+                                                   Grid.Column="2"/>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

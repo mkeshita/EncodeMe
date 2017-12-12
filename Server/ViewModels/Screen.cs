@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using MaterialDesignThemes.Wpf;
 
 namespace Server.ViewModels
@@ -55,6 +56,48 @@ namespace Server.ViewModels
             }
         }
 
+        private int? _Badge;
+
+        public int? Badge
+        {
+            get => _Badge;
+            set
+            {
+                if (value == _Badge) return;
+                _Badge = value;
+                OnPropertyChanged(nameof(Badge));
+            }
+        }
+
+        
+
+        private ScrollBarVisibility _HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+
+        public ScrollBarVisibility HorizontalScrollBarVisibility
+        {
+            get => _HorizontalScrollBarVisibility;
+            set
+            {
+                if (value == _HorizontalScrollBarVisibility) return;
+                _HorizontalScrollBarVisibility = value;
+                OnPropertyChanged(nameof(HorizontalScrollBarVisibility));
+            }
+        }
+
+        private ScrollBarVisibility _VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+        public ScrollBarVisibility VerticalScrollBarVisibility
+        {
+            get => _VerticalScrollBarVisibility;
+            set
+            {
+                if (value == _VerticalScrollBarVisibility) return;
+                _VerticalScrollBarVisibility = value;
+                OnPropertyChanged(nameof(VerticalScrollBarVisibility));
+            }
+        }
+
+        
 
 
         public virtual void Close()
