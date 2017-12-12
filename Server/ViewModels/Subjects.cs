@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
@@ -44,33 +46,7 @@ namespace Server.ViewModels
             IsRightDrawerOpen = true;
             RightDrawerContent = _schedules;
         }));
-
-
-
-        private ICommand _addCourseCommand;
-
-        public ICommand AddCourseCommand => _addCourseCommand ?? (_addCourseCommand = new DelegateCommand(d =>
-        {
-            NewCourse.Save();
-            NewCourse = null;
-        }, d => NewCourse.CanSave()));
-
-        private Models.Course _newCourse;
-
-        public Models.Course NewCourse
-        {
-            get => _newCourse ?? (_newCourse = new Models.Course());
-            private set
-            {
-                _newCourse = value;
-                OnPropertyChanged(nameof(NewCourse));
-            }
-        }
-
-
-
-
-
+        
         private bool _AllSubjectsSelected;
 
         public bool AllSubjectsSelected
@@ -87,9 +63,7 @@ namespace Server.ViewModels
                 OnPropertyChanged(nameof(AllSubjectsSelected));
             }
         }
-
-
-
+        
         private ListCollectionView _items;
 
         public ListCollectionView Items
@@ -98,8 +72,33 @@ namespace Server.ViewModels
             {
                 if (_items != null) return _items;
                 _items = new ListCollectionView(Models.Subject.Cache);
+                _items.CurrentChanged += (sender, args) =>
+                {
+                    Models.Subject.CurrentItem = (Models.Subject) _items.CurrentItem;
+                    Schedules.Filter = FilterSchedule;
+                };
                 return _items;
             }
+        }
+
+        private ListCollectionView _schedulesView;
+        public ListCollectionView Schedules
+        {
+            get
+            {
+                if (_schedulesView != null) return _schedulesView;
+                _schedulesView = new ListCollectionView(Models.ClassSchedule.Cache);
+                _schedulesView.Filter = FilterSchedule;
+                _schedulesView.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtBeginning;
+
+                return _schedulesView;
+            }
+        }
+
+        private bool FilterSchedule(object o)
+        {
+            var sched = (Models.ClassSchedule) o;
+            return sched.SubjectId == ((Models.Subject) Items.CurrentItem)?.Id;
         }
     }
 }

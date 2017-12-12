@@ -19,13 +19,13 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="20">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <WrapPanel Margin="20" 
+               HorizontalAlignment="Center">
         
-        <md:ColorZone md:ShadowAssist.ShadowDepth="Depth2" Grid.Column="0"
+        
+        <GroupBox Grid.Column="0"
+                  Header="SUBJECTS"
+                  Style="{StaticResource MaterialDesignCardGroupBox}"
                       VerticalAlignment="Stretch"
                       Margin="20">
             <DataGrid ItemsSource="{Binding Items}"
@@ -54,25 +54,41 @@
                                             Header="Year Level"/>
                 </DataGrid.Columns>
             </DataGrid>
-        </md:ColorZone>
+        </GroupBox>
 
-        <md:ColorZone Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-                      VerticalAlignment="Stretch"
-                      Margin="20" md:ShadowAssist.ShadowDepth="Depth2">
+        <GroupBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                  Header="CLASS SCHEDULES"
+                  Margin="20"
+                  Style="{StaticResource MaterialDesignCardGroupBox}"
+                      VerticalAlignment="Stretch">
             <Grid>
-                <ListView>
-                    <ListView.View>
-                        <GridView>
-                            <GridView.Columns>
-                                <GridViewColumn Header="Room"/>
-                                <GridViewColumn Header="Instructor"/>
-                                <GridViewColumn Header="Schedule"/>
-                                <GridViewColumn Header="Slots"/>
-                            </GridView.Columns>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <DataGrid ItemsSource="{Binding Schedules}"
+                          CanUserDeleteRows="False"
+                          AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn
+                            CanUserSort="False"
+                            Binding="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                            CanUserResize="False"
+                            ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                            EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                            <DataGridCheckBoxColumn.Header>
+                                <CheckBox
+                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.AllSchedulesSelected}"
+                                    Style="{StaticResource MaterialDesignCheckBox}" />
+                            </DataGridCheckBoxColumn.Header>
+                        </DataGridCheckBoxColumn>
+                        <DataGridTextColumn Header="Room" Binding="{Binding Room}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Instructor" Binding="{Binding Instructor}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Schedule" Binding="{Binding Description,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Slots" Binding="{Binding Slots,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
-        </md:ColorZone>
-    </Grid>
+        </GroupBox>
+    </WrapPanel>
 </UserControl>
