@@ -9,10 +9,10 @@ using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using NORSU.EncodeMe;
-using Server.Properties;
+using NORSU.EncodeMe.Properties;
 using Models = NORSU.EncodeMe.Models;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class Encoders : Screen
     {

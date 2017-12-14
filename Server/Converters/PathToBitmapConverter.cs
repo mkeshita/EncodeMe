@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 
-namespace Server.Converters {
+namespace NORSU.EncodeMe.Converters {
     class PathToBitmapConverter : ConverterBase {
       
 

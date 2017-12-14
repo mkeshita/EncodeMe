@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     internal class BooleanToObject : ConverterBase
     {

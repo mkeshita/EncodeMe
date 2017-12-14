@@ -8,7 +8,7 @@ using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe;
 using Models = NORSU.EncodeMe.Models;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class Subjects : Screen
     {

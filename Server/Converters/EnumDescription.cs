@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     class EnumDescription : ConverterBase
     {

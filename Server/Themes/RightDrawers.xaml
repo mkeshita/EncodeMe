@@ -1,11 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:viewModels="clr-namespace:Server.ViewModels"
-                    xmlns:views="clr-namespace:Server.Views"
+                    xmlns:viewModels="clr-namespace:NORSU.EncodeMe.ViewModels"
+                    xmlns:views="clr-namespace:NORSU.EncodeMe.Views"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:server="clr-namespace:Server"
+                    xmlns:server="clr-namespace:NORSU.EncodeMe"
                     xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data"
-                    xmlns:converters="clr-namespace:Server.Converters">
+                    xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters">
     <DataTemplate DataType="{x:Type viewModels:Prospectus}">
         <Grid Background="{StaticResource MaterialDesignPaper}">
             <Grid.RowDefinitions>

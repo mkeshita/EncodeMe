@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class Schedules : ViewModelBase
     {

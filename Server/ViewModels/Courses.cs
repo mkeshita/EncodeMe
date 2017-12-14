@@ -3,10 +3,9 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
-using NORSU.EncodeMe;
 using NORSU.EncodeMe.Models;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class Courses : ViewModelBase
     {

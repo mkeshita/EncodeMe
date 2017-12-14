@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     class StringToColor : ConverterBase
     {

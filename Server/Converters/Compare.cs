@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     public enum Comparison
     {

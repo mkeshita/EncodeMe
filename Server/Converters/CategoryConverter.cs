@@ -2,7 +2,7 @@
 using System.Linq;
 using NORSU.EncodeMe.Models;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     class CategoryConverter : ConverterBase
     {

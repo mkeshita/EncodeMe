@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace Server
+namespace NORSU.EncodeMe
 {
     internal class EnumBinding : MarkupExtension
     {

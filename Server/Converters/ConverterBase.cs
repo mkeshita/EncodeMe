@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     internal abstract class ConverterBase : MarkupExtension, IValueConverter
     {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class NewUserDialog : ViewModelBase
     {

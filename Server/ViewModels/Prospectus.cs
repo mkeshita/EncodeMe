@@ -8,7 +8,7 @@ using NORSU.EncodeMe;
 using NORSU.EncodeMe.Annotations;
 using NORSU.EncodeMe.Models;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class Prospectus : ViewModelBase
     {

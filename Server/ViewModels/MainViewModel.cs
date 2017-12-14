@@ -4,8 +4,9 @@ using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe;
 using NORSU.EncodeMe.Models;
+using NORSU.EncodeMe.Network;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class MainViewModel : ViewModelBase
     {
@@ -47,7 +48,7 @@ namespace Server.ViewModels
                 {
                     new Screen("Dashboard", PackIconKind.Home),
                     Encoders.Instance,
-                    new Screen("Terminals", PackIconKind.MonitorMultiple),
+                    Terminals.Instance,
                     Subjects.Instance,
                     new Screen("Class Schedules", PackIconKind.CalendarToday),
                     new Screen("Requests", PackIconKind.Bell),

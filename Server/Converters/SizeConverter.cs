@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace Server.Converters
+namespace NORSU.EncodeMe.Converters
 {
     class SizeConverter : ConverterBase
     {

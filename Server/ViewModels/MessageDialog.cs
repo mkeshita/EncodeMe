@@ -3,7 +3,7 @@ using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class MessageDialog : ViewModelBase
     {

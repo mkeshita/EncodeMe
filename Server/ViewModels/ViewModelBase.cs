@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using Server.Annotations;
+using NORSU.EncodeMe.Annotations;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     abstract class ViewModelBase : INotifyPropertyChanged
     {

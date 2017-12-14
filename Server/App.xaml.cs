@@ -1,7 +1,8 @@
 ﻿using System.Windows;
-using NORSU.EncodeMe..Properties;
+using NORSU.EncodeMe.Network;
+using NORSU.EncodeMe.Properties;
 
-namespace NORSU.EncodeMe.
+namespace NORSU.EncodeMe
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -12,11 +13,13 @@ namespace NORSU.EncodeMe.
         {
             awooo.IsRunning = true;
             base.OnStartup(e);
+            Server.Start();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             Settings.Default.Save();
+            Server.Stop();
             base.OnExit(e);
         }
     }

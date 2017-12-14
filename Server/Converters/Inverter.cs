@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Server.Converters {
+namespace NORSU.EncodeMe.Converters {
     class Inverter : ConverterBase {
         protected override object Convert(object value, Type targetType, object parameter)
         {

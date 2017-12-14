@@ -1,4 +1,4 @@
-﻿<Window x:Class="Server.MainWindow"
+﻿<Window x:Class="NORSU.EncodeMe.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,12 +10,13 @@
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
-        xmlns:encodeMe="clr-namespace:Server"
-        xmlns:cnv="clr-namespace:Server.Converters"
-        xmlns:viewModels="clr-namespace:Server.ViewModels"
+        xmlns:encodeMe="clr-namespace:NORSU.EncodeMe"
+        xmlns:cnv="clr-namespace:NORSU.EncodeMe.Converters"
+        xmlns:viewModels="clr-namespace:NORSU.EncodeMe.ViewModels"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:properties="clr-namespace:Server.Properties"
-        xmlns:views="clr-namespace:Server.Views"
+        xmlns:properties="clr-namespace:NORSU.EncodeMe.Properties"
+        AllowsTransparency="False"
+        xmlns:views="clr-namespace:NORSU.EncodeMe.Views"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="555" MinHeight="471"
@@ -108,6 +109,9 @@
                                     </DataTemplate>
                                     <DataTemplate DataType="{x:Type viewModels:Subjects}">
                                         <views:Subjects DataContext="{Binding}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:Terminals}">
+                                        <views:Terminals DataContext="{Binding}"/>
                                     </DataTemplate>
                                 </md:Transitioner.Resources>
                             </md:Transitioner>

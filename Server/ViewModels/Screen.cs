@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using MaterialDesignThemes.Wpf;
 
-namespace Server.ViewModels
+namespace NORSU.EncodeMe.ViewModels
 {
     class Screen : ViewModelBase
     {

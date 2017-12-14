@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 
-namespace Server
+namespace NORSU.EncodeMe
 {
     public class NotEmptyValidationRule : ValidationRule
     {
