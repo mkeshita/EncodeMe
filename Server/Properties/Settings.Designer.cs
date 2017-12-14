@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Server.Properties {
+namespace NORSU.EncodeMe.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -44,6 +44,42 @@ namespace Server.Properties {
             }
             set {
                 this["OpenFileLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TakePicture {
+            get {
+                return ((bool)(this["TakePicture"]));
+            }
+            set {
+                this["TakePicture"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
+        public int MaxLoginAttempts {
+            get {
+                return ((int)(this["MaxLoginAttempts"]));
+            }
+            set {
+                this["MaxLoginAttempts"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("74")]
+        public long LoginAttemptTimeout {
+            get {
+                return ((long)(this["LoginAttemptTimeout"]));
+            }
+            set {
+                this["LoginAttemptTimeout"] = value;
             }
         }
     }
