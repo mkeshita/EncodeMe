@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using Server.Properties;
+using NORSU.EncodeMe..Properties;
 
-namespace Server
+namespace NORSU.EncodeMe.
 {
     /// <summary>
     /// Interaction logic for App.xaml

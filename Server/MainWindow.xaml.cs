@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace Server
+namespace NORSU.EncodeMe.
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
