@@ -10,6 +10,7 @@
         Background="{StaticResource PrimaryHueDarkBrush}"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
+        xmlns:network="clr-namespace:NORSU.EncodeMe.Network"
         Title="EncodeMe Client"
         Height="400"
         Width="400"
@@ -17,6 +18,35 @@
         Focusable="False"
         MouseDoubleClick="Login_OnMouseDoubleClick"
         SnapsToDevicePixels="True">
+    <md:DialogHost Identifier="DialogHost"
+                   IsOpen="{Binding ShowResult}">
+        <md:DialogHost.DialogContent>
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <md:PackIcon Kind="Alert"
+                             Height="64"
+                             Width="64"
+                             Margin="20" />
+                <TextBlock Text="{Binding Result.Message}"
+                           Grid.Row="0"
+                           Grid.Column="1"
+                           Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                           Margin="10 20 30 30" />
+                <Button Grid.Row="1"
+                        Command="{Binding Source={x:Static md:DialogHost.CloseDialogCommand}}"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        HorizontalAlignment="Right">OK</Button>
+            </Grid>
+        </md:DialogHost.DialogContent>
+
     <Grid Focusable="False">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -74,4 +104,5 @@
             </Grid>
         </md:ColorZone>
     </Grid>
+    </md:DialogHost>
 </Window>

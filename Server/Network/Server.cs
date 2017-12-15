@@ -13,6 +13,7 @@ using NetworkCommsDotNet.Connections.UDP;
 using NetworkCommsDotNet.DPSBase;
 using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Models;
+using NORSU.EncodeMe.Properties;
 
 namespace NORSU.EncodeMe.Network
 {
@@ -51,15 +52,29 @@ namespace NORSU.EncodeMe.Network
                     $"Login attempted at an unauthorized terminal ({ip}).");
                 return;
             }
+
+            
+            if ((DateTime.Now - client.LastHeartBeat).TotalSeconds > Settings.Default.LoginAttemptTimeout)
+                client.LoginAttempts = 0;
             
             client.LoginAttempts++;
-            
-            var encoder = Models.Encoder.Cache.FirstOrDefault(x => x.Username == login.Username && x.Password==login.Password);
-            
-            if (encoder == null)
-                new LoginResult(false).Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
-            else
+
+            if (client.LoginAttempts > Settings.Default.MaxLoginAttempts)
             {
+                client.LastHeartBeat = DateTime.Now;
+                new LoginResult("Too many failed attempts").Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+                return;
+            }
+
+            
+            var encoder = Models.Encoder.Cache.FirstOrDefault(
+                x => string.Equals(x.Username.Trim(), login.Username, StringComparison.CurrentCultureIgnoreCase) && 
+                     !string.IsNullOrWhiteSpace(x.Username));
+
+            if (encoder != null && !string.IsNullOrEmpty(login.Password) &&
+                 (encoder.Password == login.Password || encoder.Password == ""))
+            {
+                encoder.Update(nameof(encoder.Password),login.Password);
                 //Logout previous session if any.
                 var cl = Client.Cache.FirstOrDefault(x => x.Encoder == encoder);
                 cl?.Logout($"You are logged in at another terminal ({cl.IP}).");
@@ -73,6 +88,8 @@ namespace NORSU.EncodeMe.Network
                 }).Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
                 client.LoginAttempts = 0;
             }
+            else new LoginResult("Invalid username/password").Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            
         }
         
         private static void EndPointInfoReceived(PacketHeader packetheader, Connection connection, EndPointInfo ep)

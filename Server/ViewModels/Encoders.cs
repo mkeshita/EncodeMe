@@ -23,8 +23,8 @@ namespace NORSU.EncodeMe.ViewModels
 
             Messenger.Default.AddListener<Models.Encoder>(Messages.EncoderFlipped, encoder =>
             {
-                if (_previousFlipped != null && !_previousFlipped.Equals(encoder))
-                    _previousFlipped.IsFlipped = false;
+                if(_previousFlipped!=null)
+                     _previousFlipped.IsFlipped = false;
                 _previousFlipped = encoder;
             });
 

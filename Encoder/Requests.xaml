@@ -16,7 +16,8 @@
         MouseDown="Requests_OnMouseDown"
         Background="Transparent"
         ShowInTaskbar="False"
-        xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels">
+        xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
+        xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters">
 
 
     <md:DrawerHost IsLeftDrawerOpen="False">
@@ -59,6 +60,21 @@
                       HorizontalAlignment="Center"
                       x:Name="Button"
                       VerticalAlignment="Center">
+                <Button.Background>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Viewbox>
+                                <Grid Height="174" Width="174">
+                                <Rectangle Fill="{StaticResource PrimaryHueDarkBrush}"
+                                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                                <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                                            Stretch="UniformToFill" />
+                                </Grid>
+                            </Viewbox>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                    
+                </Button.Background>
                 <md:PackIcon Kind="Bell" Height="32" Width="32"/>
             </Button>
 

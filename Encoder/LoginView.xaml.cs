@@ -44,7 +44,7 @@ namespace NORSU.EncodeMe
         {
             var login = DataContext as LoginViewModel;
             if (login == null) return;
-            login.Password = ((PasswordBox) sender).SecurePassword;
+            login.Password = ((PasswordBox) sender).Password;
         }
     }
 }
