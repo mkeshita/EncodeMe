@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>d069e0c6-410e-4ef3-abe8-ded6e67d3eb7</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>NORSU.EncodeMe.Network</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Encoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EndPointInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enroll.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LoginResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messenger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServerInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility.cs" />
+  </ItemGroup>
+</Project>

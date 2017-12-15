@@ -84,7 +84,7 @@ namespace NORSU.EncodeMe.Network
                 {
                     Username = encoder.Username,
                     FullName = encoder.FullName,
-                    Picture = encoder.Picture
+                    Picture = encoder.Thumbnail
                 }).Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
                 client.LoginAttempts = 0;
             }
