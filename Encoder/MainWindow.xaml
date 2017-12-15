@@ -1,0 +1,77 @@
+﻿<Window x:Class="NORSU.EncodeMe.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NORSU.EncodeMe"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
+        mc:Ignorable="d"
+        Topmost="True"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        DataContext="{Binding Source={x:Static vm:MainViewModel.Instance}}"
+        WindowStyle="ToolWindow"
+        SizeToContent="WidthAndHeight"
+        Title="EncodeMe Client">
+    <Viewbox x:Name="Viewbox" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+             Height="0" Width="0">
+    <md:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggle,Path=IsChecked}"
+                   Height="555" Width="333">
+        <md:DrawerHost.LeftDrawerContent>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ToggleButton HorizontalAlignment="Left"
+                              Height="24"
+                              Width="24"
+                              Margin="8"
+                              Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                              IsChecked="{Binding ElementName=MenuToggle,Path=IsChecked}"/>
+                <ListBox Grid.Row="1"
+                         IsSynchronizedWithCurrentItem="True"
+                         ItemsSource="{Binding Screens}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <md:PackIcon Kind="{Binding Icon}"
+                                             Margin="8"/>
+                                <TextBlock Text="{Binding Name}"
+                                           MinWidth="174"
+                                           Grid.Column="1"
+                                           Margin="10 8"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </md:DrawerHost.LeftDrawerContent>
+        <Grid>
+            <md:ColorZone Mode="PrimaryDark">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                  Height="24"
+                                  Width="24"
+                                  Margin="8"
+                                  x:Name="MenuToggle"/>
+                </Grid>
+            </md:ColorZone>
+        </Grid>
+    </md:DrawerHost>
+    </Viewbox>
+</Window>

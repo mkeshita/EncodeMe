@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="NORSU.EncodeMe.Views.SideBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NORSU.EncodeMe.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewModels="clr-namespace:NORSU.EncodeMe.ViewModels"
+             xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
+             xmlns:properties="clr-namespace:NORSU.EncodeMe.Properties"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Grid.RowSpan="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" SharedSizeGroup="a" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <materialDesign:ColorZone Grid.Row="1"
+                                  Mode="Dark"
+                                  VerticalAlignment="Stretch">
+            <ListBox IsSynchronizedWithCurrentItem="True"
+                                 x:Name="DemoItemsListBox"
+                                 Foreground="{StaticResource MaterialDesignDarkForeground}"
+                                 Margin="0 20 0 0"
+                                 ItemsSource="{Binding Path=Screens}">
+                <ListBox.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
+                                       TargetType="ListBoxItem">
+                        <Setter Property="Visibility" Value="{Binding Visibility}" />
+                        <Setter Property="ClipToBounds" Value="False"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="viewModels:Screen">
+                       
+                        <Grid Margin="7 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
+                                <ColumnDefinition Width="*" SharedSizeGroup="Label"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon Kind="{Binding Icon}"
+                                                     Width="24"
+                                                     Height="24"
+                                                     HorizontalAlignment="Center"
+                                                     VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Name}" Margin="32 0 32 0"
+                                                   FontSize="11pt"
+                                                   Visibility="{Binding Source={x:Static properties:Settings.Default},Path=SideBarOpen,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                                                   VerticalAlignment="Center"
+                                                   Grid.Column="1" />
+                            <materialDesign:Badged Badge="{Binding Badge}" BadgeColorZoneMode="Accent"
+                                                   VerticalAlignment="Center"
+                                                   Margin="4"
+                                                   Grid.Column="2"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </materialDesign:ColorZone>
+
+        <materialDesign:ColorZone Padding="7"
+                                  materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                                  x:Name="HeaderColorZone"
+                              VerticalAlignment="Stretch"
+                                            Mode="PrimaryDark">
+            <Grid Margin="7" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <materialDesign:PackIcon Kind="Server" Height="24"
+                                     Width="24"
+                                     Padding="0" Margin="0"
+                                     VerticalAlignment="Center" />
+                <TextBlock Text="EncodeMe Server"
+                                       Grid.Column="1"
+                                       FontSize="12pt"
+                                       Visibility="{Binding Source={x:Static properties:Settings.Default},Path=SideBarOpen,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                                   Margin="10 0 20 0"
+                                       Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                                   VerticalAlignment="Center" />
+            </Grid>
+        </materialDesign:ColorZone>
+    </Grid>
+</UserControl>
+
+
+

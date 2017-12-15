@@ -1,0 +1,198 @@
+﻿<UserControl x:Class="NORSU.EncodeMe.Views.Subjects"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NORSU.EncodeMe.Views"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:server="clr-namespace:NORSU.EncodeMe"
+             xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data"
+             xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
+             xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TreeView.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="20" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
+                  Header="SUBJECTS"
+                      VerticalAlignment="Stretch"
+                      Margin="20">
+            <Grid Margin="-9">
+                
+                <DataGrid ItemsSource="{Binding Items}"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                      AutoGenerateColumns="False"
+                          FrozenColumnCount="1"
+                      CanUserDeleteRows="False">
+                   
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn CanUserSort="False"
+                                                md:DataGridAssist.ColumnHeaderPadding="0"
+                                                CanUserResize="False">
+                           
+                            <DataGridTemplateColumn.Header>
+                                <Button Content="{md:PackIcon Close}"
+                                        Style="{StaticResource MaterialDesignToolButton}"
+                                        Foreground="{DynamicResource SecondaryAccentBrush}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.ClearSubjectsCommand}"
+                                        Padding="0"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Height="Auto"
+                                        ToolTip="Delete All Subjects" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="{md:PackIcon Close}"
+                                            IsEnabled="{Binding Converter={converters:IsTypeConverter Type={x:Type models:Subject}}}"
+                                            Style="{StaticResource MaterialDesignToolButton}"
+                                            Foreground="{DynamicResource SecondaryAccentBrush}"
+                                            Command="{Binding DeleteCommand}"
+                                            Padding="0"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            Height="Auto"
+                                            ToolTip="Delete" />
+
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        
+                        <!--<DataGridCheckBoxColumn
+                        CanUserSort="False"
+                        Binding="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                        CanUserResize="False"
+                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                            <DataGridCheckBoxColumn.Header>
+                                <CheckBox
+                                IsChecked="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.AllSubjectsSelected}"
+                                Style="{StaticResource MaterialDesignCheckBox}" />
+                            </DataGridCheckBoxColumn.Header>
+                        </DataGridCheckBoxColumn>-->
+                        <DataGridTextColumn Header="Subject Code" Binding="{Binding Code}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Descriptive Title" Binding="{Binding Description}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+
+                        
+
+                    </DataGrid.Columns>
+                    
+                </DataGrid>
+
+                <md:PopupBox  Content="{md:PackIcon Filter}"
+                              VerticalAlignment="Top"
+                              StaysOpen="True"
+                              HorizontalAlignment="Right"
+                              Margin="7">
+                    <md:PopupBox.PopupContent>
+                        <StackPanel MinWidth="147" Margin="7">
+                            <CheckBox Content="Show All"
+                                      IsChecked="{Binding FilterByCourse, Converter={converters:Inverter}}"
+                                      Margin="7"/>
+                            <ItemsControl ItemsSource="{Binding Source={x:Static vm:Courses.Instance},Path=Items}"
+                                          IsEnabled="{Binding FilterByCourse}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsSelected}"
+                                                  Margin="7"
+                                                  Content="{Binding Acronym}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </md:PopupBox.PopupContent>
+                </md:PopupBox>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Column="1"
+                  IsEnabled="{Binding Items/,Converter={converters:IsNullConverter Invert=True}}"
+                  Header="{Binding Items/}"
+                  Margin="20"
+                  Style="{StaticResource MaterialDesignCardGroupBox}"
+                      VerticalAlignment="Stretch">
+            <GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock>
+                        CLASS SCHEDULES [ <Run Text="{Binding Code}" Typography.Capitals="AllSmallCaps" /> ]
+                    </TextBlock>
+                </DataTemplate>
+            </GroupBox.HeaderTemplate>
+            <Grid Margin="-9">
+                <DataGrid ItemsSource="{Binding Schedules}"
+                          FrozenColumnCount="1"
+                          SelectionMode="Single"
+                          CanUserDeleteRows="False"
+                          AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn CanUserSort="False"
+                                                CanUserResize="False">
+                            
+                            <DataGridTemplateColumn.Header>
+                                <Button Content="{md:PackIcon Close}"
+                                        Style="{StaticResource MaterialDesignToolButton}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.ClearSchedulesCommand}"
+                                        Padding="0"
+                                        Foreground="{DynamicResource SecondaryAccentBrush}"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Height="Auto"
+                                        ToolTip="Delete All Schedules" />
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="{md:PackIcon Close}"
+                                            Style="{StaticResource MaterialDesignToolButton}"
+                                            Command="{Binding DeleteCommand}"
+                                            IsEnabled="{Binding Converter={converters:IsTypeConverter Type={x:Type models:ClassSchedule}}}"
+                                            Padding="0"
+                                            Foreground="{DynamicResource SecondaryAccentBrush}"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            Height="Auto"
+                                            ToolTip="Delete"/>
+                                            
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!--<DataGridCheckBoxColumn
+                            CanUserSort="False"
+                            Binding="{Binding IsSelected,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                            CanUserResize="False"
+                            ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                            EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                            <DataGridCheckBoxColumn.Header>
+                                <CheckBox
+                                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext.AllSchedulesSelected}"
+                                    Style="{StaticResource MaterialDesignCheckBox}" />
+                            </DataGridCheckBoxColumn.Header>
+                        </DataGridCheckBoxColumn>-->
+                        <DataGridTextColumn Header="Room" Binding="{Binding Room}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Instructor" Binding="{Binding Instructor}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Schedule" Binding="{Binding Description,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                        <DataGridTextColumn Header="Slots" Binding="{Binding Slots,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
+                                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
