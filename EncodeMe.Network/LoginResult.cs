@@ -1,31 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class LoginResult : Message
+    class LoginResult : Message<LoginResult>
     {
-        public LoginResult() : base(nameof(LoginResult))
+        private LoginResult() { }
+        
+        public LoginResult(ResultCodes result, string message = null)
         {
-        }
-
-        public LoginResult(string message):this()
-        {
-            Success = false;
+            Result = result;
             Message = message;
+            switch (result)
+            {
+                case ResultCodes.Offline:
+                    Message = "Not connected to server";
+                    break;
+                case ResultCodes.Timeout:
+                    Message = "Request timeout";
+                    break;
+            }
         }
         
-        public LoginResult(Encoder encoder):this()
+        public LoginResult(Encoder encoder)
         {
             Encoder = encoder;
-            Success = true;
+            Result = ResultCodes.Success;
         }
 
-        [ProtoMember(1)]
-        public bool Success { get; set; }
+        [ProtoMember(1, IsRequired = true)]
+        public ResultCodes Result { get; set; }
         [ProtoMember(2)]
         public Encoder Encoder { get; set; }
         [ProtoMember(3)]

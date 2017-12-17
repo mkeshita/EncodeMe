@@ -9,6 +9,8 @@
     <Import_RootNamespace>NORSU.EncodeMe.Network</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AndroidInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClassSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EndPointInfo.cs" />
@@ -17,8 +19,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)LoginResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messenger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RegisterStudent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RegisterStudentResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SchedulesRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SchedulesResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Student.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudentInfoRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudentInfoResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility.cs" />
   </ItemGroup>
 </Project>

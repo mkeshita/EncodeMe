@@ -64,10 +64,14 @@
                     <VisualBrush>
                         <VisualBrush.Visual>
                             <Viewbox>
-                                <Grid Height="174" Width="174">
+                                <Grid Height="74" Width="74">
                                 <Rectangle Fill="{StaticResource PrimaryHueDarkBrush}"
                                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                                <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                                    <md:PackIcon Kind="Bell" Height="47" Width="47"
+                                                 VerticalAlignment="Center"
+                                                 Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"
+                                                 HorizontalAlignment="Center"/>
+                                    <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
                                             Stretch="UniformToFill" />
                                 </Grid>
                             </Viewbox>
@@ -75,7 +79,7 @@
                     </VisualBrush>
                     
                 </Button.Background>
-                <md:PackIcon Kind="Bell" Height="32" Width="32"/>
+             
             </Button>
 
             <!--<md:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"

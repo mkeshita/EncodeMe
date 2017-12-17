@@ -1,14 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 
 namespace NORSU.EncodeMe.Network
 {
+    public enum ResultCodes
+    {
+        Success,
+        Offline,
+        Timeout,
+        NotFound,
+        Error,
+    }
+    
     static class Utility
     {
-            public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress subnetMask)
+        
+        public static IPAddress GetBroadcastAddress(this IPAddress address, IPAddress subnetMask)
             {
                 byte[] ipAdressBytes = address.GetAddressBytes();
                 byte[] subnetMaskBytes = subnetMask.GetAddressBytes();
