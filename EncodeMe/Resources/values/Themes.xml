@@ -7,6 +7,14 @@
       <item name="android:windowNoTitle">true</item>
     </style>
 
+  <style name="Theme" parent="android:Theme.Holo.Light">
+    <item name="android:actionBarStyle">@style/Theme.ActionBar</item>
+  </style>
+
+  <style name="Theme.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+    <item name="android:background">#fc0099cc</item>
+  </style>
+  
   <style name="Theme.Splash"
          parent="Theme.FullScreen">
     <item name="android:windowBackground">

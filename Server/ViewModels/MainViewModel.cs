@@ -2,9 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
-using NORSU.EncodeMe;
 using NORSU.EncodeMe.Models;
-using NORSU.EncodeMe.Network;
 
 namespace NORSU.EncodeMe.ViewModels
 {

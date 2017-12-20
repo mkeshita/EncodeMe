@@ -1,10 +1,14 @@
-﻿using ProtoBuf;
+﻿using System;
+//using Android.OS;
+using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class ClassSchedule : Message<ClassSchedule>
+    [Serializable]
+    class ClassSchedule : Message<ClassSchedule>//, IParcelable
     {
+       
         private long _ClassId;
 
         [ProtoMember(1)]
@@ -98,7 +102,41 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
+        private string _SubjectCode;
+        [ProtoMember(8)]
+        public string SubjectCode
+        {
+            get => _SubjectCode;
+            set
+            {
+                if (value == _SubjectCode) return;
+                _SubjectCode = value;
+                OnPropertyChanged(nameof(SubjectCode));
+            }
+        }
+
         
 
+        //public void Dispose()
+        //{
+
+        //}
+
+        //public IntPtr Handle { get; }
+
+        //public int DescribeContents()
+        //{
+        //    return 0;
+        //}
+
+        //public void WriteToParcel(Parcel dest, ParcelableWriteFlags flags)
+        //{
+        //    dest.WriteLong(ClassId);
+        //    dest.WriteInt(Enrolled);
+        //    dest.WriteString(Instructor);
+        //    dest.WriteString(Room);
+        //    dest.WriteString(Schedule);
+        //    dest.writeb
+        //}
     }
 }

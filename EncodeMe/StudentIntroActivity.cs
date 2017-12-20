@@ -41,7 +41,7 @@ namespace NORSU.EncodeMe
             _progressBar.Indeterminate = true;
             _studentId.Enabled = false;
             _next.Enabled = false;
-
+            
             var pref = PreferenceManager.GetDefaultSharedPreferences(this);
             var edit = pref.Edit();
             edit.PutBoolean("submitted", true);
@@ -50,6 +50,12 @@ namespace NORSU.EncodeMe
             edit.Commit();
 
             var result = await Client.GetStudentInfo(_studentId.Text);
+
+            _progressBar.Indeterminate = false;
+            _studentId.Enabled = true;
+            _next.Enabled = true;
+            _studentId.SelectAll();
+            
             if (result.Result == ResultCodes.Success && result.Student != null)
             {
                 await Db.Connection().CreateTableAsync<Student>();
@@ -62,9 +68,9 @@ namespace NORSU.EncodeMe
             }
             else
             {
+               
                 var dlg = new AlertDialog.Builder(this);
                 dlg.SetMessage("Please make sure you are connected to the network.");
-                dlg.SetIcon(Resource.Drawable.ic_error);
                 dlg.SetTitle(result.Message);
                 dlg.SetCancelable(true);
                 dlg.SetNegativeButton("Cancel", (o, args) =>
@@ -73,9 +79,7 @@ namespace NORSU.EncodeMe
                     edit.PutBoolean("submitted", false);
                     edit.PutInt("intro", 1);
                     edit.Commit();
-                    _progressBar.Indeterminate = false;
-                    _studentId.Enabled = true;
-                    _next.Enabled = true;
+                   
                 });
                 dlg.SetPositiveButton("Retry", (o, args) =>
                 {
@@ -89,11 +93,11 @@ namespace NORSU.EncodeMe
         {
             base.OnRestoreInstanceState(savedInstanceState);
             
-            var pref = PreferenceManager.GetDefaultSharedPreferences(this);
-            _progressBar.Indeterminate = pref.GetBoolean("submitted",false);
-            _studentId.Enabled = !pref.GetBoolean("submitted",false);
-            _next.Enabled = !pref.GetBoolean("submitted",false);
-            _studentId.Text = pref.GetString("studentId", "");
+           // var pref = PreferenceManager.GetDefaultSharedPreferences(this);
+           // _progressBar.Indeterminate = pref.GetBoolean("submitted",false);
+           // _studentId.Enabled = !pref.GetBoolean("submitted",false);
+           // _next.Enabled = !pref.GetBoolean("submitted",false);
+           // _studentId.Text = pref.GetString("studentId", "");
         }
     }
 }

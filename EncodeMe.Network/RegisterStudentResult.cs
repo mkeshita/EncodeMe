@@ -20,6 +20,9 @@ namespace NORSU.EncodeMe.Network
         
         [ProtoMember(2)]
         public string Message { get; set; }
+
+        [ProtoMember(3)]
+        public long StudentId { get; set; }
     }
 
    

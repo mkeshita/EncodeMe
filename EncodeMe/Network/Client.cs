@@ -23,11 +23,20 @@ namespace NORSU.EncodeMe.Network
 {
     sealed class Client
     {
-        private Client() { }
+        private Client()
+        {
+            Start();
+        }
 
+        ~Client()
+        {
+            Stop();
+        }
+        
         private static Client _instance;
-        private static Client Instance => _instance ?? (_instance = new Client());
+        public static Client Instance => _instance ?? (_instance = new Client());
         private static bool _started;
+      //  private static bool Emulator;
         
         public static void Start()
         {
@@ -47,7 +56,7 @@ namespace NORSU.EncodeMe.Network
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
 
             PeerDiscovery.OnPeerDiscovered += OnPeerDiscovered;
-            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0));
+            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any,0));
 
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
         }
@@ -58,7 +67,20 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.Shutdown();
         }
 
-        private static ServerInfo Server;
+        private static ServerInfo _server;
+
+        private static ServerInfo Server
+        {
+            get
+            {
+                return _server;
+            }
+            set
+            {
+                _server = value;
+            }
+        }
+
         private static void ServerInfoReceived(PacketHeader packetheader, Connection connection, ServerInfo incomingobject)
         {
             Server = incomingobject;
@@ -81,7 +103,7 @@ namespace NORSU.EncodeMe.Network
                     var lEp = (IPEndPoint)localEP;
                     if (!ip.Address.IsInSameSubnet(lEp.Address)) continue;
                     info.IP = lEp.Address.ToString();
-                    info.Port = lEp.Port;
+                    info.Port =lEp.Port;
                     info.Send(ip);
                 }
             }
@@ -94,14 +116,14 @@ namespace NORSU.EncodeMe.Network
             var info = new AndroidInfo();
             try
             {
-                info.DeviceId = telephonyManager.Imei;
+                info.DeviceId = Build.Serial;
                 info.Sim = telephonyManager.Line1Number;
-                info.Model = Build.Model;
+                info.Model = Build.Brand;
             } catch (Exception ){}
             try
             {                
                 info.MAC = wifi.ConnectionInfo.MacAddress;
-                info.Hostname = Environment.MachineName;
+                info.Hostname = Build.Model;
             } catch (Exception ){}
             
             return info;
@@ -117,8 +139,13 @@ namespace NORSU.EncodeMe.Network
                 await Task.Delay(TimeSpan.FromSeconds(7));
             }
         }
-
+        
         public static async Task<StudentInfoResult> GetStudentInfo(string studentId)
+        {
+            return await Instance._GetStudentInfo(studentId);
+        }
+        
+        private async Task<StudentInfoResult> _GetStudentInfo(string studentId)
         {
             if (Server == null) await FindServer();
             
@@ -150,6 +177,12 @@ namespace NORSU.EncodeMe.Network
 
         public static async Task<ResultCodes> Register(Student student)
         {
+            return await Instance._Register(student);
+        }
+
+
+        private async Task<ResultCodes> _Register(Student student)
+        {
             if (Server == null) await FindServer();
 
             if (Server == null) return ResultCodes.Offline;
@@ -160,6 +193,7 @@ namespace NORSU.EncodeMe.Network
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(RegisterStudentResult.GetHeader());
                     result = i;
+                    student.Id = i.StudentId;
                 });
             
             await student.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
@@ -178,15 +212,31 @@ namespace NORSU.EncodeMe.Network
 
         public static async Task<SchedulesResult> GetSchedules(string subject)
         {
+            return await Instance._GetSchedules(subject);
+        }
+
+        private static string _subjectRequested;
+        
+        private async Task<SchedulesResult> _GetSchedules(string subject)
+        {
+            if(string.IsNullOrWhiteSpace(_subjectRequested) && _subjectRequested!=subject)
+                NetworkComms.RemoveGlobalIncomingPacketHandler($"{SchedulesResult.GetHeader()}{_subjectRequested}");
+
+            if (string.IsNullOrWhiteSpace(subject)) return null;
+            
+            _subjectRequested = subject;
+            
             if (Server == null) await FindServer();
 
             if (Server == null) return new SchedulesResult(){Result = ResultCodes.Offline};
 
+            if (_subjectRequested != subject) return null;
+
             SchedulesResult result = null;
-            NetworkComms.AppendGlobalIncomingPacketHandler<SchedulesResult>(SchedulesResult.GetHeader(),
+            NetworkComms.AppendGlobalIncomingPacketHandler<SchedulesResult>(SchedulesResult.GetHeader()+subject,
                 (h, c, i) =>
                 {
-                    NetworkComms.RemoveGlobalIncomingPacketHandler(SchedulesResult.GetHeader());
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(SchedulesResult.GetHeader()+subject);
                     result = i;
                 });
 
@@ -201,7 +251,7 @@ namespace NORSU.EncodeMe.Network
             }
 
             Server = null;
-            NetworkComms.RemoveGlobalIncomingPacketHandler(SchedulesResult.GetHeader());
+            NetworkComms.RemoveGlobalIncomingPacketHandler(SchedulesResult.GetHeader()+subject);
             return new SchedulesResult(){Result = ResultCodes.Timeout};
         }
     }

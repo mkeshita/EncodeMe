@@ -15,6 +15,8 @@ namespace NORSU.EncodeMe.Network
     [ProtoContract]
     abstract class Message<T> :  INotifyPropertyChanged where T : Message<T>
     {
+        
+        
         private static Dictionary<Type, string> _headers = new Dictionary<Type, string>();
         
         public event PropertyChangedEventHandler PropertyChanged;
@@ -35,12 +37,12 @@ namespace NORSU.EncodeMe.Network
             return header;
         }
 
-        public Task Send(IPEndPoint ip)
+        public virtual Task Send(IPEndPoint ip)
         {
             return Send(GetHeader(), (T)this, ip);
         }
 
-        private static async Task Send(string msgType, T message, IPEndPoint ip)
+        protected static async Task Send(string msgType, T message, IPEndPoint ip)
         {
             var sent = false;
             while (!sent)

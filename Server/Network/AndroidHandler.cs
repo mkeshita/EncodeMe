@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using NetworkCommsDotNet;
@@ -89,5 +90,49 @@ namespace NORSU.EncodeMe.Network
             var ip = new IPEndPoint(IPAddress.Parse(dev.IP),dev.Port);
             result.Send(ip);
         }
+
+        public static void ScheduleRequestHandler(PacketHeader packetheader, Connection con, SchedulesRequest incomingobject)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) con.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null) return;
+            
+            var result = new SchedulesResult(){Serial = incomingobject.Serial,Subject = incomingobject.SubjectCode};
+            var subject = Subject.GetByCode(incomingobject.SubjectCode);
+            if (subject == null)
+                result.Result = ResultCodes.NotFound;
+            else
+            {
+                var schedules = Models.ClassSchedule.Cache.Where(x => x.SubjectId == subject.Id);
+                result.Result = ResultCodes.Success;
+                result.Schedules = new List<ClassSchedule>();
+                foreach (var sched in schedules)
+                {
+                    result.Schedules.Add(new ClassSchedule()
+                    {
+                        ClassId = sched.Id,
+                        Instructor = sched.Instructor,
+                        Schedule = sched.Description,
+                        Room = sched.Room,
+                        Slots = sched.Slots,
+                        Enrolled = GetEnrolled(sched.Id)
+                    });
+                }
+            }
+            
+            
+            
+            result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
+
+        private static int GetEnrolled(long id)
+        {
+            return RequestDetail.Cache.Count(
+                x =>x.ScheduleId == id &&
+                    (Request.Cache.FirstOrDefault(d => d.Id == x.RequestId)?.IsAccepted ?? false));
+        }
+        
     }
 }

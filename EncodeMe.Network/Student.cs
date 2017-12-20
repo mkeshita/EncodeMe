@@ -1,6 +1,7 @@
 ﻿using ProtoBuf;
+#if __ANDROID__
 using SQLite;
-
+#endif
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
@@ -15,7 +16,9 @@ namespace NORSU.EncodeMe.Network
         
         private string _StudentId;
         [ProtoMember(2)]
+#if __ANDROID__
         [PrimaryKey]
+#endif
         public string StudentId
         {
             get => _StudentId;
