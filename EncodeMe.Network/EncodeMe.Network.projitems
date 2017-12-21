@@ -15,6 +15,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Encoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EndPointInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enroll.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnrollRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnrollResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Login.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logout.cs" />
@@ -23,7 +25,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)RegisterStudentResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SchedulesRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SchedulesResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScheduleStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StatusResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Student.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudentInfoRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudentInfoResult.cs" />

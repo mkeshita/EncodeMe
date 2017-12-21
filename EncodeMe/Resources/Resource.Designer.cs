@@ -244,64 +244,70 @@ namespace NORSU.EncodeMe
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int ic_action_cancel = 2130837504;
+			public const int Circle = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int ic_action_done = 2130837505;
+			public const int ic_action_cancel = 2130837505;
 			
 			// aapt resource value: 0x7f020002
-			public const int ic_action_warning = 2130837506;
+			public const int ic_action_done = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int ic_airline_seat_recline_normal = 2130837507;
+			public const int ic_action_warning = 2130837507;
 			
 			// aapt resource value: 0x7f020004
-			public const int ic_error = 2130837508;
+			public const int ic_airline_seat_recline_normal = 2130837508;
 			
 			// aapt resource value: 0x7f020005
-			public const int ic_launcher = 2130837509;
+			public const int ic_error = 2130837509;
 			
 			// aapt resource value: 0x7f020006
-			public const int norsu = 2130837510;
+			public const int ic_instructor = 2130837510;
 			
 			// aapt resource value: 0x7f020007
-			public const int notification_action_background = 2130837511;
+			public const int ic_launcher = 2130837511;
 			
 			// aapt resource value: 0x7f020008
-			public const int notification_bg = 2130837512;
+			public const int norsu = 2130837512;
 			
 			// aapt resource value: 0x7f020009
-			public const int notification_bg_low = 2130837513;
+			public const int notification_action_background = 2130837513;
 			
 			// aapt resource value: 0x7f02000a
-			public const int notification_bg_low_normal = 2130837514;
+			public const int notification_bg = 2130837514;
 			
 			// aapt resource value: 0x7f02000b
-			public const int notification_bg_low_pressed = 2130837515;
+			public const int notification_bg_low = 2130837515;
 			
 			// aapt resource value: 0x7f02000c
-			public const int notification_bg_normal = 2130837516;
+			public const int notification_bg_low_normal = 2130837516;
 			
 			// aapt resource value: 0x7f02000d
-			public const int notification_bg_normal_pressed = 2130837517;
+			public const int notification_bg_low_pressed = 2130837517;
 			
 			// aapt resource value: 0x7f02000e
-			public const int notification_icon_background = 2130837518;
-			
-			// aapt resource value: 0x7f020012
-			public const int notification_template_icon_bg = 2130837522;
-			
-			// aapt resource value: 0x7f020013
-			public const int notification_template_icon_low_bg = 2130837523;
+			public const int notification_bg_normal = 2130837518;
 			
 			// aapt resource value: 0x7f02000f
-			public const int notification_tile_bg = 2130837519;
+			public const int notification_bg_normal_pressed = 2130837519;
 			
 			// aapt resource value: 0x7f020010
-			public const int notify_panel_notification_icon_bg = 2130837520;
+			public const int notification_icon_background = 2130837520;
+			
+			// aapt resource value: 0x7f020014
+			public const int notification_template_icon_bg = 2130837524;
+			
+			// aapt resource value: 0x7f020015
+			public const int notification_template_icon_low_bg = 2130837525;
 			
 			// aapt resource value: 0x7f020011
-			public const int Splash = 2130837521;
+			public const int notification_tile_bg = 2130837521;
+			
+			// aapt resource value: 0x7f020012
+			public const int notify_panel_notification_icon_bg = 2130837522;
+			
+			// aapt resource value: 0x7f020013
+			public const int Splash = 2130837523;
 			
 			static Drawable()
 			{
@@ -316,11 +322,17 @@ namespace NORSU.EncodeMe
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050036
-			public const int AddSubjectButton = 2131034166;
+			// aapt resource value: 0x7f05003b
+			public const int AddSubjectButton = 2131034171;
 			
 			// aapt resource value: 0x7f050014
 			public const int Course = 2131034132;
+			
+			// aapt resource value: 0x7f050033
+			public const int EditButton = 2131034163;
+			
+			// aapt resource value: 0x7f050037
+			public const int Enrolled = 2131034167;
 			
 			// aapt resource value: 0x7f050012
 			public const int FirstName = 2131034130;
@@ -343,11 +355,8 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f05002e
 			public const int RoomText = 2131034158;
 			
-			// aapt resource value: 0x7f050033
-			public const int Schedule = 2131034163;
-			
-			// aapt resource value: 0x7f050037
-			public const int ScheduleBrowser = 2131034167;
+			// aapt resource value: 0x7f050036
+			public const int Schedule = 2131034166;
 			
 			// aapt resource value: 0x7f05002d
 			public const int ScheduleText = 2131034157;
@@ -358,20 +367,26 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f050030
 			public const int Slots = 2131034160;
 			
-			// aapt resource value: 0x7f050031
-			public const int StudentId = 2131034161;
-			
 			// aapt resource value: 0x7f050032
-			public const int SubjectCode = 2131034162;
+			public const int StatusButton = 2131034162;
+			
+			// aapt resource value: 0x7f050034
+			public const int StudentId = 2131034164;
+			
+			// aapt resource value: 0x7f050035
+			public const int SubjectCode = 2131034165;
 			
 			// aapt resource value: 0x7f05002a
 			public const int SubjectText = 2131034154;
 			
-			// aapt resource value: 0x7f050034
-			public const int SubjectsLayout = 2131034164;
+			// aapt resource value: 0x7f050038
+			public const int SubjectsLayout = 2131034168;
 			
-			// aapt resource value: 0x7f050035
-			public const int SubjectsListView = 2131034165;
+			// aapt resource value: 0x7f050039
+			public const int SubjectsListView = 2131034169;
+			
+			// aapt resource value: 0x7f05003a
+			public const int SubmitButton = 2131034170;
 			
 			// aapt resource value: 0x7f050019
 			public const int action0 = 2131034137;
@@ -453,6 +468,9 @@ namespace NORSU.EncodeMe
 			
 			// aapt resource value: 0x7f05001e
 			public const int notification_main_column_container = 2131034142;
+			
+			// aapt resource value: 0x7f050031
+			public const int relativeLayout1 = 2131034161;
 			
 			// aapt resource value: 0x7f050025
 			public const int right_icon = 2131034149;
@@ -583,13 +601,16 @@ namespace NORSU.EncodeMe
 			public const int ScheduleListItem = 2130903061;
 			
 			// aapt resource value: 0x7f030016
-			public const int StudentIntro = 2130903062;
+			public const int Status = 2130903062;
 			
 			// aapt resource value: 0x7f030017
-			public const int SubjectItem = 2130903063;
+			public const int StudentIntro = 2130903063;
 			
 			// aapt resource value: 0x7f030018
-			public const int Subjects = 2130903064;
+			public const int SubjectItem = 2130903064;
+			
+			// aapt resource value: 0x7f030019
+			public const int Subjects = 2130903065;
 			
 			static Layout()
 			{

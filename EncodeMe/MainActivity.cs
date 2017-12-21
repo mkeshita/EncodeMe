@@ -1,6 +1,5 @@
-﻿
-
-using System;
+﻿using System;
+using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -18,18 +17,13 @@ namespace NORSU.EncodeMe
             base.OnCreate(savedInstanceState);
             
             Client.Start();
-            // Set our view from the "main" layout resource
-            //SetContentView(Resource.Layout.Main);
 
-         //   var students = await Db.GetStudentsAsync();
-         //   if (students.Count == 0)
-         //   {
-         //       var pref = PreferenceManager.GetDefaultSharedPreferences(this);
-               //if (pref.GetInt("intro", 1) == 2)
-               //     StartActivity(new Intent(Application.Context, typeof(EditStudentActivity)));
-               //else
-                    StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
-        //    }
+            var stud = (await Db.GetAll<Student>()).FirstOrDefault();
+            if(stud==null)
+                StartActivity(new Intent(Application.Context, typeof(StudentIntroActivity)));
+            else
+                StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
+            Finish();
         }
     }
 }

@@ -28,12 +28,7 @@ namespace NORSU.EncodeMe
             
             _next.Click += NextOnClick;
             
-            return;
-            var pref = PreferenceManager.GetDefaultSharedPreferences(this);
-            _progressBar.Indeterminate = pref.GetBoolean("submitted", false);
-            _studentId.Enabled = !pref.GetBoolean("submitted", false);
-            _next.Enabled = !pref.GetBoolean("submitted", false);
-            _studentId.Text = pref.GetString("studentId", "");
+            
         }
 
         private async void NextOnClick(object sender, EventArgs eventArgs)
@@ -58,9 +53,9 @@ namespace NORSU.EncodeMe
             
             if (result.Result == ResultCodes.Success && result.Student != null)
             {
-                await Db.Connection().CreateTableAsync<Student>();
-                await Db.Connection().InsertOrReplaceAsync(result.Student);
-                //Todo: student found
+                await Db.DropTable<Student>();
+                await Db.Save(result.Student);
+                StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
             }
             else if (result.Result == ResultCodes.NotFound)
             {
@@ -93,11 +88,11 @@ namespace NORSU.EncodeMe
         {
             base.OnRestoreInstanceState(savedInstanceState);
             
-           // var pref = PreferenceManager.GetDefaultSharedPreferences(this);
-           // _progressBar.Indeterminate = pref.GetBoolean("submitted",false);
-           // _studentId.Enabled = !pref.GetBoolean("submitted",false);
-           // _next.Enabled = !pref.GetBoolean("submitted",false);
-           // _studentId.Text = pref.GetString("studentId", "");
+            var pref = PreferenceManager.GetDefaultSharedPreferences(this);
+            _progressBar.Indeterminate = pref.GetBoolean("submitted",false);
+            _studentId.Enabled = !pref.GetBoolean("submitted",false);
+            _next.Enabled = !pref.GetBoolean("submitted",false);
+           _studentId.Text = pref.GetString("studentId", "");
         }
     }
 }

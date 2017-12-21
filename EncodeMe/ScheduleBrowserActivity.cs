@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using NORSU.EncodeMe.Network;
+using SQLite;
 
 namespace NORSU.EncodeMe
 {
@@ -72,8 +73,27 @@ namespace NORSU.EncodeMe
                 dlg.Show();
 
             }
-            
-            
+            else if (result.Schedules != null)
+            {
+                await Db.DropTable<ClassSchedule>("cache.db");
+                await Db.InsertAllAsync(result.Schedules,"cache.db");
+            }
+        }
+
+        protected override async void OnRestoreInstanceState(Bundle savedInstanceState)
+        {
+            _schedulesListView.Adapter = new SchedulesAdapter(this,
+                await Db.GetAll<ClassSchedule>("cache.db"));
+            var proc = savedInstanceState.GetBoolean("browser_processing", false);
+            _progress.Visibility = proc ? ViewStates.Visible : ViewStates.Gone;
+            _schedulesListView.Enabled = !proc;
+        }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            outState.PutString("browser_subject",_subjectCode.Text);
+            outState.PutBoolean("browser_processing",_progress.Visibility == ViewStates.Visible);
+            base.OnSaveInstanceState(outState);
         }
 
         private void SchedulesListViewOnItemClick(object sender, AdapterView.ItemClickEventArgs e)
@@ -82,11 +102,10 @@ namespace NORSU.EncodeMe
             if (adapter == null) return;
             var sched = adapter[e.Position];
             
-            SubjectsActivity.AddSchedule(sched);
-            
-            //var result = new Intent();
-            
-            //result.PutExtra("Class", sched);
+            var resultIntent = new Intent();
+            resultIntent.PutExtra("id", sched.ClassId);
+            SetResult(Result.Ok, resultIntent);
+
             Finish();
         }
     }

@@ -124,6 +124,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleBrowserActivity.cs" />
     <Compile Include="SchedulesAdapter.cs" />
+    <Compile Include="StatusActivity.cs" />
     <Compile Include="StudentIntroActivity.cs" />
     <Compile Include="SubjectsActivity.cs" />
     <Compile Include="SubjectsAdapter.cs" />
@@ -157,6 +158,9 @@
     </AndroidResource>
     <AndroidResource Include="Resources\layout\ScheduleListItem.axml" />
     <AndroidResource Include="Resources\layout\SubjectItem.axml" />
+    <AndroidResource Include="Resources\layout\Status.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml">
@@ -255,6 +259,27 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_airline_seat_recline_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_instructor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_instructor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_instructor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_instructor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_instructor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\loading.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Circle.xml" />
   </ItemGroup>
   <Import Project="..\EncodeMe.Network\EncodeMe.Network.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

@@ -68,7 +68,8 @@ namespace NORSU.EncodeMe
 
             if (result == ResultCodes.Success)
             {
-                await Db.Connection().InsertOrReplaceAsync(stud);
+                await Db.DropTable<Student>();
+                await Db.Save(stud);
             }
         }
         

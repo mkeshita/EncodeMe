@@ -25,7 +25,6 @@ namespace NORSU.EncodeMe.Network
     {
         private Client()
         {
-            Start();
         }
 
         ~Client()
@@ -37,6 +36,8 @@ namespace NORSU.EncodeMe.Network
         public static Client Instance => _instance ?? (_instance = new Client());
         private static bool _started;
       //  private static bool Emulator;
+        
+        
         
         public static void Start()
         {
@@ -254,5 +255,77 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.RemoveGlobalIncomingPacketHandler(SchedulesResult.GetHeader()+subject);
             return new SchedulesResult(){Result = ResultCodes.Timeout};
         }
+
+        public static async Task<EnrollResult> Enroll(string studentId, List<ClassSchedule> schedules)
+        {
+            if (Server == null) await FindServer();
+
+            if (Server == null) return new EnrollResult();
+            
+            var request = new EnrollRequest()
+            {
+                StudentId = studentId,
+                ClassSchedules = schedules
+            };
+
+            EnrollResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<EnrollResult>(EnrollResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(EnrollResult.GetHeader());
+                    result = i;
+                });
+
+            await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            foreach (var sched in schedules)
+            {
+                sched.Sent = true;
+                await Db.Save(sched);
+            }
+            
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(EnrollResult.GetHeader());
+            return new EnrollResult() {Result = ResultCodes.Timeout};
+        }
+
+        public async Task<StatusResult> GetStatus()
+        {
+            if (Server == null) await FindServer();
+
+            if (Server == null) return new StatusResult() {Result = ResultCodes.Offline};
+            
+            var request = new StatusRequest();
+            
+            StatusResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<StatusResult>(StatusResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(StatusResult.GetHeader());
+                    result = i;
+                });
+
+            await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(StatusResult.GetHeader());
+            return new StatusResult() {Result = ResultCodes.Timeout};
+        }
     }
+    
 }

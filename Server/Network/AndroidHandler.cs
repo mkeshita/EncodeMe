@@ -105,7 +105,7 @@ namespace NORSU.EncodeMe.Network
                 result.Result = ResultCodes.NotFound;
             else
             {
-                var schedules = Models.ClassSchedule.Cache.Where(x => x.SubjectId == subject.Id);
+                var schedules = Models.ClassSchedule.Cache.Where(x => x.SubjectCode == subject.Code);
                 result.Result = ResultCodes.Success;
                 result.Schedules = new List<ClassSchedule>();
                 foreach (var sched in schedules)
@@ -115,6 +115,7 @@ namespace NORSU.EncodeMe.Network
                         ClassId = sched.Id,
                         Instructor = sched.Instructor,
                         Schedule = sched.Description,
+                        SubjectCode = sched.SubjectCode,
                         Room = sched.Room,
                         Slots = sched.Slots,
                         Enrolled = GetEnrolled(sched.Id)
@@ -133,6 +134,36 @@ namespace NORSU.EncodeMe.Network
                 x =>x.ScheduleId == id &&
                     (Request.Cache.FirstOrDefault(d => d.Id == x.RequestId)?.IsAccepted ?? false));
         }
-        
+
+
+        public static void EnrollRequestHandler(PacketHeader packetheader, Connection connection, EnrollRequest incomingobject)
+        {
+            var req = Request.Cache.FirstOrDefault(x => x.StudentId == incomingobject.StudentId);
+            if(req==null) req = new Request()
+            {
+                StudentId = incomingobject.StudentId,
+            };
+            
+            req.DateSubmitted = DateTime.Now;
+            req.IsAccepted = false;
+            req.IsProcessed = false;
+            
+            req.Save();
+            
+            RequestDetail.DeleteWhere(nameof(RequestDetail.RequestId),req.Id);
+
+            foreach (var sched in incomingobject.ClassSchedules)
+            {
+                new RequestDetail()
+                {
+                    RequestId = req.Id,
+                    ScheduleId = sched.ClassId,
+                    Status = RequestStatuses.Pending,
+                    SubjectCode = sched.SubjectCode
+                }.Save();
+            }
+            
+            
+        }
     }
 }

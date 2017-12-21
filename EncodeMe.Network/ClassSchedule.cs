@@ -1,17 +1,18 @@
 ﻿using System;
 //using Android.OS;
 using ProtoBuf;
+using SQLite;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
     [Serializable]
-    class ClassSchedule : Message<ClassSchedule>//, IParcelable
+    class ClassSchedule : Message<ClassSchedule>
     {
-       
         private long _ClassId;
 
         [ProtoMember(1)]
+        [PrimaryKey]
         public long ClassId
         {
             get => _ClassId;
@@ -62,22 +63,9 @@ namespace NORSU.EncodeMe.Network
                 OnPropertyChanged(nameof(Slots));
             }
         }
-
-        private bool _Closed;
-        [ProtoMember(5)]
-        public bool Closed
-        {
-            get => _Closed;
-            set
-            {
-                if (value == _Closed) return;
-                _Closed = value;
-                OnPropertyChanged(nameof(Closed));
-            }
-        }
-
+        
         private int _Enrolled;
-        [ProtoMember(6)]
+        [ProtoMember(5)]
         public int Enrolled
         {
             get => _Enrolled;
@@ -90,7 +78,7 @@ namespace NORSU.EncodeMe.Network
         }
 
         private string _Room;
-        [ProtoMember(7)]
+        [ProtoMember(6)]
         public string Room
         {
             get => _Room;
@@ -103,7 +91,7 @@ namespace NORSU.EncodeMe.Network
         }
 
         private string _SubjectCode;
-        [ProtoMember(8)]
+        [ProtoMember(7)]
         public string SubjectCode
         {
             get => _SubjectCode;
@@ -114,8 +102,10 @@ namespace NORSU.EncodeMe.Network
                 OnPropertyChanged(nameof(SubjectCode));
             }
         }
-
         
+        public bool Sent { get; set; }
+        
+        public ScheduleStatuses EnrollmentStatus { get; set; }
 
         //public void Dispose()
         //{
