@@ -32,6 +32,7 @@
             android:indeterminateTint="#ff33b5e5"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp" />
+      
         <TextView
             android:text="Please enter your ID number"
             android:textAppearance="?android:attr/textAppearanceMedium"

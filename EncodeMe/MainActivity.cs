@@ -4,6 +4,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Preferences;
 using NORSU.EncodeMe.Network;
 
 namespace NORSU.EncodeMe
@@ -19,10 +20,19 @@ namespace NORSU.EncodeMe
             Client.Start();
 
             var stud = (await Db.GetAll<Student>()).FirstOrDefault();
-            if(stud==null)
+            if (stud == null)
                 StartActivity(new Intent(Application.Context, typeof(StudentIntroActivity)));
             else
-                StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
+            {
+                var pref = PreferenceManager.GetDefaultSharedPreferences(this);
+                var proc = pref.GetBoolean(Constants.ENROLLMENT_PROCESSING, false);
+                if (proc)
+                {
+                    StartActivity(new Intent(Application.Context, typeof(StatusActivity)));
+                }
+                else StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
+                
+            }
             Finish();
         }
     }

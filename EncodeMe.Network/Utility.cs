@@ -10,6 +10,7 @@ namespace NORSU.EncodeMe.Network
         Timeout,
         NotFound,
         Error,
+        Processing,
     }
     
     static class Utility

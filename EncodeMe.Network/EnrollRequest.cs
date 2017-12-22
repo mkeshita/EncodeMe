@@ -1,6 +1,5 @@
-﻿using System;
+﻿#if !ENCODER
 using System.Collections.Generic;
-using System.Text;
 using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
@@ -15,3 +14,4 @@ namespace NORSU.EncodeMe.Network
         public List<ClassSchedule> ClassSchedules { get; set; }
     }
 }
+#endif

@@ -25,7 +25,14 @@ namespace NORSU.EncodeMe
         private NetworkComms.PacketHandlerCallBackDelegate<StatusResult> _statusUpdateHandler;
         private bool _activityPaused;
         private Button _statusButton;
-        protected override async void OnCreate(Bundle savedInstanceState)
+        private int _queueNumber;
+        private Button _editButton;
+        private ImageView _statusImage;
+        private TextView _messageText;
+        private ProgressBar _progress;
+        private TextView _title;
+        
+        protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             
@@ -34,14 +41,21 @@ namespace NORSU.EncodeMe
 
             var pref = PreferenceManager.GetDefaultSharedPreferences(this);
             _statusButton = FindViewById<Button>(Resource.Id.StatusButton);
-            _statusButton.Text = pref.GetInt("QueueNumber",0).ToString();
+            _statusImage = FindViewById<ImageView>(Resource.Id.StatusImage);
+            _messageText = FindViewById<TextView>(Resource.Id.MessageText);
+            _progress = FindViewById<ProgressBar>(Resource.Id.Progress);
+            _title = FindViewById<TextView>(Resource.Id.TitleText);
+            
+            _queueNumber = pref.GetInt("QueueNumber", 0);
+            _statusButton.Text = _queueNumber.ToString();
 
             _statusButton.Click += (sender, args) => GetStatus();
             
-            var btn = FindViewById<Button>(Resource.Id.EditButton);
-            btn.Click += (sender, args) => StartActivity(typeof(SubjectsActivity));
+            _editButton = FindViewById<Button>(Resource.Id.EditButton);
+            _editButton.Click += (sender, args) => StartActivity(typeof(SubjectsActivity));
+            _editButton.Enabled = _queueNumber > 0;
             
-            _statusUpdateHandler = StatusUpdateHandler;
+            _statusUpdateHandler = (h,c,i)=>Enrolled(i);
             NetworkComms.AppendGlobalIncomingPacketHandler(StatusResult.GetHeader()+"update", _statusUpdateHandler);
 
             GetStatus();
@@ -50,13 +64,9 @@ namespace NORSU.EncodeMe
         private async void GetStatus()
         {
             var status = await Client.Instance.GetStatus();
+            _editButton.Enabled = status.Status == EnrollmentStatus.Pending;
             if (status.Result == ResultCodes.Success)
                 Enrolled(status);
-        }
-
-        private void StatusUpdateHandler(PacketHeader h, Connection c, StatusResult i)
-        {
-            Enrolled(i);
         }
 
         private async void Enrolled(StatusResult status)
@@ -64,12 +74,45 @@ namespace NORSU.EncodeMe
             var pref = PreferenceManager.GetDefaultSharedPreferences(this);
             var edit = pref.Edit();
             edit.PutInt("QueueNumber", status.QueueNumber);
-            edit.PutBoolean("Enrollment_Processed", status.IsProcessed);
-            edit.PutBoolean("Enrollment_Accepted", status.IsAccepted);
+            edit.PutBoolean(Constants.ENROLLMENT_PROCESSING, status.Status>EnrollmentStatus.Processing);
+            edit.PutBoolean("Enrollment_Accepted", status.Status == EnrollmentStatus.Accepted);
             edit.Commit();
             _statusButton.Text = status.QueueNumber + "";
+            _queueNumber = status.QueueNumber;
+            
+            _editButton.Enabled = status.Status != EnrollmentStatus.Processing;
+            
+            switch (status.Status)
+            {
+                case EnrollmentStatus.Pending:
+                    return;
+                case EnrollmentStatus.Processing:
+                    _statusButton.Visibility = ViewStates.Gone;
+                    _statusImage.Visibility = ViewStates.Visible;
+                    _messageText.Text = "You request is now being processed.";
+                    return;
+                case EnrollmentStatus.Accepted:
+                    _progress.Indeterminate = false;
+                    _progress.Progress = 1;
+                    _title.Text = "OFFICIALLY ENROLLED";
+                    _messageText.Text = "Congratulations! Your are now officially enrolled.";
+                    _editButton.Text = "View Schedule";
+                    break;
+                case EnrollmentStatus.Closed:
+                    _progress.Indeterminate = false;
+                    _progress.Progress = 0;
+                    _title.Text = "ENROLLMENT FAILED";
+                    _messageText.Text = "Some if not al of the classes you are enrolling are closed.";
+                    break;
+                case EnrollmentStatus.Conflict:
+                    _progress.Indeterminate = false;
+                    _progress.Progress = 0;
+                    _title.Text = "ENROLLMENT FAILED";
+                    _messageText.Text = "The schedules of some classes you are enrolling are overlapping.";
+                    break;
+            }
 
-            if (!status.IsProcessed) return;
+
             var scheds = await Db.GetAll<ClassSchedule>();
             foreach (var stat in status.Schedules)
             {
@@ -80,15 +123,15 @@ namespace NORSU.EncodeMe
                 await Db.Save(sched);
             }
 
-            if (_activityPaused)
-            {
+           // if (_activityPaused)
+            //{
               //  var notificationManager = (NotificationManager) GetSystemService(Context.NotificationService);
               //  var channel = new NotificationChannel("NORSU_EncodeMe_Channel_07","EncodeMe", NotificationImportance.High);
               //  channel.Description = "Enrollment status updated.";
               //  notificationManager.CreateNotificationChannel(channel);
-            } else
-                StartActivity(typeof(SubjectsActivity));
-            Finish();
+           // } else
+               // StartActivity(typeof(SubjectsActivity));
+           // Finish();
         }
 
         protected override void OnDestroy()
@@ -107,6 +150,7 @@ namespace NORSU.EncodeMe
         {
             _activityPaused = false;
             GetStatus();
+            //_editButton.Enabled = _queueNumber > 0;
             base.OnResume();
         }
     }

@@ -1,7 +1,8 @@
 ﻿using System;
-//using Android.OS;
 using ProtoBuf;
+#if __ANDROID__
 using SQLite;
+#endif
 
 namespace NORSU.EncodeMe.Network
 {
@@ -12,7 +13,9 @@ namespace NORSU.EncodeMe.Network
         private long _ClassId;
 
         [ProtoMember(1)]
+#if __ANDROID__
         [PrimaryKey]
+#endif
         public long ClassId
         {
             get => _ClassId;
@@ -105,6 +108,7 @@ namespace NORSU.EncodeMe.Network
         
         public bool Sent { get; set; }
         
+        [ProtoMember(8)]
         public ScheduleStatuses EnrollmentStatus { get; set; }
 
         //public void Dispose()

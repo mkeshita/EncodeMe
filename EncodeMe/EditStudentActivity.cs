@@ -8,7 +8,7 @@ using NORSU.EncodeMe.Network;
 
 namespace NORSU.EncodeMe
 {
-    [Activity(Label = "@string/app_name",Icon = "@drawable/ic_launcher", Theme = "@style/Theme.FullScreen",
+    [Activity(Label = "@string/app_name",Icon = "@drawable/ic_launcher", Theme = "@style/Theme.FullScreen", NoHistory = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class EditStudentActivity : Activity
     {
@@ -70,7 +70,19 @@ namespace NORSU.EncodeMe
             {
                 await Db.DropTable<Student>();
                 await Db.Save(stud);
+                StartActivity(typeof(SubjectsActivity));
+                Finish();
             }
+            var dlg = new AlertDialog.Builder(this);
+            if (result == ResultCodes.Offline)
+                dlg.SetMessage("Server is unavailable.");
+            else if (result == ResultCodes.Timeout)
+                dlg.SetMessage("Request timeout");
+            else
+                dlg.SetMessage("Request failed.");
+
+            dlg.SetPositiveButton("OK", (o, args) => { });
+            dlg.Show();
         }
         
         protected override void OnSaveInstanceState(Bundle outState)

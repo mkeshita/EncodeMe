@@ -138,11 +138,25 @@ namespace NORSU.EncodeMe.Network
 
         public static void EnrollRequestHandler(PacketHeader packetheader, Connection connection, EnrollRequest incomingobject)
         {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null) return;
+
+            var ep = new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port);
+            
             var req = Request.Cache.FirstOrDefault(x => x.StudentId == incomingobject.StudentId);
             if(req==null) req = new Request()
             {
                 StudentId = incomingobject.StudentId,
             };
+
+            if (req.IsProcessing)
+            {
+                new EnrollResult(ResultCodes.Processing).Send(ep);
+                return;
+            }
             
             req.DateSubmitted = DateTime.Now;
             req.IsAccepted = false;
@@ -150,20 +164,50 @@ namespace NORSU.EncodeMe.Network
             
             req.Save();
             
-            RequestDetail.DeleteWhere(nameof(RequestDetail.RequestId),req.Id);
+            //RequestDetail.DeleteWhere(nameof(RequestDetail.RequestId),req.Id);
 
             foreach (var sched in incomingobject.ClassSchedules)
             {
-                new RequestDetail()
+                var detail = RequestDetail.Cache.FirstOrDefault(x => x.SubjectCode == sched.SubjectCode) ?? new RequestDetail()
                 {
                     RequestId = req.Id,
                     ScheduleId = sched.ClassId,
                     Status = RequestStatuses.Pending,
                     SubjectCode = sched.SubjectCode
-                }.Save();
+                };
+                detail.Save();
             }
             
-            
+            var result = new EnrollResult(ResultCodes.Success)
+            {
+                QueueNumber = Request.Cache.Count(x => !x.IsProcessed),
+            };
+            if (req.IsProcessing)
+                result.QueueNumber = 0;
+
+            result.Send(ep);
+        }
+
+        public static void RegisterStudentHandler(PacketHeader packetheader, Connection connection, RegisterStudent reg)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null) return;
+
+            var stud = Models.Student.Cache.FirstOrDefault(x => x.StudentId == reg.Student.StudentId);
+            stud = new Models.Student
+            {
+                FirstName = reg.Student.FirstName,
+                LastName = reg.Student.LastName,
+                Course = reg.Student.Course,
+                StudentId = reg.Student.StudentId
+            };
+            stud.Save();
+
+            new RegisterStudentResult(ResultCodes.Success) { StudentId = stud.Id}
+                .Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
     }
 }

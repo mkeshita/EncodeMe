@@ -1,15 +1,20 @@
 ﻿using System;
+using System.IO;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Graphics;
 using Android.OS;
 using Android.Preferences;
+using Android.Views;
+using Android.Webkit;
 using Android.Widget;
+
 using NORSU.EncodeMe.Network;
 
 namespace NORSU.EncodeMe
 {
-    [Activity(Label = "@string/app_name", Icon = "@drawable/ic_launcher", Theme = "@style/Theme.FullScreen",
+    [Activity(Label = "@string/app_name", Icon = "@drawable/ic_launcher", Theme = "@style/Theme.FullScreen", NoHistory = true,
         ConfigurationChanges = ConfigChanges.Orientation, ScreenOrientation = ScreenOrientation.Portrait)]
     public class StudentIntroActivity : Activity
     {
@@ -27,8 +32,17 @@ namespace NORSU.EncodeMe
             _next = FindViewById<Button>(Resource.Id.NextButton);
             
             _next.Click += NextOnClick;
-            
-            
+
+           // var img = FindViewById<GifImageView>(Resource.Id.gifImageView);
+           // var stream = Assets.Open("loading.gif");
+          //  byte[] bytes;
+          //  using (MemoryStream ms = new MemoryStream())
+          //  {
+          //      stream.CopyTo(ms);
+          //      bytes = ms.ToArray();
+          //  }
+          //  img.SetBytes(bytes);
+         //   img.StartAnimation();
         }
 
         private async void NextOnClick(object sender, EventArgs eventArgs)
@@ -56,10 +70,14 @@ namespace NORSU.EncodeMe
                 await Db.DropTable<Student>();
                 await Db.Save(result.Student);
                 StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
+                Finish();
             }
             else if (result.Result == ResultCodes.NotFound)
             {
-                StartActivity(new Intent(Application.Context, typeof(EditStudentActivity)));
+                var intent = new Bundle();
+                intent.PutString("StudentID", _studentId.Text);
+                StartActivity(new Intent(Application.Context, typeof(EditStudentActivity)),intent);
+                Finish();
             }
             else
             {

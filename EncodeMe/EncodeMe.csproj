@@ -115,6 +115,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Db.cs" />
     <Compile Include="EditStudentActivity.cs" />
     <Compile Include="MainActivity.cs" />

@@ -1,28 +1,38 @@
-﻿using System;
+﻿#if !ENCODER
 using System.Collections.Generic;
-using System.Text;
-using Android.App;
 using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
+    public enum EnrollmentStatus
+    {
+        Pending,
+        Processing,
+        Accepted,
+        Conflict,
+        Closed
+    }
+    
     [ProtoContract]
     class StatusResult : Message<StatusResult>
     {
         [ProtoMember(1)]
         public int QueueNumber { get; set; }
-
+        
         [ProtoMember(2)]
-        public bool IsProcessed { get; set; }
-
-        [ProtoMember(3)]
         public List<ScheduleStatus> Schedules { get; set; }
 
-        [ProtoMember(4)]
+        [ProtoMember(3)]
         public ResultCodes Result { get; set; }
+        
+        [ProtoMember(4)]
+        public string Encoder { get; set; }
 
         [ProtoMember(5)]
-        public bool IsAccepted { get; set; }
+        public byte[] EncoderPicture { get; set; }
+
+        [ProtoMember(6)]
+        public EnrollmentStatus Status { get; set; }
     }
 
     [ProtoContract]
@@ -31,3 +41,4 @@ namespace NORSU.EncodeMe.Network
         
     }
 }
+#endif
