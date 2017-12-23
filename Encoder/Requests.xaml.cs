@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using GenieLib;
 
 namespace NORSU.EncodeMe
 {
@@ -19,17 +20,38 @@ namespace NORSU.EncodeMe
     /// </summary>
     public partial class Requests : Window
     {
+        private Magic _magic;
+        private bool _collapsed;
+        private bool _collapsing;
+
         public Requests()
         {
             InitializeComponent();
-            var win = new Window1();
-            ((App) App.Current).Window1 = win;
+
+            _magic = new Magic(Lamp, Genie, true);
+            _magic.Duration = new Duration(TimeSpan.FromMilliseconds(300));
+            _magic.Collapsed += (sender, args) =>
+            {
+                _collapsed = true;
+            };
+
+            _magic.Collapsing += (sender, args) =>
+            {
+                _collapsing = true;
+            };
+
+            _magic.Expanded += (sender, args) =>
+            {
+                Button.Visibility = Visibility.Collapsed;
+                Genie.CornerRadius = new CornerRadius(0);
+                Transitioner.SelectedIndex = 0;
+            };
+            _magic.IsGenieOut = false;
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            ((App) App.Current).Window1.Show();
         }
 
         private void Requests_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -59,6 +81,20 @@ namespace NORSU.EncodeMe
         {
             Activate();
         }
-        
+
+        private void Button_OnClick(object sender, RoutedEventArgs e)
+        {
+            var anim = new DoubleAnimation(1,new Duration(TimeSpan.FromMilliseconds(100)));
+
+            anim.Completed += (o, args) =>
+            {
+                _magic.IsGenieOut = true;
+                Genie.Visibility = Visibility.Visible;
+            };
+            //Button.BeginAnimation(Button.RenderTransformProperty, anim);
+          //  var scale = (ScaleTransform) Button.RenderTransform;
+            Button.BeginAnimation(HeightProperty, anim);
+            Button.BeginAnimation(WidthProperty,anim);
+        }
     }
 }

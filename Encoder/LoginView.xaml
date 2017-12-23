@@ -11,7 +11,7 @@
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
         xmlns:network="clr-namespace:NORSU.EncodeMe.Network"
-        Title="EncodeMe Client"
+        Title="NORSU-Guihulngan Encoder"
         Height="400"
         Width="400"
         MouseDown="Login_OnMouseDown"

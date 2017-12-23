@@ -86,9 +86,9 @@ namespace NORSU.EncodeMe
             _progress.Visibility = ViewStates.Gone;
 
             if (result == null) return;
-            
+
+
             var dlg = new AlertDialog.Builder(this);
-            
             if (result.Result == ResultCodes.Success || result.Result == ResultCodes.Processing)
             {
                 foreach (var sched in _schedules)
@@ -105,15 +105,24 @@ namespace NORSU.EncodeMe
                 {
                     dlg.SetMessage(
                         "An encoder is currently processing your enrollment. Changes you've submitted were not accepted.");
+                    dlg.SetPositiveButton("OK", (o, a) => { });
+                    dlg.Show();
+                } else if (result.Result == ResultCodes.Enrolled)
+                {
+                    dlg.SetMessage(
+                        "You are officially enrolled. See the registrar to change your schedules.");
+                    dlg.SetTitle("Congratulations");
+                    dlg.SetPositiveButton("OK", (o, a) => { });
                     dlg.Show();
                 }
                 
                 StartActivity(typeof(StatusActivity));
                 Finish();
-            } 
-            
-            
+                return;
+            }
 
+
+            
             if (result.Result == ResultCodes.Offline)
                 dlg.SetMessage("Server is unavailable.");
             else if (result.Result == ResultCodes.Timeout)

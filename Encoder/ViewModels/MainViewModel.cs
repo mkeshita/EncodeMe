@@ -32,13 +32,27 @@ namespace NORSU.EncodeMe.ViewModels
 
         public ICommand GetNextRequest => _getNextRequest ?? (_getNextRequest = new DelegateCommand(async d =>
         {
+            if (IsProcessing) return;
+            await WorkViewModel.ShowDialog(null);
+            return;
             if (Encoder == null)
             {
                 var result = await LoginViewModel.ShowDialog(new LoginView());
                 Encoder = result.Result == ResultCodes.Success ? result.Encoder : null;
             }
+            
             if (Encoder != null)
             {
+                IsProcessing = true;
+                var res = await Client.GetNextWork(Encoder.Username);
+                IsProcessing = false;
+                if (res.Result == ResultCodes.Success)
+                {
+                    await WorkViewModel.ShowDialog(res);
+                }
+                else
+                    MessageBox.Show("Something went wrong while trying to fetch the next work item.",
+                        "Request Timeout", MessageBoxButton.OK, MessageBoxImage.Error);
                 
             }
         }));

@@ -94,5 +94,44 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
+        public static void GetWorkHandler(PacketHeader packetheader, Connection connection, GetWork req)
+        {
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
+            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            if (!(client?.IsEnabled ?? false))
+            {
+                Activity.Log(
+                    Activity.Categories.Network,
+                    Activity.Types.Warning,
+                    $"Work item requested at an unauthorized terminal ({ip}).");
+                return;
+            }
+
+            var work = Request.GetNextRequest();
+            work.Update(nameof(work.IsProcessing),true);
+
+            var result = new GetWorkResult(ResultCodes.Success)
+            {
+                RequestId = work.Id,
+                StudentId = work.StudentId
+            };
+
+            var items = RequestDetail.Cache.Where(x => x.RequestId == work.Id).ToList();
+            foreach (var item in items)
+            {
+                var sched = Models.ClassSchedule.Cache.FirstOrDefault(x => x.Id == item.ScheduleId);
+                result.ClassSchedules.Add(new ClassSchedule()
+                {
+                    ClassId = item.ScheduleId,
+                    SubjectCode = item.SubjectCode,
+                    Instructor = sched?.Instructor,
+                    Room = sched?.Room,
+                    Schedule = sched?.Description,
+                });
+            }
+
+            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            
+        }
     }
 }

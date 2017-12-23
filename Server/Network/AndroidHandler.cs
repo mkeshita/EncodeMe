@@ -157,6 +157,12 @@ namespace NORSU.EncodeMe.Network
                 new EnrollResult(ResultCodes.Processing).Send(ep);
                 return;
             }
+
+            if (req.IsAccepted)
+            {
+                new EnrollResult(ResultCodes.Enrolled).Send(ep);
+                return;
+            }
             
             req.DateSubmitted = DateTime.Now;
             req.IsAccepted = false;

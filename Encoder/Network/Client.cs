@@ -10,17 +10,9 @@ using NetworkCommsDotNet.Tools;
 
 namespace NORSU.EncodeMe.Network
 {
-    class Client
+    static class Client
     {
         private static bool _started;
-        
-        private Client()
-        {
-           
-        }
-
-        private static Client _instance;
-        private static Client Instance => _instance ?? (_instance = new Client());
         
         public static void Start()
         {
@@ -49,6 +41,7 @@ namespace NORSU.EncodeMe.Network
 
         public static void Stop()
         {
+            if(!_started) return;
             Connection.StopListening();
             NetworkComms.Shutdown();
         }
@@ -84,6 +77,7 @@ namespace NORSU.EncodeMe.Network
 
         private static async Task FindServer()
         {
+            Start();
             var start = DateTime.Now;
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             while ((DateTime.Now-start).TotalSeconds<20)
@@ -92,6 +86,8 @@ namespace NORSU.EncodeMe.Network
                 await TaskEx.Delay(TimeSpan.FromSeconds(7));
             }
         }
+        
+        public static Encoder Encoder { get; private set; }
         
         public static async Task<LoginResult> Login(string username, string password)
         {
@@ -107,6 +103,7 @@ namespace NORSU.EncodeMe.Network
                     {
                         NetworkComms.RemoveGlobalIncomingPacketHandler(LoginResult.GetHeader());
                         result = res;
+                        Encoder = res?.Encoder;
                     });
             
                 await login.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
@@ -124,7 +121,34 @@ namespace NORSU.EncodeMe.Network
             
             return new LoginResult(ResultCodes.Timeout);
         }
-      
 
+        public static async Task<GetWorkResult> GetNextWork(string username)
+        {
+            if (Server == null) await FindServer();
+            if (Server == null) return new GetWorkResult(ResultCodes.Offline);
+            
+            var request = new GetWork(username);
+            GetWorkResult result = null;
+            
+            NetworkComms.AppendGlobalIncomingPacketHandler<GetWorkResult>(GetWorkResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(GetWorkResult.GetHeader());
+                    result = i;
+                });
+
+            await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(GetWorkResult.GetHeader());
+            return new GetWorkResult(ResultCodes.Timeout);
+        }
     }
 }

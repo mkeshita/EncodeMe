@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet.DPSBase;
@@ -28,6 +29,7 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<AndroidInfo>(AndroidInfo.GetHeader(), AndroidHandler.HandShakeHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<StudentInfoRequest>(StudentInfoRequest.GetHeader(), AndroidHandler.StudentInfoRequested);
             NetworkComms.AppendGlobalIncomingPacketHandler<EndPointInfo>(EndPointInfo.GetHeader(), EncoderHandler.HandShakeHandler);
+            NetworkComms.AppendGlobalIncomingPacketHandler<GetWork>(GetWork.GetHeader(), EncoderHandler.GetWorkHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<Login>(Login.GetHeader(), EncoderHandler.LoginHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<SchedulesRequest>(SchedulesRequest.GetHeader(), AndroidHandler.ScheduleRequestHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<EnrollRequest>(EnrollRequest.GetHeader(),AndroidHandler.EnrollRequestHandler);
@@ -43,8 +45,11 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.Shutdown();
         }
 
-      
 
+        public static async Task PushUpdate(string studentId)
+        {
+            
+        }
 
     }
 }

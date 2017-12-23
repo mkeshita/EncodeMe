@@ -11,6 +11,8 @@ namespace NORSU.EncodeMe.Network
         NotFound,
         Error,
         Processing,
+        Denied,
+        Enrolled
     }
     
     static class Utility

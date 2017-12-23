@@ -7,8 +7,6 @@
         mc:Ignorable="d"
        Topmost="True"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Height="74"
-        Width="74"
         DataContext="{Binding Source={x:Static vm:MainViewModel.Instance}}"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -16,6 +14,7 @@
         MouseDown="Requests_OnMouseDown"
         Background="Transparent"
         ShowInTaskbar="False"
+        SizeToContent="WidthAndHeight"
         xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
         xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters">
 
@@ -27,7 +26,8 @@
                 <Button>asdfasdfasd</Button>
             </StackPanel>
         </md:DrawerHost.LeftDrawerContent>
-        <Grid>
+        <Grid Height="400"
+              Width="250">
             <!--
            
         
@@ -52,14 +52,25 @@
                 </Style>
             </UserControl.Style>
         </UserControl>-->
-
+            
+            <Rectangle Height="10" Width="10"
+                       x:Name="Lamp"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right"
+                       Margin="0 0 35 35"/>
+            
+           
+            <Border Height="74" Width="74"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom">
             <Button Height="64" Width="64" Style="{StaticResource MaterialDesignFloatingActionButton}"
                     md:ButtonProgressAssist.IsIndeterminate="True"
                     md:ButtonProgressAssist.IsIndicatorVisible="{Binding IsProcessing}"
-                    Command="{Binding GetNextRequest}"
+                    Click="Button_OnClick"
                       HorizontalAlignment="Center"
                       x:Name="Button"
                       VerticalAlignment="Center">
+          
                 <Button.Background>
                     <VisualBrush>
                         <VisualBrush.Visual>
@@ -81,7 +92,22 @@
                 </Button.Background>
              
             </Button>
+            </Border>
 
+            <Border Background="{StaticResource PrimaryHueDarkBrush}"
+                  Visibility="Hidden"
+                  x:Name="Genie"
+                  Margin="0 0 8 20"
+                    CornerRadius="400">
+                <md:Transitioner x:Name="Transitioner">
+                    <StackPanel>
+                        <TextBlock Text="LOGIN"/>
+                        <TextBox/>
+                        <PasswordBox/>
+                        <Button Content="Login"/>
+                    </StackPanel>
+                </md:Transitioner>
+            </Border>
             <!--<md:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
                      MouseEnter="UIElement_OnMouseEnter"
                 HorizontalAlignment="Center"
