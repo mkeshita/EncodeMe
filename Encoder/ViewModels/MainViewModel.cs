@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -30,10 +31,13 @@ namespace NORSU.EncodeMe.ViewModels
 
         private ICommand _getNextRequest;
 
-        public ICommand GetNextRequest => _getNextRequest ?? (_getNextRequest = new DelegateCommand(async d =>
+        public ICommand GetNextRequest => _getNextRequest ?? (_getNextRequest = new DelegateCommand<Requests>(async win =>
         {
             if (IsProcessing) return;
-            await WorkViewModel.ShowDialog(null);
+          //  IsProcessing = true;
+          //  await TaskEx.Delay(2000);
+          //  IsProcessing = false;
+          
             return;
             if (Encoder == null)
             {

@@ -11,123 +11,267 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         AllowsTransparency="True"
+        SnapsToDevicePixels="True"
         MouseDown="Requests_OnMouseDown"
         Background="Transparent"
         ShowInTaskbar="False"
         SizeToContent="WidthAndHeight"
         xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
         xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters">
+    <Window.Resources>
+        <Storyboard x:Key="HideButton">
+            <DoubleAnimation Storyboard.TargetName="Button" Storyboard.TargetProperty="Height"
+                             To="20" Duration="0:0:0.05"/>
+            <DoubleAnimation Storyboard.TargetName="Button" Storyboard.TargetProperty="Width"
+                             To="20" Duration="0:0:0.05" />
+        </Storyboard>
+        <Storyboard x:Key="ShowButton">
+            <DoubleAnimation Storyboard.TargetName="Button" Storyboard.TargetProperty="Height"
+                         To="64" Duration="0:0:0.1" />
+            <DoubleAnimation Storyboard.TargetName="Button" Storyboard.TargetProperty="Width"
+                         To="64" Duration="0:0:0.1" />
+        </Storyboard>
+    </Window.Resources>
 
 
-    <md:DrawerHost IsLeftDrawerOpen="False">
-        <md:DrawerHost.LeftDrawerContent>
-            <StackPanel>
-                <Button>asdf</Button>
-                <Button>asdfasdfasd</Button>
-            </StackPanel>
-        </md:DrawerHost.LeftDrawerContent>
-        <Grid Height="400"
+    <Grid Height="400"
               Width="250">
-            <!--
-           
-        
-        <UserControl Cursor="Hand">
-            <UserControl.Style>
-                <Style TargetType="UserControl">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <Image Source="normal.png" StretchDirection="DownOnly" Height="174" Width="174"
-                                       x:Name="Image"
-                                       Opacity="0.9"/>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Image" Property="Opacity" Value="1"/>
-                                        <Setter TargetName="Image" Property="Source" Value="over.png"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </UserControl.Style>
-        </UserControl>-->
-            
-            <Rectangle Height="10" Width="10"
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Rectangle Height="20" Width="20"
                        x:Name="Lamp"
                        VerticalAlignment="Bottom"
                        HorizontalAlignment="Right"
-                       Margin="0 0 35 35"/>
-            
-           
-            <Border Height="74" Width="74"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom">
-            <Button Height="64" Width="64" Style="{StaticResource MaterialDesignFloatingActionButton}"
+                       Margin="0 0 20 20"/>
+
+        <md:ColorZone Mode="Light"
+                      Padding="10 0"
+                      Grid.Row="1">
+            <md:Transitioner x:Name="MainTransitioner" SelectedIndex="0">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid MouseLeftButtonUp="EncoderPictureClicked"
+                      Background="Transparent"
+                      Cursor="Hand"
+                      x:Name="LoginLamp">
+
+                        <md:PackIcon Kind="AccountCircle" Height="32" Width="32"
+                                     VerticalAlignment="Center"/>
+                        <Border Height="32" Width="32"
+                                CornerRadius="147"
+                                ClipToBounds="True">
+                            <Border.OpacityMask>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Ellipse Height="7" Width="7" Fill="Red" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Border.OpacityMask>
+                            <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                               Stretch="UniformToFill"
+                               VerticalAlignment="Center"
+                           Height="32" Width="32" />
+                        </Border>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 0 20 0"
+                            HorizontalAlignment="Right"
+                            Grid.Column="1">
+                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                            Padding="8 0">
+                            <md:Badged Badge="10"
+                                       Margin="0 7 0 0">
+
+                                <md:PackIcon Kind="MonitorMultiple"
+                                     Height="24"
+                                     Width="24"/>
+
+                            </md:Badged>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                                Padding="8 0">
+                            <md:Badged Badge="9999" BadgeColorZoneMode="Accent"
+                                       Margin="0 7 0 0">
+
+                                <md:PackIcon Kind="Bell"
+                                             Height="24"
+                                             Width="24" />
+
+                            </md:Badged>
+                        </Button>
+                    </StackPanel>
+                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                        
+                    Grid.Column="2"
                     md:ButtonProgressAssist.IsIndeterminate="True"
-                    md:ButtonProgressAssist.IsIndicatorVisible="{Binding IsProcessing}"
+                    md:ButtonProgressAssist.IsIndicatorVisible="True"
+                    md:ButtonProgressAssist.IndicatorForeground="{StaticResource PrimaryHueMidBrush}"
                     Click="Button_OnClick"
                       HorizontalAlignment="Center"
                       x:Name="Button"
                       VerticalAlignment="Center">
-          
-                <Button.Background>
-                    <VisualBrush>
-                        <VisualBrush.Visual>
-                            <Viewbox>
-                                <Grid Height="74" Width="74">
-                                <Rectangle Fill="{StaticResource PrimaryHueDarkBrush}"
-                                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                                    <md:PackIcon Kind="Bell" Height="47" Width="47"
-                                                 VerticalAlignment="Center"
-                                                 Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"
-                                                 HorizontalAlignment="Center"/>
-                                    <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
-                                            Stretch="UniformToFill" />
-                                </Grid>
-                            </Viewbox>
-                        </VisualBrush.Visual>
-                    </VisualBrush>
-                    
-                </Button.Background>
-             
-            </Button>
-            </Border>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="NEXT"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+                <!--Login toolbar-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid MouseLeftButtonUp="EncoderPictureClicked"
+                          Background="Transparent"
+                          Cursor="Hand">
+                        <md:PackIcon Kind="AccountCircle" Height="32" Width="32"
+                                     VerticalAlignment="Center" />
+                        <Border Height="32" Width="32"
+                                CornerRadius="147"
+                                ClipToBounds="True">
+                            <Border.OpacityMask>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Ellipse Height="7" Width="7" Fill="Red" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Border.OpacityMask>
+                            <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                                   Stretch="UniformToFill"
+                                   VerticalAlignment="Center"
+                                   Height="32" Width="32" />
+                        </Border>
+                    </Grid>
+                    <UniformGrid Columns="2" HorizontalAlignment="Right"
+                                 Grid.Column="1">
+                        <Button Content="Cancel"
+                                Click="ExitClicked"
+                                VerticalAlignment="Bottom"
+                                Margin="10 10 5 10" />
 
-            <Border Background="{StaticResource PrimaryHueDarkBrush}"
-                  Visibility="Hidden"
+                        <Button Content="Login"
+                                IsEnabled="False"
+                                x:Name="LoginButton"
+                                Click="LoginClicked"
+                                VerticalAlignment="Bottom"
+                                Margin="5 10 10 10" />
+                    </UniformGrid>
+                </Grid>
+            </md:Transitioner>
+
+        </md:ColorZone>
+
+        <Border Visibility="Hidden"
                   x:Name="Genie"
-                  Margin="0 0 8 20"
-                    CornerRadius="400">
-                <md:Transitioner x:Name="Transitioner">
-                    <StackPanel>
-                        <TextBlock Text="LOGIN"/>
-                        <TextBox/>
-                        <PasswordBox/>
-                        <Button Content="Login"/>
+                    Grid.Row="0"
+                
+                  Margin="0 0 0 0">
+            <Grid >
+                <Grid x:Name="LoginView">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Border CornerRadius="4 4 0 0"
+                                Background="{StaticResource PrimaryHueDarkBrush}">
+                        <StackPanel VerticalAlignment="Top"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Left">
+                            <Image Source="norsu_74.png"
+                                   Margin="7"
+                                   Height="48" Width="48"/>
+                            <TextBlock Text="Please Login" 
+                                           Foreground="White"
+                                           VerticalAlignment="Center"
+                                           Margin="20 0 0 0"
+                                           TextAlignment="Center"
+                                           Style="{StaticResource MaterialDesignTitleTextBlock}"/>
+                        </StackPanel>
+                    </Border>
+                    <StackPanel Background="White"
+                                    Grid.Row="1">
+                        <ProgressBar x:Name="LoginProgress"
+                                     IsIndeterminate="False"/>
+                        <TextBox Margin="20 47 20 10"
+                                     x:Name="Username"
+                                     TextChanged="Username_OnTextChanged"
+                                     md:HintAssist.Hint="USERNAME"/>
+                        <PasswordBox
+                                PasswordChanged="Password_OnPasswordChanged"
+                                Margin="20"
+                                x:Name="Password"
+                                md:HintAssist.Hint="PASSWORD" />
                     </StackPanel>
-                </md:Transitioner>
-            </Border>
-            <!--<md:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
-                     MouseEnter="UIElement_OnMouseEnter"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                     ToggleCheckedContentCommand="{Binding ToggleCommand}"
-                Height="64" Width="64">
-            <md:PopupBox.ToggleCheckedContent>
-                <md:PackIcon Kind="Settings" Height="32" Width="32"/>
-            </md:PopupBox.ToggleCheckedContent>
-            <md:PopupBox.ToggleContent>
-                <md:PackIcon Kind="Bell" Height="32" Width="32"/>
-            </md:PopupBox.ToggleContent>
-            <md:PopupBox.PopupContent>
-                <StackPanel>
-                    <Button Content="{md:PackIcon Settings}"/>
-                </StackPanel>
-            </md:PopupBox.PopupContent>
-        </md:PopupBox>-->
-        </Grid>
+                </Grid>
+            </Grid>
+        </Border>
 
-    </md:DrawerHost>
+        <Border Visibility="Hidden"
+                x:Name="EncoderGenie"
+                Grid.Row="0"
+                CornerRadius="4 4 0 0"
+                Background="{StaticResource PrimaryHueDarkBrush}"
+                Margin="0 0 0 0">
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Border Height="64" Width="64"
+                    Margin="10">
+                    <Border.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Ellipse Height="7" Width="7" Fill="Red"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Border.OpacityMask>
+                    <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                   Height="64" Width="64"
+                   Stretch="UniformToFill"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center"
+                            Margin="10">
+                    <TextBlock Text="{Binding Encoder.Username}" Style="{StaticResource MaterialDesignHeadlineTextBlock}"/>
+                    <TextBlock Text="{Binding Encoder.FullName}" Style="{StaticResource MaterialDesignSubheadingTextBlock}"/>
+                </StackPanel>
+            </StackPanel>
+            <WrapPanel Grid.Row="1">
+                <md:Card Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="100" FontSize="20pt" HorizontalAlignment="Center"
+                               FontWeight="Bold"
+                               Margin="20"/>
+                        <TextBlock Text="Processed Items"
+                               VerticalAlignment="Bottom"
+                               HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </md:Card>
+                <md:Card Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="100" FontSize="20pt" HorizontalAlignment="Center"
+                               FontWeight="Bold"
+                               Margin="20" />
+                        <TextBlock Text="Rate"
+                               VerticalAlignment="Bottom"
+                               HorizontalAlignment="Left" />
+                    </StackPanel>
+                </md:Card>
+            </WrapPanel>
+        </Grid>
+        </Border>
+    </Grid>
+
 
 </Window>

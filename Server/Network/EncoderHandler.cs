@@ -44,11 +44,11 @@ namespace NORSU.EncodeMe.Network
                      !string.IsNullOrWhiteSpace(x.Username));
 
             if (encoder != null && !string.IsNullOrEmpty(login.Password) &&
-                 (encoder.Password == login.Password || encoder.Password == ""))
+                 (encoder.Password == login.Password || string.IsNullOrEmpty(encoder.Password)))
             {
                 encoder.Update(nameof(encoder.Password), login.Password);
                 //Logout previous session if any.
-                var cl = Client.Cache.FirstOrDefault(x => x.Encoder.Id == encoder.Id);
+                var cl = Client.Cache.FirstOrDefault(x => x.Encoder?.Id == encoder.Id);
                 cl?.Logout($"You are logged in at another terminal ({cl.IP}).");
 
                 client.Encoder = encoder;
