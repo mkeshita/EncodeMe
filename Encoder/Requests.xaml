@@ -49,125 +49,171 @@
                        Margin="0 0 20 20"/>
 
         <md:ColorZone Mode="Light"
-                      Padding="10 0"
                       Grid.Row="1">
-            <md:Transitioner x:Name="MainTransitioner" SelectedIndex="0">
-                <Grid >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid MouseLeftButtonUp="EncoderPictureClicked"
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid MouseLeftButtonUp="EncoderPictureClicked"
                       Background="Transparent"
                       Cursor="Hand"
+                      Margin="10 0 0 0"
                       x:Name="LoginLamp">
 
-                        <md:PackIcon Kind="AccountCircle" Height="32" Width="32"
-                                     VerticalAlignment="Center"/>
-                        <Border Height="32" Width="32"
-                                CornerRadius="147"
-                                ClipToBounds="True">
-                            <Border.OpacityMask>
-                                <VisualBrush>
-                                    <VisualBrush.Visual>
-                                        <Ellipse Height="7" Width="7" Fill="Red" />
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Border.OpacityMask>
-                            <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                    <md:PackIcon Kind="AccountCircle" Height="32" Width="32"
+                                 VerticalAlignment="Center" />
+                    <Border Height="32" Width="32"
+                            CornerRadius="147"
+                            ClipToBounds="True">
+                        <Border.OpacityMask>
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <Ellipse Height="7" Width="7" Fill="Red" />
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Border.OpacityMask>
+                        <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
                                Stretch="UniformToFill"
                                VerticalAlignment="Center"
-                           Height="32" Width="32" />
-                        </Border>
-                    </Grid>
+                               Height="32" Width="32" />
+                    </Border>
+                </Grid>
 
-                    <StackPanel Orientation="Horizontal"
+                <md:Transitioner x:Name="MainTransitioner" SelectedIndex="0"
+                                 Grid.Column="1">
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+
+                        <StackPanel Orientation="Horizontal"
                                 Margin="0 0 20 0"
                             HorizontalAlignment="Right"
-                            Grid.Column="1">
-                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                            Grid.Column="0">
+                            <Button Style="{StaticResource MaterialDesignToolButton}"
                             Padding="8 0">
-                            <md:Badged Badge="10"
+                                <md:Badged Badge="10"
                                        Margin="0 7 0 0">
 
-                                <md:PackIcon Kind="MonitorMultiple"
+                                    <md:PackIcon Kind="MonitorMultiple"
                                      Height="24"
                                      Width="24"/>
 
-                            </md:Badged>
-                        </Button>
-                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                                </md:Badged>
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignToolButton}"
                                 Padding="8 0">
-                            <md:Badged Badge="9999" BadgeColorZoneMode="Accent"
+                                <md:Badged Badge="9999" BadgeColorZoneMode="Accent"
                                        Margin="0 7 0 0">
 
-                                <md:PackIcon Kind="Bell"
+                                    <md:PackIcon Kind="Bell"
                                              Height="24"
                                              Width="24" />
 
-                            </md:Badged>
-                        </Button>
-                    </StackPanel>
-                    <Button Style="{StaticResource MaterialDesignRaisedButton}"
-                        
-                    Grid.Column="2"
-                    md:ButtonProgressAssist.IsIndeterminate="True"
-                    md:ButtonProgressAssist.IsIndicatorVisible="True"
-                    md:ButtonProgressAssist.IndicatorForeground="{StaticResource PrimaryHueMidBrush}"
-                    Click="Button_OnClick"
-                      HorizontalAlignment="Center"
-                      x:Name="Button"
-                      VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="NEXT"/>
+                                </md:Badged>
+                            </Button>
+
+
                         </StackPanel>
-                    </Button>
-                </Grid>
-                <!--Login toolbar-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid MouseLeftButtonUp="EncoderPictureClicked"
-                          Background="Transparent"
-                          Cursor="Hand">
-                        <md:PackIcon Kind="AccountCircle" Height="32" Width="32"
-                                     VerticalAlignment="Center" />
-                        <Border Height="32" Width="32"
-                                CornerRadius="147"
-                                ClipToBounds="True">
-                            <Border.OpacityMask>
-                                <VisualBrush>
-                                    <VisualBrush.Visual>
-                                        <Ellipse Height="7" Width="7" Fill="Red" />
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Border.OpacityMask>
-                            <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
-                                   Stretch="UniformToFill"
-                                   VerticalAlignment="Center"
-                                   Height="32" Width="32" />
-                        </Border>
+
+                        <Button Content="NEXT"
+                                Click="Button_OnClick"
+                                Margin="10"
+                                x:Name="NextButton"
+                                Grid.Column="1">
+
+                        </Button>
                     </Grid>
-                    <UniformGrid Columns="2" HorizontalAlignment="Right"
+                    <!--Login toolbar-->
+                    <UniformGrid Columns="1" HorizontalAlignment="Right"
                                  Grid.Column="1">
-                        <Button Content="Cancel"
+                        <!--<Button Content="CANCEL"
                                 Click="ExitClicked"
                                 VerticalAlignment="Bottom"
-                                Margin="10 10 5 10" />
+                                Margin="10 10 5 10" 
+                                />-->
 
-                        <Button Content="Login"
+                        <Button Content="LOGIN"
                                 IsEnabled="False"
                                 x:Name="LoginButton"
                                 Click="LoginClicked"
                                 VerticalAlignment="Bottom"
                                 Margin="5 10 10 10" />
                     </UniformGrid>
-                </Grid>
-            </md:Transitioner>
+                    <!--Encoder Toolbar-->
+                    <Grid>
+                        <Button x:Name="LogoutButton"
+                            HorizontalAlignment="Right"
+                            Click="LogoutButton_OnClick"
+                                Grid.Column="1"
+                                ToolTip="Logout"
+                                IsEnabled="False"
+                                VerticalAlignment="Bottom"
+                                Margin="10" >
+                            <StackPanel Orientation="Horizontal">
+                                <md:PackIcon Kind="Logout"
+                                         Height="24"
+                                         Width="24"
+                                         VerticalAlignment="Center"/>
+                                <TextBlock Text=" LOGOUT"
+                                       VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
 
+                    <!--Work toolbar-->
+                 
+                    <Grid Margin="10 0 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <Button Style="{StaticResource MaterialDesignToolButton}"
+                                    Padding="5 0"
+                                    >
+                            <StackPanel VerticalAlignment="Center">
+                                <md:PackIcon Kind="CheckCircle"
+                                             Height="24"
+                                             Width="24"
+                                             HorizontalAlignment="Center"
+                                             Foreground="{StaticResource PrimaryHueDarkBrush}" />
+                                <TextBlock Text="Accept" FontSize="6pt" />
+                            </StackPanel>
+                            </Button>
+                            <Button Padding="5 0"
+                                    Style="{StaticResource MaterialDesignToolButton}">
+                                <StackPanel VerticalAlignment="Center">
+                                <md:PackIcon Kind="CloseCircle" Height="24"
+                                             Width="24"
+                                             HorizontalAlignment="Center"
+                                             Foreground="{StaticResource SecondaryAccentBrush}" />
+                                <TextBlock Text="Closed" FontSize="6pt" />
+                            </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignToolButton}" Padding="5 0">
+                                <StackPanel VerticalAlignment="Center">
+                                <md:PackIcon Kind="AlertCircle" Height="24"
+                                             Width="24"
+                                             HorizontalAlignment="Center" />
+                                <TextBlock Text="Conflict" FontSize="6pt" />
+                            </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        
+                        <Button Content="SUBMIT"
+                                Grid.Column="1"
+                                Margin="10" />
+                    </Grid>
+                </md:Transitioner>
+
+            </Grid>
         </md:ColorZone>
 
         <Border Visibility="Hidden"
@@ -216,60 +262,128 @@
             </Grid>
         </Border>
 
-        <Border Visibility="Hidden"
+        <md:ColorZone Visibility="Hidden"
+                VerticalAlignment="Bottom"
                 x:Name="EncoderGenie"
                 Grid.Row="0"
                 CornerRadius="4 4 0 0"
-                Background="{StaticResource PrimaryHueDarkBrush}"
+                Mode="PrimaryDark"
                 Margin="0 0 0 0">
-        <Grid >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Border Height="64" Width="64"
-                    Margin="10">
-                    <Border.OpacityMask>
-                        <VisualBrush>
-                            <VisualBrush.Visual>
-                                <Ellipse Height="7" Width="7" Fill="Red"/>
-                            </VisualBrush.Visual>
-                        </VisualBrush>
-                    </Border.OpacityMask>
-                    <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
-                   Height="64" Width="64"
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <Border Height="48" Width="48"
+                    Margin="20 10 10 10">
+                        <Border.OpacityMask>
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <Ellipse Height="7" Width="7" Fill="Red"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Border.OpacityMask>
+                        <Image Source="{Binding Encoder.Picture,Converter={converters:BytesToImage}}"
+                   Height="48" Width="48"
                    Stretch="UniformToFill"/>
-                </Border>
-                <StackPanel VerticalAlignment="Center"
+                    </Border>
+                    <StackPanel VerticalAlignment="Center"
                             Margin="10">
-                    <TextBlock Text="{Binding Encoder.Username}" Style="{StaticResource MaterialDesignHeadlineTextBlock}"/>
-                    <TextBlock Text="{Binding Encoder.FullName}" Style="{StaticResource MaterialDesignSubheadingTextBlock}"/>
+                        <TextBlock Text="{Binding Encoder.Username}" Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+                               />
+                        <TextBlock Text="{Binding Encoder.FullName}" Style="{StaticResource MaterialDesignSubheadingTextBlock}"
+                               />
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-            <WrapPanel Grid.Row="1">
-                <md:Card Margin="10">
-                    <StackPanel>
-                        <TextBlock Text="100" FontSize="20pt" HorizontalAlignment="Center"
-                               FontWeight="Bold"
-                               Margin="20"/>
-                        <TextBlock Text="Processed Items"
-                               VerticalAlignment="Bottom"
-                               HorizontalAlignment="Left"/>
+                <StackPanel Grid.Row="1" Margin="5">
+                    <md:ColorZone Margin="5" ToolTip="Number of students processed.">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="AccountMultipleOutline"
+                                     VerticalAlignment="Center"
+                                         HorizontalAlignment="Center"
+                                     Height="32" Width="32"
+                                     Margin="5" />
+                            <Rectangle Width="1" Fill="{StaticResource MaterialDesignDivider}"/>
+                            <TextBlock Text="100" FontSize="20pt" HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                       Margin="10 0"
+                               FontWeight="Bold"/>
+
+                        </StackPanel>
+                    </md:ColorZone>
+                    <md:ColorZone Margin="5" ToolTip="Rate of encoding. Students per hour." >
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Speedometer"
+                                     Height="32" Width="32"
+                                         HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Margin="5"/>
+                            <Rectangle Width="1" Fill="{StaticResource MaterialDesignDivider}" />
+                            <TextBlock Text="100/HR" FontSize="20pt" HorizontalAlignment="Right"
+                                       Margin="10 0"
+                                       VerticalAlignment="Center"
+                               FontWeight="Bold"/>
+
+                        </StackPanel>
+                    </md:ColorZone>
+                </StackPanel>
+
+            </Grid>
+        </md:ColorZone>
+
+        <Border Visibility="Hidden"
+                  x:Name="WorkGenie"
+                    Grid.Row="0"
+                Background="White"
+                BorderThickness="0 0 0 1"
+                BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                CornerRadius="4 4 0 0"
+                  Margin="0 0 0 0">
+
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Border CornerRadius="4 4 0 0"
+                                Background="{StaticResource PrimaryHueDarkBrush}">
+                    <StackPanel VerticalAlignment="Top"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Left">
+                        <Image Source="norsu_74.png"
+                                   Margin="7"
+                                   Height="48" Width="48"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="STUDENT ID" 
+                                           Foreground="White"
+                                           Style="{StaticResource MaterialDesignTitleTextBlock}"/>
+                            <TextBlock Text="Student Name"
+                                       Style="{StaticResource MaterialDesignSubheadingTextBlock}"
+                                       Foreground="White"/>
+                        </StackPanel>
                     </StackPanel>
-                </md:Card>
-                <md:Card Margin="10">
-                    <StackPanel>
-                        <TextBlock Text="100" FontSize="20pt" HorizontalAlignment="Center"
-                               FontWeight="Bold"
-                               Margin="20" />
-                        <TextBlock Text="Rate"
-                               VerticalAlignment="Bottom"
-                               HorizontalAlignment="Left" />
-                    </StackPanel>
-                </md:Card>
-            </WrapPanel>
-        </Grid>
+                </Border>
+
+                <DataGrid Grid.Row="1"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          CanUserReorderColumns="False"
+                          AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"
+                                                CanUserResize="False"/>
+                        <DataGridTextColumn Header="SUBJECT"/>
+                        <DataGridTextColumn Header="SCHEDULE"/>
+                        <DataGridTemplateColumn Header="STATUS"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+               
+            </Grid>
+
         </Border>
     </Grid>
 

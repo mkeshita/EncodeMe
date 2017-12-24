@@ -15,7 +15,7 @@ namespace NORSU.EncodeMe
     /// </summary>
     public partial class Requests : Window
     {
-        private Magic _loginMagic, _encoderMagic;
+        private Magic _loginMagic, _encoderMagic, _workMagic;
         
         public Requests()
         {
@@ -39,6 +39,11 @@ namespace NORSU.EncodeMe
             _encoderMagic.Duration = new Duration(TimeSpan.FromMilliseconds(200));
             _encoderMagic.Expanding += GenieExpanding;
             _encoderMagic.Collapsed += MagicCollapsed;
+
+            _workMagic = new Magic(NextButton, WorkGenie, true);
+            _workMagic.Duration = new Duration(TimeSpan.FromMilliseconds(200));
+            _workMagic.Collapsed += MagicCollapsed;
+            _workMagic.Expanding += GenieExpanding;
         }
 
         private void MagicCollapsed(object o, EventArgs eventArgs)
@@ -70,6 +75,11 @@ namespace NORSU.EncodeMe
 
         private void Button_OnClick(object sender, RoutedEventArgs e)
         {
+            _workMagic.IsGenieOut = true;
+            MainTransitioner.SelectedIndex = 3;
+            LoginLamp.Visibility = Visibility.Collapsed;
+            return;
+            
             if (MainViewModel.Instance.Encoder == null)
             {
                 _loginMagic.IsGenieOut = true;
@@ -89,6 +99,12 @@ namespace NORSU.EncodeMe
 
         private void EncoderPictureClicked(object sender, MouseButtonEventArgs e)
         {
+            _workMagic.IsGenieOut = false;
+            
+            _encoderMagic.IsGenieOut = !_encoderMagic.IsGenieOut;
+            MainTransitioner.SelectedIndex = _encoderMagic.IsGenieOut ? 2 : 0;
+            return;
+
             if (MainViewModel.Instance.Encoder == null)
             {
                 _loginMagic.IsGenieOut = !_loginMagic.IsGenieOut;
@@ -100,7 +116,7 @@ namespace NORSU.EncodeMe
             else
             {
                 _encoderMagic.IsGenieOut = !_encoderMagic.IsGenieOut;
-                
+                MainTransitioner.SelectedIndex = _encoderMagic.IsGenieOut ? 2 : 0;
             }
         }
 
@@ -169,6 +185,13 @@ namespace NORSU.EncodeMe
             LoginProgress.Value = (usernameProgress + pwdProgress);
 
             LoginButton.IsEnabled = !LoginProgress.IsIndeterminate && LoginProgress.Value == 100;
+        }
+
+        private void LogoutButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.Instance.Encoder = null;
+            _encoderMagic.IsGenieOut = false;
+            MainTransitioner.SelectedIndex = 0;
         }
     }
 }
