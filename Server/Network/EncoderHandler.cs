@@ -120,10 +120,13 @@ namespace NORSU.EncodeMe.Network
             
             work.Update(nameof(work.Status),Request.Statuses.Proccessing);
 
+            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId == work.StudentId);
+            
             var result = new GetWorkResult(ResultCodes.Success)
             {
                 RequestId = work.Id,
-                StudentId = work.StudentId
+                StudentId = work.StudentId?.ToUpper(),
+                StudentName = $"{student?.FirstName} {student?.LastName}"
             };
 
             var items = RequestDetail.Cache.Where(x => x.RequestId == work.Id).ToList();

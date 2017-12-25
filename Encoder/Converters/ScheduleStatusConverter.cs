@@ -47,7 +47,7 @@ namespace NORSU.EncodeMe.Converters
             switch (status)
             {
                 case ScheduleStatuses.Pending:
-                    return PackIconKind.HelpCircle;
+                    return PackIconKind.HelpCircleOutline;
                 case ScheduleStatuses.Accepted:
                     return PackIconKind.CheckCircle;
                 case ScheduleStatuses.Conflict:

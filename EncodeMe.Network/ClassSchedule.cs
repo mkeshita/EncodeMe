@@ -1,4 +1,9 @@
 ﻿using System;
+
+#if !__ANDROID__
+using System.Windows.Input;
+#endif
+
 using ProtoBuf;
 #if __ANDROID__
 using SQLite;
@@ -107,9 +112,35 @@ namespace NORSU.EncodeMe.Network
         }
         
         public bool Sent { get; set; }
-        
+
+        private ScheduleStatuses _enrollmentStatus;
+
         [ProtoMember(8)]
-        public ScheduleStatuses EnrollmentStatus { get; set; }
+        public ScheduleStatuses EnrollmentStatus
+        {
+            get => _enrollmentStatus;
+            set
+            {
+                if (value == _enrollmentStatus) return;
+                _enrollmentStatus = value; 
+                OnPropertyChanged(nameof(EnrollmentStatus));
+            }
+        }
+
+#if !__ANDROID__
+        private ICommand _toggleStatusCommand;
+
+        public ICommand ToggleStatusCommand => _toggleStatusCommand ??
+                                               (_toggleStatusCommand = new DelegateCommand(c =>
+                                               {
+                                                   if (EnrollmentStatus == ScheduleStatuses.Accepted)
+                                                       EnrollmentStatus = ScheduleStatuses.Closed;
+                                                   else if (EnrollmentStatus == ScheduleStatuses.Closed)
+                                                       EnrollmentStatus = ScheduleStatuses.Conflict;
+                                                   else
+                                                       EnrollmentStatus = ScheduleStatuses.Accepted;
+
+                                               }));
         
         private bool _IsSelected;
 
@@ -123,8 +154,8 @@ namespace NORSU.EncodeMe.Network
                 OnPropertyChanged(nameof(IsSelected));
             }
         }
+#endif
 
-        
         //public void Dispose()
         //{
 

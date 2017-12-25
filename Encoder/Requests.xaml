@@ -120,11 +120,9 @@
 
                         </StackPanel>
 
-                        <Button Padding="0"
-                                Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                                md:ButtonProgressAssist.IsIndeterminate="True"
+                        <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                 Click="Button_OnClick"
-                                Margin="10 5"
+                                Margin="5"
                                 x:Name="NextButton"
                                 Grid.Column="1">
                             <md:PackIcon Kind="FileImport" Height="24" Width="24"/>
@@ -168,8 +166,8 @@
                     </Grid>
 
                     <!--Work toolbar-->
-                 
-                    <Grid Margin="10 0 0 0">
+
+                    <Grid Margin="10 0" x:Name="WorkToolbar">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -178,41 +176,44 @@
                         <StackPanel Orientation="Horizontal"
                                     VerticalAlignment="Center">
                             <Button Style="{StaticResource MaterialDesignToolButton}"
-                                    Padding="5 0"
-                                    >
-                            <StackPanel VerticalAlignment="Center">
-                                <md:PackIcon Kind="CheckCircle"
+                                    Click="AcceptSelected"
+                                    Padding="5 0">
+                                <StackPanel VerticalAlignment="Center">
+                                    <md:PackIcon Kind="CheckCircle"
                                              Height="24"
                                              Width="24"
                                              HorizontalAlignment="Center"
                                              Foreground="{StaticResource PrimaryHueDarkBrush}" />
-                                <TextBlock Text="Accept" FontSize="6pt" />
-                            </StackPanel>
+                                    <TextBlock Text="Accept" FontSize="6pt" />
+                                </StackPanel>
                             </Button>
                             <Button Padding="5 0"
+                                    Click="CloseScheduleClicked"
                                     Style="{StaticResource MaterialDesignToolButton}">
                                 <StackPanel VerticalAlignment="Center">
-                                <md:PackIcon Kind="CloseCircle" Height="24"
+                                    <md:PackIcon Kind="CloseCircle" Height="24"
                                              Width="24"
                                              HorizontalAlignment="Center"
                                              Foreground="{StaticResource SecondaryAccentBrush}" />
-                                <TextBlock Text="Closed" FontSize="6pt" />
-                            </StackPanel>
+                                    <TextBlock Text="Closed" FontSize="6pt" />
+                                </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource MaterialDesignToolButton}" Padding="5 0">
+                            <Button Style="{StaticResource MaterialDesignToolButton}" Padding="5 0"
+                                    Click="ConflictScheduleClicked">
                                 <StackPanel VerticalAlignment="Center">
-                                <md:PackIcon Kind="AlertCircle" Height="24"
+                                    <md:PackIcon Kind="AlertCircle" Height="24"
                                              Width="24"
                                              HorizontalAlignment="Center" />
-                                <TextBlock Text="Conflict" FontSize="6pt" />
-                            </StackPanel>
+                                    <TextBlock Text="Conflict" FontSize="6pt" />
+                                </StackPanel>
                             </Button>
                         </StackPanel>
-                        
-                        <Button Content="SUBMIT"
-                                Click="Button_OnClick"
+
+                        <Button Click="SubmitButton_OnClick"
+                                x:Name="SubmitButton"
                                 Grid.Column="1"
-                                Margin="10" />
+                                Content="SUBMIT"
+                                VerticalAlignment="Center" />
                     </Grid>
                 </md:Transitioner>
 
@@ -360,9 +361,11 @@
                                    Height="48" Width="48"/>
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="STUDENT ID" 
+                                       x:Name="StudentId"
                                            Foreground="White"
                                            Style="{StaticResource MaterialDesignTitleTextBlock}"/>
                             <TextBlock Text="Student Name"
+                                       x:Name="StudentName"
                                        Style="{StaticResource MaterialDesignSubheadingTextBlock}"
                                        Foreground="White"/>
                         </StackPanel>
@@ -381,35 +384,47 @@
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid HorizontalAlignment="Stretch">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="a"/>
-                                    <ColumnDefinition Width="*" SharedSizeGroup="b"/>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="c"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <CheckBox IsChecked="{Binding IsSelected}"/>
-
-                                <TextBlock Grid.Column="1">
-                                    <Run FontWeight="Bold"
-                                            Text="{Binding SubjectCode}" />
+                                <CheckBox IsChecked="{Binding IsSelected}"
+                                          VerticalAlignment="Center"
+                                          Margin="5"/>
+                                <TextBlock Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           Margin="5">
+                                    <Run FontWeight="Bold" Text="{Binding SubjectCode}" />
                                     [ <Run Text="{Binding Schedule}" /> ]
                                 </TextBlock>
-
-                                <md:PackIcon Grid.Column="2"
+                                <Button Grid.Column="2"
+                                        Padding="0"
+                                        Style="{StaticResource MaterialDesignToolButton}"
+                                        Command="{Binding ToggleStatusCommand}">
+                                    <md:PackIcon Height="24"
+                                             Width="24"
+                                             Margin="5 0"
                                              Foreground="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusToBrushConverter
-                                    {StaticResource PrimaryHueDarkBrush}, {StaticResource SecondaryAccentBrush}, {StaticResource MaterialDesignLightForeground}}}"
-                                        Kind="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusConverter}}" />
-
+                                                {StaticResource PrimaryHueDarkBrush}, 
+                                                {StaticResource SecondaryAccentBrush}, 
+                                                {StaticResource MaterialDesignLightForeground}}}"
+                                             Kind="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusConverter}}" />
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-
-               
+                <ProgressBar x:Name="SubmitProgress" Grid.Row="1"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Center"
+                             IsIndeterminate="True"
+                             Visibility="Collapsed"
+                             Height="64"
+                             Width="64"
+                             Style="{StaticResource MaterialDesignCircularProgressBar}"/>
             </Grid>
-
         </Border>
     </Grid>
-
-
 </Window>

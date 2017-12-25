@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -72,16 +73,23 @@ namespace NORSU.EncodeMe
             Left = System.Windows.SystemParameters.WorkArea.Width - ActualWidth;
             Top = SystemParameters.WorkArea.Bottom - ActualHeight;
         }
-        
+
+        private GetWorkResult CurrentWork;
 
         private async void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            ButtonProgressAssist.SetIsIndicatorVisible(NextButton, true);
+            _workMagic.IsGenieOut = true;
+            MainTransitioner.SelectedIndex = 3;
+            LoginLamp.Visibility = Visibility.Collapsed;
+            return;
             
+            ButtonProgressAssist.SetIsIndicatorVisible(NextButton, true);
+            ButtonProgressAssist.SetIsIndeterminate(NextButton, true);
             var work = await Client.GetNextWork();
-
+            CurrentWork = work;
             ButtonProgressAssist.SetIsIndicatorVisible(NextButton, false);
-
+            ButtonProgressAssist.SetIsIndeterminate(NextButton, false);
+            
             switch (work.Result)
             {
                 case ResultCodes.Success:
@@ -89,6 +97,8 @@ namespace NORSU.EncodeMe
                     _workMagic.IsGenieOut = true;
                     MainTransitioner.SelectedIndex = 3;
                     LoginLamp.Visibility = Visibility.Collapsed;
+                    StudentId.Text = work.StudentId;
+                    StudentName.Text = work.StudentName;
                     break;
                 case ResultCodes.NotFound:
                     MessageBox.Show("No more pending items.");
@@ -103,8 +113,7 @@ namespace NORSU.EncodeMe
                     MessageBox.Show("An error occured while trying to fetch next item.","Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
             }
-
-
+            
             return;
             
             if (MainViewModel.Instance.Encoder == null)
@@ -215,6 +224,47 @@ namespace NORSU.EncodeMe
             MainViewModel.Instance.Encoder = null;
             _encoderMagic.IsGenieOut = false;
             MainTransitioner.SelectedIndex = 0;
+        }
+
+        private void AcceptSelected(object sender, RoutedEventArgs e)
+        {
+            var selection = CurrentWork.ClassSchedules?.Where(x => x.IsSelected);
+            if (selection == null) return;
+            foreach (var c in selection)
+            {
+                c.EnrollmentStatus = ScheduleStatuses.Accepted;
+            }
+        }
+
+        private void CloseScheduleClicked(object sender, RoutedEventArgs e)
+        {
+            var selection = CurrentWork.ClassSchedules?.Where(x => x.IsSelected);
+            if (selection == null) return;
+            foreach (var c in selection)
+            {
+                c.EnrollmentStatus = ScheduleStatuses.Closed;
+            }
+        }
+
+        private void ConflictScheduleClicked(object sender, RoutedEventArgs e)
+        {
+            var selection = CurrentWork.ClassSchedules?.Where(x => x.IsSelected);
+            if (selection == null) return;
+            foreach (var c in selection)
+            {
+                c.EnrollmentStatus = ScheduleStatuses.Conflict;
+            }
+        }
+
+        private static PackIcon submitIcon;
+
+        private void SubmitButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            SubmitProgress.Visibility = Visibility.Visible;
+            WorkDataGrid.IsEnabled = false;
+            WorkToolbar.IsEnabled = false;
+            
+            
         }
     }
 }

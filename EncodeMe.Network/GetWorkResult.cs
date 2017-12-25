@@ -25,6 +25,9 @@ namespace NORSU.EncodeMe.Network
         public List<ClassSchedule> ClassSchedules { get; set; }
         [ProtoMember(4)]
         public ResultCodes Result { get; set; }
+
+        [ProtoMember(5)]
+        public string StudentName { get; set; }
     }
 }
 #endif
