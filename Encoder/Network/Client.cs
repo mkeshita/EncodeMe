@@ -122,7 +122,7 @@ namespace NORSU.EncodeMe.Network
             return new LoginResult(ResultCodes.Timeout);
         }
 
-        public static async Task<GetWorkResult> GetNextWork(string username)
+        public static async Task<GetWorkResult> GetNextWork(string username="")
         {
             if (Server == null) await FindServer();
             if (Server == null) return new GetWorkResult(ResultCodes.Offline);

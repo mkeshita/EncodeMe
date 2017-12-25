@@ -112,6 +112,7 @@
     <Compile Include="..\Server\Converters\StringToColor.cs">
       <Link>Converters\StringToColor.cs</Link>
     </Compile>
+    <Compile Include="Converters\ScheduleStatusConverter.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>

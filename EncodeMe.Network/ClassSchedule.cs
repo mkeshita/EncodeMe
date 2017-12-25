@@ -110,7 +110,21 @@ namespace NORSU.EncodeMe.Network
         
         [ProtoMember(8)]
         public ScheduleStatuses EnrollmentStatus { get; set; }
+        
+        private bool _IsSelected;
 
+        public bool IsSelected
+        {
+            get => _IsSelected;
+            set
+            {
+                if (value == _IsSelected) return;
+                _IsSelected = value;
+                OnPropertyChanged(nameof(IsSelected));
+            }
+        }
+
+        
         //public void Dispose()
         //{
 

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
+using NetworkCommsDotNet;
 using NORSU.EncodeMe.Network;
 
 namespace NORSU.EncodeMe.ViewModels
@@ -26,9 +27,45 @@ namespace NORSU.EncodeMe.ViewModels
             }
         }
 
-        private MainViewModel() { }
+        private MainViewModel()
+        {
+            NetworkComms.AppendGlobalIncomingPacketHandler<ServerUpdate>(ServerUpdate.GetHeader(), (h, c, u) =>
+            {
+                PendingRequestCount = u.Requests;
+                OnlineEncoderCount = u.Encoders;
+            });
+        }
 
+        private int? _OnlineEncoderCount;
 
+        public int? OnlineEncoderCount
+        {
+            get => _OnlineEncoderCount;
+            set
+            {
+                if (value == _OnlineEncoderCount) return;
+                _OnlineEncoderCount = value;
+                if (value == 0) _OnlineEncoderCount = null;
+                OnPropertyChanged(nameof(OnlineEncoderCount));
+            }
+        }
+
+        
+
+        private int? _PendingRequestCount;
+
+        public int? PendingRequestCount
+        {
+            get => _PendingRequestCount;
+            set
+            {
+                if (value == _PendingRequestCount) return;
+                _PendingRequestCount = value;
+                if (value == 0) _PendingRequestCount = null;
+                OnPropertyChanged(nameof(PendingRequestCount));
+            }
+        }
+        
         private ICommand _getNextRequest;
 
         public ICommand GetNextRequest => _getNextRequest ?? (_getNextRequest = new DelegateCommand<Requests>(async win =>

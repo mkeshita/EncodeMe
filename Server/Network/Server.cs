@@ -6,10 +6,11 @@ using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet.DPSBase;
 using NetworkCommsDotNet.Tools;
+using NORSU.EncodeMe.Models;
 
 namespace NORSU.EncodeMe.Network
 {
-    static class Server
+    static partial class Server
     {
         private static bool _started;
         
@@ -28,9 +29,9 @@ namespace NORSU.EncodeMe.Network
             
             NetworkComms.AppendGlobalIncomingPacketHandler<AndroidInfo>(AndroidInfo.GetHeader(), AndroidHandler.HandShakeHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<StudentInfoRequest>(StudentInfoRequest.GetHeader(), AndroidHandler.StudentInfoRequested);
-            NetworkComms.AppendGlobalIncomingPacketHandler<EndPointInfo>(EndPointInfo.GetHeader(), EncoderHandler.HandShakeHandler);
-            NetworkComms.AppendGlobalIncomingPacketHandler<GetWork>(GetWork.GetHeader(), EncoderHandler.GetWorkHandler);
-            NetworkComms.AppendGlobalIncomingPacketHandler<Login>(Login.GetHeader(), EncoderHandler.LoginHandler);
+            NetworkComms.AppendGlobalIncomingPacketHandler<EndPointInfo>(EndPointInfo.GetHeader(), HandShakeHandler);
+            NetworkComms.AppendGlobalIncomingPacketHandler<GetWork>(GetWork.GetHeader(), GetWorkHandler);
+            NetworkComms.AppendGlobalIncomingPacketHandler<Login>(Login.GetHeader(), LoginHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<SchedulesRequest>(SchedulesRequest.GetHeader(), AndroidHandler.ScheduleRequestHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<EnrollRequest>(EnrollRequest.GetHeader(),AndroidHandler.EnrollRequestHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<RegisterStudent>(RegisterStudent.GetHeader(), AndroidHandler.RegisterStudentHandler);
@@ -51,5 +52,16 @@ namespace NORSU.EncodeMe.Network
             
         }
 
+        public static Task SendEncoderUpdates()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                var update = new ServerUpdate();
+                update.Requests = Request.Cache.Count(x => x.Status == Request.Statuses.Pending);
+                update.Encoders = Client.Cache.Count(x => x.Encoder != null);
+                //Parallel.ForEach(Client.Cache, c => update.Send(new IPEndPoint(IPAddress.Parse(c.IP), c.Port)));
+                foreach (var c in Client.Cache) update.Send(new IPEndPoint(IPAddress.Parse(c.IP), c.Port));
+            });
+        }
     }
 }

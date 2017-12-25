@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using GenieLib;
+using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe.Network;
 using NORSU.EncodeMe.ViewModels;
 
@@ -73,11 +74,37 @@ namespace NORSU.EncodeMe
         }
         
 
-        private void Button_OnClick(object sender, RoutedEventArgs e)
+        private async void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            _workMagic.IsGenieOut = true;
-            MainTransitioner.SelectedIndex = 3;
-            LoginLamp.Visibility = Visibility.Collapsed;
+            ButtonProgressAssist.SetIsIndicatorVisible(NextButton, true);
+            
+            var work = await Client.GetNextWork();
+
+            ButtonProgressAssist.SetIsIndicatorVisible(NextButton, false);
+
+            switch (work.Result)
+            {
+                case ResultCodes.Success:
+                    WorkDataGrid.ItemsSource = work.ClassSchedules;
+                    _workMagic.IsGenieOut = true;
+                    MainTransitioner.SelectedIndex = 3;
+                    LoginLamp.Visibility = Visibility.Collapsed;
+                    break;
+                case ResultCodes.NotFound:
+                    MessageBox.Show("No more pending items.");
+                    return;
+                case ResultCodes.Offline:
+                    MessageBox.Show("You are not connected to server.","Server Offline", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                case ResultCodes.Timeout:
+                    MessageBox.Show("You are not connected to server.","Request Timeout", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                case ResultCodes.Error:
+                    MessageBox.Show("An error occured while trying to fetch next item.","Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+            }
+
+
             return;
             
             if (MainViewModel.Instance.Encoder == null)
@@ -100,11 +127,7 @@ namespace NORSU.EncodeMe
         private void EncoderPictureClicked(object sender, MouseButtonEventArgs e)
         {
             _workMagic.IsGenieOut = false;
-            
-            _encoderMagic.IsGenieOut = !_encoderMagic.IsGenieOut;
-            MainTransitioner.SelectedIndex = _encoderMagic.IsGenieOut ? 2 : 0;
-            return;
-
+           
             if (MainViewModel.Instance.Encoder == null)
             {
                 _loginMagic.IsGenieOut = !_loginMagic.IsGenieOut;

@@ -7,6 +7,7 @@ namespace NORSU.EncodeMe.Network
 {
     public enum ScheduleStatuses
     {
+        Pending,
         Accepted,
         Conflict,
         Closed

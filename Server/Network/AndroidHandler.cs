@@ -132,10 +132,9 @@ namespace NORSU.EncodeMe.Network
         {
             return RequestDetail.Cache.Count(
                 x =>x.ScheduleId == id &&
-                    (Request.Cache.FirstOrDefault(d => d.Id == x.RequestId)?.IsAccepted ?? false));
+                    (Request.Cache.FirstOrDefault(d => d.Id == x.RequestId)?.Status == Request.Statuses.Accepted));
         }
-
-
+        
         public static void EnrollRequestHandler(PacketHeader packetheader, Connection connection, EnrollRequest incomingobject)
         {
             var dev = AndroidDevice.Cache.FirstOrDefault(
@@ -152,22 +151,20 @@ namespace NORSU.EncodeMe.Network
                 StudentId = incomingobject.StudentId,
             };
 
-            if (req.IsProcessing)
+            if (req.Status == Request.Statuses.Proccessing)
             {
                 new EnrollResult(ResultCodes.Processing).Send(ep);
                 return;
             }
 
-            if (req.IsAccepted)
+            if (req.Status == Request.Statuses.Accepted)
             {
                 new EnrollResult(ResultCodes.Enrolled).Send(ep);
                 return;
             }
             
             req.DateSubmitted = DateTime.Now;
-            req.IsAccepted = false;
-            req.IsProcessed = false;
-            
+            req.Status = Request.Statuses.Pending;
             req.Save();
             
             //RequestDetail.DeleteWhere(nameof(RequestDetail.RequestId),req.Id);
@@ -186,9 +183,9 @@ namespace NORSU.EncodeMe.Network
             
             var result = new EnrollResult(ResultCodes.Success)
             {
-                QueueNumber = Request.Cache.Count(x => !x.IsProcessed),
+                QueueNumber = Request.Cache.Count(x => x.Status == Request.Statuses.Pending),
             };
-            if (req.IsProcessing)
+            if (req.Status == Request.Statuses.Proccessing)
                 result.QueueNumber = 0;
 
             result.Send(ep);

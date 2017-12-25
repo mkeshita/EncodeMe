@@ -10,7 +10,7 @@ using NORSU.EncodeMe.Properties;
 
 namespace NORSU.EncodeMe.Network
 {
-    static class EncoderHandler
+    static partial class Server
     {
         public static void LoginHandler(PacketHeader packetheader, Connection connection, Login login)
         {
@@ -50,7 +50,8 @@ namespace NORSU.EncodeMe.Network
                 //Logout previous session if any.
                 var cl = Client.Cache.FirstOrDefault(x => x.Encoder?.Id == encoder.Id);
                 cl?.Logout($"You are logged in at another terminal ({cl.IP}).");
-
+                
+                
                 client.Encoder = encoder;
                 new LoginResult(new Encoder()
                 {
@@ -62,13 +63,14 @@ namespace NORSU.EncodeMe.Network
             }
             else new LoginResult(ResultCodes.Error, "Invalid username/password").Send((IPEndPoint)connection.ConnectionInfo.RemoteEndPoint);
 
+            SendEncoderUpdates();
         }
 
         public static void HandShakeHandler(PacketHeader packetheader, Connection connection, EndPointInfo ep)
         {
             //Get known client or create new one.
             var client = Client.Cache.FirstOrDefault(x => x.IP == ep.IP) ?? new Client();
-
+            
 
             client.IP = ep.IP;
             client.Hostname = ep.Hostname;
@@ -92,6 +94,8 @@ namespace NORSU.EncodeMe.Network
                 serverInfo.Send(ip);
                 break;
             }
+            
+            SendEncoderUpdates();
         }
 
         public static void GetWorkHandler(PacketHeader packetheader, Connection connection, GetWork req)
@@ -108,7 +112,13 @@ namespace NORSU.EncodeMe.Network
             }
 
             var work = Request.GetNextRequest();
-            work.Update(nameof(work.IsProcessing),true);
+            if (work == null)
+            {
+                new GetWorkResult(ResultCodes.NotFound).Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                return;
+            }
+            
+            work.Update(nameof(work.Status),Request.Statuses.Proccessing);
 
             var result = new GetWorkResult(ResultCodes.Success)
             {
@@ -132,6 +142,7 @@ namespace NORSU.EncodeMe.Network
 
             result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
             
+            SendEncoderUpdates();
         }
     }
 }

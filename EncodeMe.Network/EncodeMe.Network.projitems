@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SchedulesResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduleStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServerUpdate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StatusResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Student.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudentInfoRequest.cs" />

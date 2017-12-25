@@ -96,7 +96,7 @@
                             Grid.Column="0">
                             <Button Style="{StaticResource MaterialDesignToolButton}"
                             Padding="8 0">
-                                <md:Badged Badge="10"
+                                <md:Badged Badge="{Binding OnlineEncoderCount}"
                                        Margin="0 7 0 0">
 
                                     <md:PackIcon Kind="MonitorMultiple"
@@ -107,7 +107,7 @@
                             </Button>
                             <Button Style="{StaticResource MaterialDesignToolButton}"
                                 Padding="8 0">
-                                <md:Badged Badge="9999" BadgeColorZoneMode="Accent"
+                                <md:Badged Badge="{Binding PendingRequestCount}" BadgeColorZoneMode="Accent"
                                        Margin="0 7 0 0">
 
                                     <md:PackIcon Kind="Bell"
@@ -120,12 +120,14 @@
 
                         </StackPanel>
 
-                        <Button Content="NEXT"
+                        <Button Padding="0"
+                                Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                md:ButtonProgressAssist.IsIndeterminate="True"
                                 Click="Button_OnClick"
-                                Margin="10"
+                                Margin="10 5"
                                 x:Name="NextButton"
                                 Grid.Column="1">
-
+                            <md:PackIcon Kind="FileImport" Height="24" Width="24"/>
                         </Button>
                     </Grid>
                     <!--Login toolbar-->
@@ -208,6 +210,7 @@
                         </StackPanel>
                         
                         <Button Content="SUBMIT"
+                                Click="Button_OnClick"
                                 Grid.Column="1"
                                 Margin="10" />
                     </Grid>
@@ -366,20 +369,41 @@
                     </StackPanel>
                 </Border>
 
-                <DataGrid Grid.Row="1"
-                          IsReadOnly="True"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          CanUserReorderColumns="False"
-                          AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridCheckBoxColumn EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"
-                                                CanUserResize="False"/>
-                        <DataGridTextColumn Header="SUBJECT"/>
-                        <DataGridTextColumn Header="SCHEDULE"/>
-                        <DataGridTemplateColumn Header="STATUS"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <ListBox Grid.Row="1" Grid.IsSharedSizeScope="True"
+                         SelectionMode="Extended"
+                         HorizontalContentAlignment="Stretch"
+                          x:Name="WorkDataGrid">
+                    <ListBox.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
+                               TargetType="ListBoxItem">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="a"/>
+                                    <ColumnDefinition Width="*" SharedSizeGroup="b"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="c"/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox IsChecked="{Binding IsSelected}"/>
+
+                                <TextBlock Grid.Column="1">
+                                    <Run FontWeight="Bold"
+                                            Text="{Binding SubjectCode}" />
+                                    [ <Run Text="{Binding Schedule}" /> ]
+                                </TextBlock>
+
+                                <md:PackIcon Grid.Column="2"
+                                             Foreground="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusToBrushConverter
+                                    {StaticResource PrimaryHueDarkBrush}, {StaticResource SecondaryAccentBrush}, {StaticResource MaterialDesignLightForeground}}}"
+                                        Kind="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusConverter}}" />
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
                
             </Grid>
