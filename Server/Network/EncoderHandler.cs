@@ -171,7 +171,7 @@ namespace NORSU.EncodeMe.Network
                         stat = Request.Statuses.Accepted;
                         break;
                     case ScheduleStatuses.Conflict:
-                        stat = Request.Statuses.Conflic;
+                        stat = Request.Statuses.Conflict;
                         break;
                     case ScheduleStatuses.Closed:
                         stat = Request.Statuses.Closed;

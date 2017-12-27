@@ -48,7 +48,7 @@ namespace NORSU.EncodeMe.ViewModels
                     Encoders.Instance,
                     Terminals.Instance,
                     Subjects.Instance,
-                    new Screen("Requests", PackIconKind.Bell),
+                    Requests.Instance,
                  //   new Screen("Activity", PackIconKind.Clock),
                     new Screen("Settings", PackIconKind.Settings),
                 };

@@ -113,6 +113,9 @@
                                     <DataTemplate DataType="{x:Type viewModels:Terminals}">
                                         <views:Terminals DataContext="{Binding}"/>
                                     </DataTemplate>
+                                    <DataTemplate DataType="{x:Type viewModels:Requests}">
+                                        <views:Requests DataContext="{Binding}" />
+                                    </DataTemplate>
                                 </md:Transitioner.Resources>
                             </md:Transitioner>
                         </ScrollViewer>
