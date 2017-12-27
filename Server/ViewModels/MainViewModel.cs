@@ -48,9 +48,8 @@ namespace NORSU.EncodeMe.ViewModels
                     Encoders.Instance,
                     Terminals.Instance,
                     Subjects.Instance,
-                    new Screen("Class Schedules", PackIconKind.CalendarToday),
                     new Screen("Requests", PackIconKind.Bell),
-                    new Screen("Activity", PackIconKind.Clock),
+                 //   new Screen("Activity", PackIconKind.Clock),
                     new Screen("Settings", PackIconKind.Settings),
                 };
                 _itemsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);

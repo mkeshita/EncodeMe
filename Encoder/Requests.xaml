@@ -89,12 +89,19 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Encoder.Username}"
+                                       Style="{StaticResource MaterialDesignTitleTextBlock}"/>
+                        </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
                                 Margin="0 0 20 0"
+                                    Visibility="Collapsed"
                             HorizontalAlignment="Right"
                             Grid.Column="0">
                             <Button Style="{StaticResource MaterialDesignToolButton}"
+                                    
                             Padding="8 0">
                                 <md:Badged Badge="{Binding OnlineEncoderCount}"
                                        Margin="0 7 0 0">

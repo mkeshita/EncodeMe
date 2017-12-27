@@ -7,6 +7,7 @@ using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet.DPSBase;
 using NetworkCommsDotNet.Tools;
+using NORSU.EncodeMe.ViewModels;
 
 namespace NORSU.EncodeMe.Network
 {
@@ -28,7 +29,9 @@ namespace NORSU.EncodeMe.Network
                 NetworkComms.DefaultSendReceiveOptions.DataProcessors, NetworkComms.DefaultSendReceiveOptions.Options);
             
             NetworkComms.AppendGlobalIncomingPacketHandler<ServerInfo>(ServerInfo.GetHeader(), ServerInfoReceived);
-
+            NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Logout.GetHeader(), LogoutHandlger);
+            
+            
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
 
             PeerDiscovery.OnPeerDiscovered += OnPeerDiscovered;
@@ -37,6 +40,12 @@ namespace NORSU.EncodeMe.Network
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             
             
+        }
+
+        private static void LogoutHandlger(PacketHeader packetHeader, Connection connection, Logout incomingObject)
+        {
+            Encoder = null;
+            MainViewModel.Instance.Encoder = null;
         }
 
         public static void Stop()

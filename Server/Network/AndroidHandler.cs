@@ -175,7 +175,7 @@ namespace NORSU.EncodeMe.Network
                 {
                     RequestId = req.Id,
                     ScheduleId = sched.ClassId,
-                    Status = RequestStatuses.Pending,
+                    Status = Request.Statuses.Pending,
                     SubjectCode = sched.SubjectCode
                 };
                 detail.Save();

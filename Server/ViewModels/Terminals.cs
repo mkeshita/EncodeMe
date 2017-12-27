@@ -11,7 +11,7 @@ namespace NORSU.EncodeMe.ViewModels
 {
     sealed class Terminals : Screen
     {
-        private Terminals() : base("Clients", PackIconKind.MonitorMultiple)
+        private Terminals() : base("Encoding Stations", PackIconKind.MonitorMultiple)
         {
         }
 
