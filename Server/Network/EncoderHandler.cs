@@ -97,6 +97,8 @@ namespace NORSU.EncodeMe.Network
             
             SendEncoderUpdates();
         }
+        
+        
 
         public static void GetWorkHandler(PacketHeader packetheader, Connection connection, GetWork req)
         {
@@ -146,6 +148,43 @@ namespace NORSU.EncodeMe.Network
             result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
             
             SendEncoderUpdates();
+        }
+
+        private static void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)
+        {
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
+            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            if (!(client?.IsEnabled ?? false))
+                return;
+
+            var req = Request.Cache.FirstOrDefault(x => x.StudentId == i.StudentId);
+            if (req == null) return;
+            
+            foreach (var sched in i.ClassSchedules)
+            {
+                var s = RequestDetail.Cache.FirstOrDefault(x => x.RequestId == req.Id && x.ScheduleId == sched.ClassId);
+                if(s==null) continue;
+                var stat = Request.Statuses.Pending;
+                switch (sched.EnrollmentStatus)
+                {
+                    case ScheduleStatuses.Accepted:
+                        stat = Request.Statuses.Accepted;
+                        break;
+                    case ScheduleStatuses.Conflict:
+                        stat = Request.Statuses.Conflic;
+                        break;
+                    case ScheduleStatuses.Closed:
+                        stat = Request.Statuses.Closed;
+                        break;
+                }
+                if (stat > req.Status) req.Status = stat;
+                s.Update(nameof(s.Status), stat);
+            }
+            req.Save();
+            
+            var result = new SaveWorkResult();
+            result.Result = ResultCodes.Success;
+            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
         }
     }
 }

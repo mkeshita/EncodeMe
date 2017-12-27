@@ -75,7 +75,7 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
-        private static async Task FindServer()
+        public static async Task FindServer()
         {
             Start();
             var start = DateTime.Now;
@@ -120,6 +120,34 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.RemoveGlobalIncomingPacketHandler(LoginResult.GetHeader());
             
             return new LoginResult(ResultCodes.Timeout);
+        }
+
+        public static async Task<SaveWorkResult> SaveWork(SaveWork work)
+        {
+            if (Server == null) await FindServer();
+            if (Server == null) return new SaveWorkResult() { Result = ResultCodes.Offline};
+
+            SaveWorkResult result = null;
+            
+            NetworkComms.AppendGlobalIncomingPacketHandler<SaveWorkResult>(SaveWorkResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
+                    result = i;
+                });
+
+            await work.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
+            return new SaveWorkResult(){Result = ResultCodes.Timeout};
         }
 
         public static async Task<GetWorkResult> GetNextWork(string username="")

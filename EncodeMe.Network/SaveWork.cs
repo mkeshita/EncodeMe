@@ -13,4 +13,11 @@ namespace NORSU.EncodeMe.Network
         [ProtoMember(2)]
         public List<ClassSchedule> ClassSchedules { get; set; }
     }
+
+    [ProtoContract]
+    class SaveWorkResult : Message<SaveWorkResult>
+    {
+        [ProtoMember(1)]
+        public ResultCodes Result { get; set; }
+    }
 }

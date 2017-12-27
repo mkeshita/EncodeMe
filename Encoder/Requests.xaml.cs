@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using GenieLib;
 using MaterialDesignThemes.Wpf;
+using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Network;
 using NORSU.EncodeMe.ViewModels;
 
@@ -75,14 +76,19 @@ namespace NORSU.EncodeMe
         }
 
         private GetWorkResult CurrentWork;
-
+        private bool workFetched;
         private async void Button_OnClick(object sender, RoutedEventArgs e)
         {
-            _workMagic.IsGenieOut = true;
-            MainTransitioner.SelectedIndex = 3;
-            LoginLamp.Visibility = Visibility.Collapsed;
-            return;
+            if (MainViewModel.Instance.Encoder == null)
+            {
+                _loginMagic.IsGenieOut = true;
+                MainTransitioner.SelectedIndex = 1;
+                PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
+                return;
+            }
             
+            if (workFetched) return;
+            workFetched = true;
             ButtonProgressAssist.SetIsIndicatorVisible(NextButton, true);
             ButtonProgressAssist.SetIsIndeterminate(NextButton, true);
             var work = await Client.GetNextWork();
@@ -114,13 +120,7 @@ namespace NORSU.EncodeMe
                     break;
             }
             
-            return;
-            
-            if (MainViewModel.Instance.Encoder == null)
-            {
-                _loginMagic.IsGenieOut = true;
-                MainTransitioner.SelectedIndex = 1;
-            }
+            workFetched = false;           
         }
 
 
@@ -258,13 +258,32 @@ namespace NORSU.EncodeMe
 
         private static PackIcon submitIcon;
 
-        private void SubmitButton_OnClick(object sender, RoutedEventArgs e)
+        private async void SubmitButton_OnClick(object sender, RoutedEventArgs e)
         {
             SubmitProgress.Visibility = Visibility.Visible;
             WorkDataGrid.IsEnabled = false;
             WorkToolbar.IsEnabled = false;
             
-            
+            var work = new SaveWork()
+            {
+                StudentId = CurrentWork.StudentId,
+                ClassSchedules = CurrentWork.ClassSchedules,
+            };
+
+            var result = await Client.SaveWork(work);
+
+            SubmitProgress.Visibility = Visibility.Collapsed;
+            WorkDataGrid.IsEnabled = true;
+            WorkToolbar.IsEnabled = true;
+
+            if (result.Result == ResultCodes.Success)
+            {
+                _workMagic.IsGenieOut = false;
+            }
+            else
+            {
+                MessageBox.Show("An error occured while contacting server. Please try again.");
+            }
         }
     }
 }
