@@ -30,14 +30,15 @@
             </DataGrid.Columns>
         </DataGrid>
         <DataGrid ItemsSource="{Binding Items/Details}"
-                   Grid.Column="1"
-                   IsReadOnly="True"
-                   CanUserAddRows="False"
-                   CanUserDeleteRows="False"
-                   AutoGenerateColumns="False" >
+                  Margin="1 0 0 0"
+                  Grid.Column="1"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding SubjectCode}"
-                                    Header="Subject Code"/>
+                                    Header="Subject Code" />
                 <DataGridTextColumn Binding="{Binding Schedule.Description}"
                                     Header="Schedule" />
                 <DataGridTextColumn Binding="{Binding Schedule.Instructor}"
@@ -46,5 +47,9 @@
                                     Header="Room" />
             </DataGrid.Columns>
         </DataGrid>
+        
+        <GridSplitter Grid.Column="1" Width="4" Background="Transparent"
+                      HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+        
     </Grid>
 </UserControl>

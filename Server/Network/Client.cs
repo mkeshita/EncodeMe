@@ -77,6 +77,20 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
+        private bool _IsOnline;
+        [Ignore]
+        public bool IsOnline
+        {
+            get => _IsOnline;
+            set
+            {
+                if(value == _IsOnline)
+                    return;
+                _IsOnline = value;
+                OnPropertyChanged(nameof(IsOnline));
+            }
+        }
+
         private bool _IsEnabled = true;
 
         public bool IsEnabled

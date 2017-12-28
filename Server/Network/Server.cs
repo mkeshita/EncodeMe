@@ -43,6 +43,12 @@ namespace NORSU.EncodeMe.Network
         
         public static void Stop()
         {
+            var list = Client.Cache.Where(x => x.IsOnline)?.ToList();
+            foreach (var client in list)
+            {
+                TerminalLog.Add(client.Id, "Terminal is disconnected.");
+            }
+            
             Connection.StopListening();
             NetworkComms.Shutdown();
         }
@@ -59,7 +65,7 @@ namespace NORSU.EncodeMe.Network
             {
                 var update = new ServerUpdate();
                 update.Requests = Request.Cache.Count(x => x.Status == Request.Statuses.Pending);
-                update.Encoders = Client.Cache.Count(x => x.Encoder != null);
+                update.Encoders = Client.Cache.Count(x => x.IsOnline);
                 //Parallel.ForEach(Client.Cache, c => update.Send(new IPEndPoint(IPAddress.Parse(c.IP), c.Port)));
                 foreach (var c in Client.Cache) update.Send(new IPEndPoint(IPAddress.Parse(c.IP), c.Port));
             });
