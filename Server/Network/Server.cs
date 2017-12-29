@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
+using NetworkCommsDotNet.Connections.UDP;
 using NetworkCommsDotNet.DPSBase;
 using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Models;
@@ -26,7 +27,6 @@ namespace NORSU.EncodeMe.Network
             
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             
-            
             NetworkComms.AppendGlobalIncomingPacketHandler<AndroidInfo>(AndroidInfo.GetHeader(), AndroidHandler.HandShakeHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<StudentInfoRequest>(StudentInfoRequest.GetHeader(), AndroidHandler.StudentInfoRequested);
             NetworkComms.AppendGlobalIncomingPacketHandler<EndPointInfo>(EndPointInfo.GetHeader(), HandShakeHandler);
@@ -38,7 +38,6 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<SaveWork>(SaveWork.GetHeader(),SaveWorkHandler);
             
             Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0), true);
-            
         }
         
         public static void Stop()
@@ -46,17 +45,68 @@ namespace NORSU.EncodeMe.Network
             var list = Client.Cache.Where(x => x.IsOnline)?.ToList();
             foreach (var client in list)
             {
-                TerminalLog.Add(client.Id, "Terminal is disconnected.");
+                new Disconnected().Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                TerminalLog.Add(client.Id, "Disconnected");
             }
             
             Connection.StopListening();
             NetworkComms.Shutdown();
         }
-
-
+        
         public static async Task PushUpdate(string studentId)
         {
             
+        }
+
+        public static void CheckTerminalConnections()
+        {
+            var clients = Client.Cache.OrderByDescending(x => x.IsOnline).ToList();
+            Parallel.ForEach(clients,async client =>
+            {
+                var ep = new IPEndPoint(IPAddress.Parse(client.IP), client.Port);
+                client.IsOnline = await Ping(ep);
+            });
+            
+        }
+
+        public static async Task<bool> Ping(IPEndPoint ep)
+        {
+            var head = $"PONG{ep.Address}";
+            var pong = false;
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>(head, 
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(head);
+                    pong = true;
+                });
+
+            var sent = false;
+            while (!sent)
+            {
+                try
+                {
+                    UDPConnection.SendObject("PING",
+                        "https://github.com/awooo-ph", ep,
+                        NetworkComms.DefaultSendReceiveOptions,
+                        ApplicationLayerProtocolStatus.Enabled);
+                    sent = true;
+                    break;
+                }
+                catch (Exception)
+                {
+                    await TaskEx.Delay(100);
+                }
+            }
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalMilliseconds < 4710)
+            {
+                if (pong)
+                    return pong;
+                await TaskEx.Delay(TimeSpan.FromMilliseconds(100));
+            }
+
+            return pong;
         }
 
         public static Task SendEncoderUpdates()

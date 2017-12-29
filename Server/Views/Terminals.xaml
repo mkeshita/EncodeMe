@@ -35,6 +35,7 @@
                                        Height="32" Width="32"
                                              Visibility="{Binding IsOnline,Converter={converters:BooleanToVisibility Collapsed,Visible},FallbackValue=Visible}" />
                                 <md:PackIcon Kind="CloseCircle" Foreground="{StaticResource ValidationErrorBrush}"
+                                             Visibility="{Binding IsEnabled,Converter={converters:BooleanToVisibility Collapsed,Visible},FallbackValue=Collapsed}"
                                              VerticalAlignment="Center"
                                              Margin="5 0 0 7"
                                              HorizontalAlignment="Center"/>

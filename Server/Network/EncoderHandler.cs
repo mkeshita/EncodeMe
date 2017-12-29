@@ -50,7 +50,7 @@ namespace NORSU.EncodeMe.Network
                 TerminalLog.Add(client.Id, $"{encoder.Username} has logged in.");
                 //Logout previous session if any.
                 var cl = Client.Cache.FirstOrDefault(x => x.Encoder?.Id == encoder.Id);
-                cl?.Logout($"You are logged in at another terminal ({cl.Hostname}).");
+                cl?.Logout($"You were logged in at another terminal ({cl.Hostname}).");
 
                 client.Encoder = encoder;
                 new LoginResult(new Encoder()
@@ -63,7 +63,7 @@ namespace NORSU.EncodeMe.Network
             }
             else
             {
-                TerminalLog.Add(client.Id, $"{encoder.Username} attempted to login but failed because the password is invalid.");
+                TerminalLog.Add(client.Id, $"Login attempt failed. Username: {login.Username}");
                 new LoginResult(ResultCodes.Error, "Invalid username/password").Send((IPEndPoint)connection.ConnectionInfo.RemoteEndPoint);
             }
 
@@ -85,7 +85,7 @@ namespace NORSU.EncodeMe.Network
             if (isNew)
                 TerminalLog.Add(client.Id, "Encoder terminal added.");
 
-            TerminalLog.Add(client.Id, "Terminal is online.");
+            TerminalLog.Add(client.Id, "Terminal has connected.");
             
             var localEPs = Connection.AllExistingLocalListenEndPoints();
             var serverInfo = new ServerInfo(Environment.MachineName);
@@ -121,6 +121,7 @@ namespace NORSU.EncodeMe.Network
             }
 
             client.IsOnline = true;
+            client.LastHeartBeat = DateTime.Now;
             TerminalLog.Add(client.Id, "Work item requested.");
             
             var work = Request.GetNextRequest();
@@ -168,6 +169,7 @@ namespace NORSU.EncodeMe.Network
                 return;
 
             client.IsOnline = true;
+            client.LastHeartBeat = DateTime.Now;
             TerminalLog.Add(client.Id, "Enrollment item completed.");
 
             var req = Request.Cache.FirstOrDefault(x => x.StudentId == i.StudentId);

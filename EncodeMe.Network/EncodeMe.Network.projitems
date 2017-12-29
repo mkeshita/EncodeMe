@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AndroidInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClassSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Disconnected.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encoder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GetWork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GetWorkResult.cs" />

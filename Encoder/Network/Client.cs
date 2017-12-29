@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
+using NetworkCommsDotNet.Connections.UDP;
 using NetworkCommsDotNet.DPSBase;
 using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.ViewModels;
@@ -30,7 +31,7 @@ namespace NORSU.EncodeMe.Network
             
             NetworkComms.AppendGlobalIncomingPacketHandler<ServerInfo>(ServerInfo.GetHeader(), ServerInfoReceived);
             NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Logout.GetHeader(), LogoutHandlger);
-            
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>("PING", PingHandler);
             
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
 
@@ -42,15 +43,50 @@ namespace NORSU.EncodeMe.Network
             
         }
 
+        private static async void PingHandler(PacketHeader packetHeader, Connection connection, string incomingObject)
+        {
+            var ip =(IPEndPoint) connection.ConnectionInfo.RemoteEndPoint;
+            var localEPs = Connection.AllExistingLocalListenEndPoints();
+            var lep = "";
+            foreach (var localEP in localEPs[ConnectionType.UDP])
+            {
+                var lEp = (IPEndPoint) localEP;
+                if (!ip.Address.IsInSameSubnet(lEp.Address))
+                    continue;
+                lep = lEp.Address.ToString();
+                break;
+            }
+            
+            var sent = false;
+            while (!sent)
+            {
+                try
+                {
+                    UDPConnection.SendObject($"PONG{lep}", "https://github.com/awooo-ph", ip, NetworkComms.DefaultSendReceiveOptions,
+                        ApplicationLayerProtocolStatus.Enabled);
+                    sent = true;
+                    break;
+                }
+                catch (Exception)
+                {
+                    await TaskEx.Delay(100);
+                }
+            }
+        }
+
         private static void LogoutHandlger(PacketHeader packetHeader, Connection connection, Logout incomingObject)
         {
             Encoder = null;
             MainViewModel.Instance.Encoder = null;
         }
 
-        public static void Stop()
+        public static async void Stop()
         {
             if(!_started) return;
+
+            if(Server!=null)
+                await new Disconnected().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+            
             Connection.StopListening();
             NetworkComms.Shutdown();
         }
