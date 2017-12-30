@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class Enroll : Message
+    class Enroll : Message<Enroll>
     {
-        public Enroll() : base(nameof(Enroll))
-        {
-            
-        }
         [ProtoMember(1)]
         public string StudentId { get; set; }
 

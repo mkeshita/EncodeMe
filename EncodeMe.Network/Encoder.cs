@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
-using NORSU.EncodeMe.Annotations;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class Encoder : Message
+    class Encoder : Message<Encoder>
     {
         [ProtoMember(1)]
         public string Username { get; set; }
@@ -20,6 +14,5 @@ namespace NORSU.EncodeMe.Network
         [ProtoMember(3)]
         public byte[] Picture { get; set; }
         
-        public Encoder() : base(nameof(Encoder)) { }
     }
 }

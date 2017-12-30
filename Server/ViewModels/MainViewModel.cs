@@ -2,9 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using MaterialDesignThemes.Wpf;
-using NORSU.EncodeMe;
 using NORSU.EncodeMe.Models;
-using NORSU.EncodeMe.Network;
 
 namespace NORSU.EncodeMe.ViewModels
 {
@@ -50,9 +48,8 @@ namespace NORSU.EncodeMe.ViewModels
                     Encoders.Instance,
                     Terminals.Instance,
                     Subjects.Instance,
-                    new Screen("Class Schedules", PackIconKind.CalendarToday),
-                    new Screen("Requests", PackIconKind.Bell),
-                    new Screen("Activity", PackIconKind.Clock),
+                    Requests.Instance,
+                 //   new Screen("Activity", PackIconKind.Clock),
                     new Screen("Settings", PackIconKind.Settings),
                 };
                 _itemsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);

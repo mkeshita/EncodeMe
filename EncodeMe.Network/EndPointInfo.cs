@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net;
-using System.Runtime.CompilerServices;
-using System.Text;
-using NORSU.EncodeMe.Annotations;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class EndPointInfo  : Message
+    sealed class EndPointInfo  : Message<EndPointInfo>
     {       
-        private EndPointInfo() : base((nameof(EndPointInfo))) { }
+        private EndPointInfo() { }
 
         public EndPointInfo(string host) : this()
         {
@@ -25,11 +18,7 @@ namespace NORSU.EncodeMe.Network
         public int Port { get; set; }
         [ProtoMember(3)]
         public string Hostname { get; set; }
-
-        public override string ToString()
-        {
-            return $"({Hostname}) {IP}:{Port}";
-        }
+        
 
         public static bool operator ==(EndPointInfo ep, EndPointInfo ep2)
         {

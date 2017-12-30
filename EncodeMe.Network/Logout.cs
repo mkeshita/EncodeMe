@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class Logout : Message
+    class Logout : Message<Logout>
     {
-        public Logout() : base(nameof(Logout))
-        {
-        }
-
         [ProtoMember(1)]
         public string Reason { get; set; }
     }

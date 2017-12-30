@@ -9,16 +9,33 @@
     <Import_RootNamespace>NORSU.EncodeMe.Network</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AndroidInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClassSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Disconnected.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Encoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GetWork.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GetWorkResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EndPointInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enroll.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnrollRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnrollResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Login.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messenger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RegisterStudent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RegisterStudentResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SaveWork.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SchedulesRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SchedulesResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScheduleStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ServerInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServerUpdate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StatusResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Student.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudentInfoRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudentInfoResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility.cs" />
   </ItemGroup>
 </Project>

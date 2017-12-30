@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+    android:minWidth="25px"
+    android:minHeight="25px">
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:id="@+id/linearLayout1">
+    <TextView
+      android:text="PLEASE WAIT"
+      android:textAppearance="?android:attr/textAppearanceLarge"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/TitleText"
+      android:textSize="20pt"
+      android:textStyle="bold"
+      android:gravity="center"
+      android:textColor="#fc0099cc" />
+    <ProgressBar
+      style="?android:attr/progressBarStyleHorizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/Progress"
+      android:indeterminate="true"
+      android:indeterminateBehavior="repeat"
+      android:indeterminateTint="#ff33b5e5"
+      android:layout_marginLeft="10dp"
+      android:layout_marginRight="10dp" />
+    
+    <TextView
+      android:text="You may close this app while waiting for your turn."
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/MessageText"
+      android:textStyle="italic"
+      android:gravity="center"
+      android:layout_marginBottom="20dp" 
+      android:layout_marginLeft="10dp"
+      android:layout_marginRight="10dp"/>
+
+    <RelativeLayout
+      android:layout_height="wrap_content"
+      android:layout_width="wrap_content"
+      android:layout_gravity="center"
+      android:minWidth="25px"
+      android:minHeight="25px"
+      android:id="@+id/relativeLayout1"
+      android:layout_centerInParent="true">
+      <Button
+        android:id="@+id/StatusButton"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/Circle"
+        android:layout_centerInParent="true"
+        android:padding="10dp"
+        android:text="47"
+        android:textColor="#FFF"
+        android:textSize="47pt" />
+      <ImageView android:id="@+id/StatusImage"
+                 android:layout_width="200dp"
+                 android:layout_height="200dp"
+                 android:visibility="gone"
+                 android:src="@drawable/norsu"
+                 android:layout_centerInParent="true"/>
+      <!--<TextView
+            android:text="47"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView1"
+            android:layout_centerInParent="true"
+            android:textSize="47pt" />-->
+    </RelativeLayout>
+  </LinearLayout>
+  <Button
+    android:id="@+id/EditButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_margin="10dp"
+    android:text="Edit Schedules"/>
+</RelativeLayout>

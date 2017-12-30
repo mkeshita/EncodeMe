@@ -1,31 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security;
-using System.Text;
 using System.Threading.Tasks;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet.Connections.UDP;
 using NetworkCommsDotNet.DPSBase;
 using NetworkCommsDotNet.Tools;
+using NORSU.EncodeMe.ViewModels;
 
 namespace NORSU.EncodeMe.Network
 {
-    class Client
+    static class Client
     {
         private static bool _started;
-        
-        private Client()
-        {
-           
-        }
-
-        private static Client _instance;
-        private static Client Instance => _instance ?? (_instance = new Client());
         
         public static void Start()
         {
@@ -40,8 +29,10 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.DefaultSendReceiveOptions = new SendReceiveOptions(serializer,
                 NetworkComms.DefaultSendReceiveOptions.DataProcessors, NetworkComms.DefaultSendReceiveOptions.Options);
             
-            NetworkComms.AppendGlobalIncomingPacketHandler<ServerInfo>(nameof(ServerInfo), ServerInfoReceived);
-
+            NetworkComms.AppendGlobalIncomingPacketHandler<ServerInfo>(ServerInfo.GetHeader(), ServerInfoReceived);
+            NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Logout.GetHeader(), LogoutHandlger);
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>("PING", PingHandler);
+            
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
 
             PeerDiscovery.OnPeerDiscovered += OnPeerDiscovered;
@@ -52,8 +43,50 @@ namespace NORSU.EncodeMe.Network
             
         }
 
-        public static void Stop()
+        private static async void PingHandler(PacketHeader packetHeader, Connection connection, string incomingObject)
         {
+            var ip =(IPEndPoint) connection.ConnectionInfo.RemoteEndPoint;
+            var localEPs = Connection.AllExistingLocalListenEndPoints();
+            var lep = "";
+            foreach (var localEP in localEPs[ConnectionType.UDP])
+            {
+                var lEp = (IPEndPoint) localEP;
+                if (!ip.Address.IsInSameSubnet(lEp.Address))
+                    continue;
+                lep = lEp.Address.ToString();
+                break;
+            }
+            
+            var sent = false;
+            while (!sent)
+            {
+                try
+                {
+                    UDPConnection.SendObject($"PONG{lep}", "https://github.com/awooo-ph", ip, NetworkComms.DefaultSendReceiveOptions,
+                        ApplicationLayerProtocolStatus.Enabled);
+                    sent = true;
+                    break;
+                }
+                catch (Exception)
+                {
+                    await TaskEx.Delay(100);
+                }
+            }
+        }
+
+        private static void LogoutHandlger(PacketHeader packetHeader, Connection connection, Logout incomingObject)
+        {
+            Encoder = null;
+            MainViewModel.Instance.Encoder = null;
+        }
+
+        public static async void Stop()
+        {
+            if(!_started) return;
+
+            if(Server!=null)
+                await new Disconnected().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+            
             Connection.StopListening();
             NetworkComms.Shutdown();
         }
@@ -87,8 +120,9 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
-        private static async Task FindServer()
+        public static async Task FindServer()
         {
+            Start();
             var start = DateTime.Now;
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             while ((DateTime.Now-start).TotalSeconds<20)
@@ -98,45 +132,96 @@ namespace NORSU.EncodeMe.Network
             }
         }
         
+        public static Encoder Encoder { get; private set; }
+        
         public static async Task<LoginResult> Login(string username, string password)
         {
-            //return Task.Factory.StartNew(() =>
-            //{
-                if(Server==null)
-                    await FindServer();
-                var result = new LoginResult();
-                if (Server == null)
-                {
-                    result.Success = false;
-                    result.Message = "Server is offline";
-                    return result;
-                }
+                if(Server==null) await FindServer();
+                if (Server == null) return new LoginResult(ResultCodes.Offline);
                 
                 var login = new Login(){Username = username,Password = password};
 
-                result = null;
+                LoginResult result = null;
                 
-                NetworkComms.AppendGlobalIncomingPacketHandler<LoginResult>(nameof(LoginResult),
+                NetworkComms.AppendGlobalIncomingPacketHandler<LoginResult>(LoginResult.GetHeader(),
                     (h, c, res) =>
                     {
-                        NetworkComms.RemoveGlobalIncomingPacketHandler(nameof(LoginResult));
+                        NetworkComms.RemoveGlobalIncomingPacketHandler(LoginResult.GetHeader());
                         result = res;
+                        Encoder = res?.Encoder;
                     });
-
-                var start = DateTime.Now;
+            
                 await login.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
-                while ((DateTime.Now-start).TotalSeconds<17)
+            var start = DateTime.Now;
+            while ((DateTime.Now-start).TotalSeconds<17)
                 {
                     if (result != null) return result;
                     await TaskEx.Delay(TimeSpan.FromSeconds(1));
                 }
-                
-                result = new LoginResult("Request timeout");
-                return result;
-            //});
-        }
-      
 
+            Server = null;
+
+            NetworkComms.RemoveGlobalIncomingPacketHandler(LoginResult.GetHeader());
+            
+            return new LoginResult(ResultCodes.Timeout);
+        }
+
+        public static async Task<SaveWorkResult> SaveWork(SaveWork work)
+        {
+            if (Server == null) await FindServer();
+            if (Server == null) return new SaveWorkResult() { Result = ResultCodes.Offline};
+
+            SaveWorkResult result = null;
+            
+            NetworkComms.AppendGlobalIncomingPacketHandler<SaveWorkResult>(SaveWorkResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
+                    result = i;
+                });
+
+            await work.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
+            return new SaveWorkResult(){Result = ResultCodes.Timeout};
+        }
+
+        public static async Task<GetWorkResult> GetNextWork(string username="")
+        {
+            if (Server == null) await FindServer();
+            if (Server == null) return new GetWorkResult(ResultCodes.Offline);
+            
+            var request = new GetWork(username);
+            GetWorkResult result = null;
+            
+            NetworkComms.AppendGlobalIncomingPacketHandler<GetWorkResult>(GetWorkResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(GetWorkResult.GetHeader());
+                    result = i;
+                });
+
+            await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(GetWorkResult.GetHeader());
+            return new GetWorkResult(ResultCodes.Timeout);
+        }
     }
 }

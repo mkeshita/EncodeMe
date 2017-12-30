@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Text;
-using NORSU.EncodeMe.Annotations;
 using NORSU.EncodeMe.Models;
 
 namespace NORSU.EncodeMe.Network
@@ -74,6 +68,20 @@ namespace NORSU.EncodeMe.Network
                 if (value == _LastHeartBeat) return;
                 _LastHeartBeat = value;
                 OnPropertyChanged(nameof(LastHeartBeat));
+            }
+        }
+
+        private bool _IsOnline;
+        [Ignore]
+        public bool IsOnline
+        {
+            get => _IsOnline;
+            set
+            {
+                if(value == _IsOnline)
+                    return;
+                _IsOnline = value;
+                OnPropertyChanged(nameof(IsOnline));
             }
         }
 

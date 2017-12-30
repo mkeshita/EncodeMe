@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <TextView
+        android:text="Name and Course"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView1"
+        android:textSize="17pt"
+        android:textStyle="normal"
+        android:gravity="center"
+        android:textColor="#fc0099cc"
+        android:layout_marginTop="20dp" />
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/Progress"
+        android:indeterminate="false"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateTint="#ff33b5e5"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp" />
+    <TextView
+        android:text="Please enter your name and course"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:textStyle="italic"
+        android:gravity="center"
+        android:layout_marginBottom="20dp" />
+    <ScrollView
+        android:layout_weight="70"
+        android:gravity="top"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView1">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:id="@+id/linearLayout1">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:id="@+id/FirstName"
+                android:hint="First Name"
+                android:padding="10dp"
+                android:textSize="12pt"
+                android:textAllCaps="true"
+                android:layout_margin="10dp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:id="@+id/LastName"
+                android:hint="Last Name"
+                android:padding="10dp"
+                android:textSize="12pt"
+                android:textAllCaps="true"
+                android:layout_margin="10dp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:id="@+id/Course"
+                android:hint="Course"
+                android:padding="10dp"
+                android:textSize="12pt"
+                android:textAllCaps="true"
+                android:layout_margin="10dp" />
+        </LinearLayout>
+    </ScrollView>
+  <Button
+    android:text="Next"
+    android:id="@+id/NextButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp" />
+</LinearLayout>

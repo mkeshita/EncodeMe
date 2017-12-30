@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security;
-using System.Text;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class Login : Message
+    class Login : Message<Login>
     {
-        public Login() : base(nameof(Login))
-        {}
-        
         [ProtoMember(1)]
         public string Username { get; set; }
         

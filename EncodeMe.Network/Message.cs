@@ -3,32 +3,22 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
-using NetworkCommsDotNet.Connections.TCP;
 using NetworkCommsDotNet.Connections.UDP;
-using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Annotations;
 using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    abstract class Message :  INotifyPropertyChanged
+    abstract class Message<T> :  INotifyPropertyChanged where T : Message<T>
     {
-        public static implicit operator string([NotNull] Message value)
-        {
-            return value.Value;
-        }
-
-        private readonly string Value;
-        protected Message(string message)
-        {
-            Value = message;
-        }
-
+        
+        
+        private static Dictionary<Type, string> _headers = new Dictionary<Type, string>();
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -37,12 +27,22 @@ namespace NORSU.EncodeMe.Network
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public Task Send(IPEndPoint ip)
+        public static string GetHeader()
         {
-            return Send(Value, this, ip);
+            if (_headers.ContainsKey(typeof(T)))
+                return _headers[typeof(T)];
+            
+            var header = typeof(T).Name;
+            _headers.Add(typeof(T),header);
+            return header;
         }
 
-        private static async Task Send<T>(string msgType, T message, IPEndPoint ip)
+        public virtual Task Send(IPEndPoint ip)
+        {
+            return Send(GetHeader(), (T)this, ip);
+        }
+
+        protected static async Task Send(string msgType, T message, IPEndPoint ip)
         {
             var sent = false;
             while (!sent)
@@ -53,16 +53,20 @@ namespace NORSU.EncodeMe.Network
                     sent = true;
                     break;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
+#if __ANDROID__
+                    await Task.Delay(100);
+#else
                     await TaskEx.Delay(100);
+#endif
                 }
             }
         }
 
         private static IPEndPoint _broadcastEP;
 
-        public static Task Broadcast<T>(string type, T message)
+        public static Task Broadcast(string type, T message)
         {
             if (_broadcastEP == null)
                 _broadcastEP = new IPEndPoint(IPAddress.Broadcast, Config.ServerPort);

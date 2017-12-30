@@ -103,14 +103,14 @@ namespace NORSU.EncodeMe.ViewModels
                         Negative = "CANCEL",
                         AffirmativeAction = () =>
                         {
-                            Models.ClassSchedule.DeleteWhere(nameof(Models.ClassSchedule.SubjectId), subject.Id);
+                            Models.ClassSchedule.DeleteWhere(nameof(Models.ClassSchedule.SubjectCode), subject.Code);
                             IsDialogOpen = false;
                         }
                     }, "InnerDialog");
                 }, d =>
                 {
                     if (!(Items.CurrentItem is Models.Subject subject)) return false;
-                    return Models.ClassSchedule.Cache.Count(x=>x.SubjectId==subject.Id) > 0;
+                    return Models.ClassSchedule.Cache.Count(x=>x.SubjectCode==subject.Code) > 0;
                 }));
 
         private static ICommand _showCoursesCommand;
@@ -190,7 +190,7 @@ namespace NORSU.EncodeMe.ViewModels
         {
             if (!(Items.CurrentItem is Models.Subject)) return false;
             var sched = (Models.ClassSchedule) o;
-            return sched.SubjectId == ((Models.Subject) Items.CurrentItem)?.Id;
+            return sched.SubjectCode == ((Models.Subject) Items.CurrentItem)?.Code;
         }
     }
 }

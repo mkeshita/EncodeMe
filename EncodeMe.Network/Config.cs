@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security;
-using System.Text;
-
-namespace NORSU.EncodeMe.Network
+﻿namespace NORSU.EncodeMe.Network
 {
     static class Config
     {

@@ -11,8 +11,7 @@ namespace NORSU.EncodeMe
     /// </summary>
     public partial class App : Application
     {
-        public Window1 Window1 { get; set; }
-
+      
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

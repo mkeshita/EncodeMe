@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class ServerInfo : Message
+    class ServerInfo : Message<ServerInfo>
     {
-        private ServerInfo() : base(nameof(ServerInfo))
+        private ServerInfo()
         {
         }
 

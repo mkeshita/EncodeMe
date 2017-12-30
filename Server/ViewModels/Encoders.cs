@@ -144,27 +144,38 @@ namespace NORSU.EncodeMe.ViewModels
 
                 try
                 {
-                    using (var bin = new MemoryStream())
+
+                    using (var img = Image.FromFile(dlg.FileName))
                     {
-                        using (var img = Image.FromFile(dlg.FileName))
+                        using (var bmp = ImageProcessor.Resize(img, 471))
                         {
-                            using (var bmp = ImageProcessor.Resize(img, 471))
+                            using (var bin = new MemoryStream())
                             {
                                 bmp.Save(bin, ImageFormat.Jpeg);
+                                encoder.Picture = bin.ToArray();
                             }
                         }
-                        var pic = encoder.Picture;
-                        encoder.Picture = bin.ToArray();
-                        encoder.Save();
-                        encoder.IsFlipped = false;
-
-                        MainViewModel.EnqueueMessage($"{encoder.Username}'s picture has been changed.", "UNDO",
-                            en =>
+                        using (var bmp = ImageProcessor.Resize(img, 74))
+                        {
+                            using (var bin = new MemoryStream())
                             {
-                                en.Picture = pic;
-                                en.Save();
-                            }, encoder, true);
+                                bmp.Save(bin, ImageFormat.Jpeg);
+                                encoder.Thumbnail = bin.ToArray();
+                            }
+                        }
                     }
+                    var pic = encoder.Picture;
+
+                    encoder.Save();
+                    encoder.IsFlipped = false;
+
+                    MainViewModel.EnqueueMessage($"{encoder.Username}'s picture has been changed.", "UNDO",
+                        en =>
+                        {
+                            en.Picture = pic;
+                            en.Save();
+                        }, encoder, true);
+
 
                 }
                 catch (Exception e)
