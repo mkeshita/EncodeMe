@@ -276,6 +276,7 @@
             </Grid>
         </Border>
 
+        <!-- ENCODER INFO VIEW -->
         <md:ColorZone Visibility="Hidden"
                 VerticalAlignment="Bottom"
                 x:Name="EncoderGenie"
@@ -319,7 +320,7 @@
                                      Height="32" Width="32"
                                      Margin="5" />
                             <Rectangle Width="1" Fill="{StaticResource MaterialDesignDivider}"/>
-                            <TextBlock Text="100" FontSize="20pt" HorizontalAlignment="Right"
+                            <TextBlock Text="{Binding Encoder.WorkCount,StringFormat={}#\,##0}" FontSize="20pt" HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
                                        Margin="10 0"
                                FontWeight="Bold"/>
@@ -334,10 +335,12 @@
                                      VerticalAlignment="Center"
                                      Margin="5"/>
                             <Rectangle Width="1" Fill="{StaticResource MaterialDesignDivider}" />
-                            <TextBlock Text="100/HR" FontSize="20pt" HorizontalAlignment="Right"
+                            <TextBlock FontSize="20pt" HorizontalAlignment="Right"
                                        Margin="10 0"
                                        VerticalAlignment="Center"
-                               FontWeight="Bold"/>
+                               FontWeight="Bold">
+                                <Run Text="{Binding Encoder.Rate,StringFormat={}#\,##0.##}"/><Run Text="/HR"/>
+                            </TextBlock>
 
                         </StackPanel>
                     </md:ColorZone>

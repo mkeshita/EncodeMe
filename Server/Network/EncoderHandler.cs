@@ -57,7 +57,9 @@ namespace NORSU.EncodeMe.Network
                 {
                     Username = encoder.Username,
                     FullName = encoder.FullName,
-                    Picture = encoder.Thumbnail
+                    Picture = encoder.Thumbnail,
+                    WorkCount = Request.Cache.Count(x=>x.Status > Request.Statuses.Proccessing && x.EncoderId == encoder.Id),
+                    Rate = encoder.WorkRate,
                 }).Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
                 client.LoginAttempts = 0;
             }
@@ -171,6 +173,15 @@ namespace NORSU.EncodeMe.Network
 
             client.IsOnline = true;
             client.LastHeartBeat = DateTime.Now;
+
+            if (client.Encoder == null)
+            {
+                var res = new SaveWorkResult();
+                res.Result = ResultCodes.Denied;
+                res.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                return;
+            }
+            
             TerminalLog.Add(client.Id, "Enrollment item completed.");
 
             var req = Request.Cache.FirstOrDefault(x => string.Equals(x.StudentId, i.StudentId, StringComparison.CurrentCultureIgnoreCase));
@@ -196,6 +207,7 @@ namespace NORSU.EncodeMe.Network
                 if (stat > req.Status) req.Status = stat;
                 s.Update(nameof(s.Status), stat);
             }
+            req.EncoderId = client.Encoder.Id;
             req.Save();
             
             var result = new SaveWorkResult();
