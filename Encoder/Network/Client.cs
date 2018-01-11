@@ -179,6 +179,8 @@ namespace NORSU.EncodeMe.Network
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
                     result = i;
+                    if (i?.Result == ResultCodes.Denied)
+                        Encoder = null;
                 });
 
             await work.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));

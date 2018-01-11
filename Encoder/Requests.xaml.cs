@@ -284,6 +284,9 @@ namespace NORSU.EncodeMe
                 _workMagic.IsGenieOut = false;
                 MainTransitioner.SelectedIndex = 0;
                 LoginLamp.Visibility = Visibility.Visible;
+            } else if (result.Result == ResultCodes.Denied)
+            {
+                EncoderPictureClicked(null, null);
             }
             else
             {
