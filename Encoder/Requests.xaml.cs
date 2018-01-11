@@ -81,7 +81,7 @@ namespace NORSU.EncodeMe
         {
             if (MainViewModel.Instance.Encoder == null)
             {
-                _loginMagic.IsGenieOut = true;
+                _loginMagic.IsGenieOut = true;             
                 MainTransitioner.SelectedIndex = 1;
                 PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
                 return;
@@ -95,6 +95,8 @@ namespace NORSU.EncodeMe
             CurrentWork = work;
             ButtonProgressAssist.SetIsIndicatorVisible(NextButton, false);
             ButtonProgressAssist.SetIsIndeterminate(NextButton, false);
+
+            _encoderMagic.IsGenieOut = false;
             
             switch (work.Result)
             {
@@ -221,6 +223,7 @@ namespace NORSU.EncodeMe
 
         private void LogoutButton_OnClick(object sender, RoutedEventArgs e)
         {
+            Client.Logout();
             MainViewModel.Instance.Encoder = null;
             _encoderMagic.IsGenieOut = false;
             MainTransitioner.SelectedIndex = 0;
@@ -279,6 +282,8 @@ namespace NORSU.EncodeMe
             if (result.Result == ResultCodes.Success)
             {
                 _workMagic.IsGenieOut = false;
+                MainTransitioner.SelectedIndex = 0;
+                LoginLamp.Visibility = Visibility.Visible;
             }
             else
             {

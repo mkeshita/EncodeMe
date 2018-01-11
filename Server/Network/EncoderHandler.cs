@@ -131,7 +131,8 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
             
-            work.Update(nameof(work.Status),Request.Statuses.Proccessing);
+            //work.Update(nameof(work.Status),Request.Statuses.Proccessing);
+            work.Status = Request.Statuses.Proccessing;
 
             var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId == work.StudentId);
             
@@ -172,7 +173,7 @@ namespace NORSU.EncodeMe.Network
             client.LastHeartBeat = DateTime.Now;
             TerminalLog.Add(client.Id, "Enrollment item completed.");
 
-            var req = Request.Cache.FirstOrDefault(x => x.StudentId == i.StudentId);
+            var req = Request.Cache.FirstOrDefault(x => string.Equals(x.StudentId, i.StudentId, StringComparison.CurrentCultureIgnoreCase));
             if (req == null) return;
             
             foreach (var sched in i.ClassSchedules)

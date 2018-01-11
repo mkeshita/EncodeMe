@@ -30,7 +30,7 @@ namespace NORSU.EncodeMe.Network
                 NetworkComms.DefaultSendReceiveOptions.DataProcessors, NetworkComms.DefaultSendReceiveOptions.Options);
             
             NetworkComms.AppendGlobalIncomingPacketHandler<ServerInfo>(ServerInfo.GetHeader(), ServerInfoReceived);
-            NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Logout.GetHeader(), LogoutHandlger);
+            NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Network.Logout.GetHeader(), LogoutHandlger);
             NetworkComms.AppendGlobalIncomingPacketHandler<string>("PING", PingHandler);
             
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
@@ -222,6 +222,14 @@ namespace NORSU.EncodeMe.Network
             Server = null;
             NetworkComms.RemoveGlobalIncomingPacketHandler(GetWorkResult.GetHeader());
             return new GetWorkResult(ResultCodes.Timeout);
+        }
+
+        public static async void Logout()
+        {
+            if (Server == null) await FindServer();
+            if (Server == null) return;
+
+            await new Logout().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
         }
     }
 }
