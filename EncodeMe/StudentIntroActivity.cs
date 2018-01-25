@@ -43,6 +43,7 @@ namespace NORSU.EncodeMe
           //  }
           //  img.SetBytes(bytes);
          //   img.StartAnimation();
+            
         }
 
         private async void NextOnClick(object sender, EventArgs eventArgs)

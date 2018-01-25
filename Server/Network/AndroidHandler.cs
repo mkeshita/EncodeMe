@@ -212,5 +212,27 @@ namespace NORSU.EncodeMe.Network
             new RegisterStudentResult(ResultCodes.Success) { StudentId = stud.Id}
                 .Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
+
+        public static void GetCoursesHandler(PacketHeader packetheader, Connection connection, GetCourses incomingobject)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+            
+            var result = new Courses();
+            foreach (var course in Models.Course.Cache.ToList())
+            {
+                result.Items.Add(new Course()
+                {
+                    Id = course.Id,
+                    Name = course.Acronym,
+                });
+            }
+
+            result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
     }
 }

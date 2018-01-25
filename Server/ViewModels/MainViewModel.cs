@@ -45,13 +45,13 @@ namespace NORSU.EncodeMe.ViewModels
                 if (_itemsView != null) return _items;//View;
                 _items = new ObservableCollection<Screen>()
                 {
-                    new Screen("Dashboard", PackIconKind.Home),
+                    //new Screen("Dashboard", PackIconKind.Home),
                     Encoders.Instance,
                     Terminals.Instance,
                     Subjects.Instance,
                     Requests.Instance,
                  //   new Screen("Activity", PackIconKind.Clock),
-                    new Screen("Settings", PackIconKind.Settings),
+                 //   new Screen("Settings", PackIconKind.Settings),
                 };
                 _itemsView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
                 _itemsView.CurrentChanging += (s, args) =>

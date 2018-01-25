@@ -36,6 +36,7 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<EnrollRequest>(EnrollRequest.GetHeader(),AndroidHandler.EnrollRequestHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<RegisterStudent>(RegisterStudent.GetHeader(), AndroidHandler.RegisterStudentHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<SaveWork>(SaveWork.GetHeader(),SaveWorkHandler);
+            NetworkComms.AppendGlobalIncomingPacketHandler<GetCourses>(GetCourses.GetHeader(), AndroidHandler.GetCoursesHandler);
             
             Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0), true);
         }

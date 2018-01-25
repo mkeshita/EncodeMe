@@ -140,7 +140,45 @@ namespace NORSU.EncodeMe.Network
                 await Task.Delay(TimeSpan.FromSeconds(7));
             }
         }
+
+        public static async Task<Courses> GetCourses()
+        {
+            return await Instance._GetCourses();
+        }
+
+        private Courses _courses;
         
+        private async Task<Courses> _GetCourses()
+        {
+            if (_courses != null) return _courses;
+            if (Server == null) await FindServer();
+            if (Server == null) return null;
+            
+            var request = new GetCourses();
+
+            Courses result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<Courses>(Courses.GetHeader(),
+                (h, c, r) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(Courses.GetHeader());
+                    result = r;
+                    _courses = r;
+                });
+            
+            await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(Courses.GetHeader());
+            return null;
+        }
+
         public static async Task<StudentInfoResult> GetStudentInfo(string studentId)
         {
             return await Instance._GetStudentInfo(studentId);
