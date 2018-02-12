@@ -32,6 +32,27 @@ namespace NORSU.EncodeMe.ViewModels
             }
         }
 
+        private ICommand _deleteSelectedCommand;
+
+        public ICommand DeleteSelectedCommand =>
+            _deleteSelectedCommand ?? (_deleteSelectedCommand = new DelegateCommand(
+                d =>
+                {
+                    var list = Student.Cache.Where(x => x.IsSelected).ToList();
+                    if (list.Count == 0) return;
+                    foreach (var student in list)
+                    {
+                        student.Delete(false);
+                    }
+                    var msg = "student";
+                    if (list.Count > 1) msg += "s";
+                    MainViewModel.EnqueueMessage($"{list.Count} {msg} deleted","UNDO",
+                        () =>
+                        {
+                            list.ForEach(x=>x.Undelete());
+                        });
+                },d=>Student.Cache.Any(x=>x.IsSelected)));
+        
         private bool FilterStudent(object o)
         {
             if (!(o is Models.Student s)) return false;
