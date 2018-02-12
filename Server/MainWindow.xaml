@@ -19,7 +19,7 @@
         xmlns:views="clr-namespace:NORSU.EncodeMe.Views"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        MinWidth="555" MinHeight="471"
+        MinWidth="666" MinHeight="555"
         WindowState="Maximized"
         DataContext="{Binding Source={x:Static viewModels:MainViewModel.Instance}}"
         Title="EncodeMe Server" Height="471" Width="555">
@@ -131,6 +131,9 @@
                                     <DataTemplate DataType="{x:Type viewModels:Requests}">
                                         <views:Requests DataContext="{Binding}" />
                                     </DataTemplate>
+                  <DataTemplate DataType="{x:Type viewModels:Users}">
+                    <views:Users/>
+                  </DataTemplate>
                                 </md:Transitioner.Resources>
                             </md:Transitioner>
                         </ScrollViewer>

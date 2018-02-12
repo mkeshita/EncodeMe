@@ -10,7 +10,8 @@
              HorizontalAlignment="Stretch"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="{StaticResource MaterialDesignDarkBackground}">
-    <md:Card HorizontalAlignment="Center" VerticalAlignment="Center" Width="333">
+    <md:Card HorizontalAlignment="Center" VerticalAlignment="Center" Width="333"
+             UniformCornerRadius="7">
       <StackPanel>
         <StackPanel Orientation="Horizontal">
           <Path
@@ -38,6 +39,7 @@
                   Margin="10"
                   HorizontalAlignment="Right"
                   Content="LOGIN"
+                  IsDefault="True"
                   Command="{Binding LoginCommand}"
                   CommandParameter="{Binding ElementName=PasswordBox}"/>
         </Grid>
