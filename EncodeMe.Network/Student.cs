@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using System;
+using ProtoBuf;
 #if __ANDROID__
 using SQLite;
 #endif
@@ -82,6 +83,89 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
-        
+        private string _BirthDAte;
+        [ProtoMember(7)]
+        public string BirthDate
+        {
+            get => _BirthDAte;
+            set
+            {
+                if (value == _BirthDAte)
+                    return;
+                _BirthDAte = value;
+                OnPropertyChanged(nameof(BirthDate));
+            }
+        }
+
+        private string _College;
+        [ProtoMember(8)]
+        public string College
+        {
+            get => _College;
+            set
+            {
+                if (value == _College)
+                    return;
+                _College = value;
+                OnPropertyChanged(nameof(College));
+            }
+        }
+
+        private string _Major;
+        [ProtoMember(9)]
+        public string Major
+        {
+            get => _Major;
+            set
+            {
+                if (value == _Major)
+                    return;
+                _Major = value;
+                OnPropertyChanged(nameof(Major));
+            }
+        }
+
+        private string _Minor;
+        [ProtoMember(10)]
+        public string Minor
+        {
+            get => _Minor;
+            set
+            {
+                if (value == _Minor)
+                    return;
+                _Minor = value;
+                OnPropertyChanged(nameof(Minor));
+            }
+        }
+
+        private string _Status;
+        [ProtoMember(11)]
+        public string Status
+        {
+            get => _Status;
+            set
+            {
+                if (value == _Status)
+                    return;
+                _Status = value;
+                OnPropertyChanged(nameof(Status));
+            }
+        }
+
+        private string _Scholarship;
+        [ProtoMember(12)]
+        public string Scholarship
+        {
+            get => _Scholarship;
+            set
+            {
+                if (value == _Scholarship)
+                    return;
+                _Scholarship = value;
+                OnPropertyChanged(nameof(Scholarship));
+            }
+        }
+
     }
 }

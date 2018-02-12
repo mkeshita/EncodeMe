@@ -53,6 +53,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <views:SideBar Grid.RowSpan="2"/>
+              
             <md:DialogHost Identifier="InnerDialog"
                            SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}"
                            IsOpen="{Binding Screens/IsDialogOpen}"
@@ -90,7 +91,7 @@
                                             Grid.Row="1"/>
                         </Grid>
                     </md:DrawerHost.RightDrawerContent>
-                    <Grid>
+                    <Grid IsEnabled="{Binding HasLoggedIn}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" SharedSizeGroup="a" />
                             <RowDefinition Height="*" />
@@ -103,6 +104,20 @@
                             <md:Transitioner
                             ItemsSource="{Binding Screens}"
                             IsSynchronizedWithCurrentItem="True">
+                <md:Transitioner.ItemContainerStyle>
+                  <Style TargetType="md:TransitionerSlide">
+                    <Setter Property="BackwardWipe">
+                      <Setter.Value>
+                        <md:FadeWipe/>
+                      </Setter.Value>
+                    </Setter>
+                    <Setter Property="ForwardWipe">
+                      <Setter.Value>
+                        <md:FadeWipe />
+                      </Setter.Value>
+                    </Setter>
+                  </Style>
+                </md:Transitioner.ItemContainerStyle>
                                 <md:Transitioner.Resources>
                                     <DataTemplate DataType="{x:Type viewModels:Encoders}">
                                         <views:Encoders DataContext="{Binding}" />
@@ -210,6 +225,9 @@
                              Grid.Row="1"
                              Grid.ColumnSpan="2">
                 </md:Snackbar>
+              
+              <views:Login Grid.ColumnSpan="2" Grid.RowSpan="2"
+                           Visibility="{Binding HasLoggedIn,Converter={cnv:BooleanToVisibility Collapsed,Visible},FallbackValue=Visible}"/>
             </Grid>
 
     </md:DialogHost>
