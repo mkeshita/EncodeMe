@@ -11,7 +11,7 @@ namespace NORSU.EncodeMe.ViewModels
 {
     class Users : Screen
     {
-        private Users() : base("Users", PackIconKind.AccountMultiple)
+        private Users() : base("User Accounts", PackIconKind.AccountMultiple)
         {
             ShortName = "Users";
             Commands.Add(new ScreenMenu("ADD NEW", PackIconKind.AccountPlus, AddNewCommand));

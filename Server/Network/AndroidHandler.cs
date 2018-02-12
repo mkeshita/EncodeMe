@@ -68,7 +68,7 @@ namespace NORSU.EncodeMe.Network
             result.Result = ResultCodes.Success;
             result.Student = new Student()
             {
-                Course = student.Course,
+                Course = student.Course.Acronym,
                 FirstName = student.FirstName,
                 Id = student.Id,
                 LastName = student.LastName,
@@ -204,7 +204,7 @@ namespace NORSU.EncodeMe.Network
             {
                 FirstName = reg.Student.FirstName,
                 LastName = reg.Student.LastName,
-                Course = reg.Student.Course,
+                //Course = reg.Student.Course,
                 StudentId = reg.Student.StudentId
             };
             stud.Save();

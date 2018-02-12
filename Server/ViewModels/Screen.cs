@@ -29,7 +29,7 @@ namespace NORSU.EncodeMe.ViewModels
                 OnPropertyChanged(nameof(IsDialogOpen));
             }
         }
-
+        
         private bool _IsRightDrawerOpen;
 
         public bool IsRightDrawerOpen
@@ -157,7 +157,7 @@ namespace NORSU.EncodeMe.ViewModels
                 OnPropertyChanged(nameof(Icon));
             }
         }
-
+        
         //private UserControl _content;
 
         //public UserControl Content

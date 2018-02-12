@@ -98,6 +98,7 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
+                      <!--Screen Content-->
                         <ScrollViewer Grid.Row="1"
                                   HorizontalScrollBarVisibility="{Binding Screens/HorizontalScrollBarVisibility}"
                                   VerticalScrollBarVisibility="{Binding Screens/VerticalScrollBarVisibility}">
@@ -131,6 +132,9 @@
                                     <DataTemplate DataType="{x:Type viewModels:Requests}">
                                         <views:Requests DataContext="{Binding}" />
                                     </DataTemplate>
+                  <DataTemplate DataType="{x:Type viewModels:Students}">
+                    <views:Students />
+                  </DataTemplate>
                   <DataTemplate DataType="{x:Type viewModels:Users}">
                     <views:Users/>
                   </DataTemplate>
@@ -138,7 +142,8 @@
                             </md:Transitioner>
                         </ScrollViewer>
 
-                        <md:ColorZone md:ShadowAssist.ShadowDepth="Depth1"
+            <!--Screen Title-->
+            <md:ColorZone md:ShadowAssist.ShadowDepth="Depth1"
                                       Background="{DynamicResource MaterialDesignPaper}"
                                   Grid.Row="0"
                                   md:ShadowAssist.Darken="False"
@@ -180,10 +185,14 @@
                                         </DataTemplate>
                                     </md:Transitioner.ItemTemplate>
                                 </md:Transitioner>
+
+                <!--Screen Toolbar-->
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="2"
+                            HorizontalAlignment="Right">
+                 
                                 
-                                <md:Transitioner Grid.Column="2"
-                                         HorizontalAlignment="Right"
-                                         Margin="10 0"
+                  <md:Transitioner Margin="10 0"
                                          ItemsSource="{Binding Screens}"
                                          IsSynchronizedWithCurrentItem="True">
                                     <md:Transitioner.ItemTemplate>
@@ -214,7 +223,11 @@
                                         </DataTemplate>
                                     </md:Transitioner.ItemTemplate>
                                 </md:Transitioner>
-                            </Grid>
+
+                 
+                </StackPanel>
+                              
+              </Grid>
                         </md:ColorZone>
                     </Grid>
                 </md:DrawerHost>

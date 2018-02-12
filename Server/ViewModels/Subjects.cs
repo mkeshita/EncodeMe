@@ -12,9 +12,9 @@ namespace NORSU.EncodeMe.ViewModels
 {
     class Subjects : Screen
     {
-        private Subjects() : base("Subjects", PackIconKind.BookOpen)
+        private Subjects() : base("Offered Courses", PackIconKind.BookOpen)
         {
-            ShortName = "Subjects";
+            ShortName = "Courses";
             Commands.Add(new ScreenMenu("COURSES", PackIconKind.Library, ShowCoursesCommand));
             
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
