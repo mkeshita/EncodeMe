@@ -72,12 +72,12 @@ namespace NORSU.EncodeMe.ViewModels
 
         public ICommand LogoutCommand => _logoutCommand ?? (_logoutCommand = new DelegateCommand(d =>
         {
-            CurrentUser = null;
+            Messenger.Default.Broadcast(Messages.InitiateLogout);
         }));
 
         private ICommand _loginCommand;
         public ICommand LoginCommand => _loginCommand ?? (_loginCommand = new DelegateCommand<PasswordBox>(
-        pwd =>
+        async pwd =>
         {
             User user = null;
             if (User.Cache.Count == 0)
@@ -93,7 +93,18 @@ namespace NORSU.EncodeMe.ViewModels
 
             if (user == null)
             {
-                MessageBox.Show("Login Failed", "Invalid username/password.");
+                await DialogHost.Show(new MessageDialog()
+                {
+                    Icon = PackIconKind.KeyVariant,
+                    Title = "AUTHENTICATION FAILED",
+                    Message = "Invalid username and password. Please try again!",
+                    Affirmative = "QUIT PROGRAM",
+                    Negative = "TRY AGAIN",
+                    AffirmativeCommand = new DelegateCommand(dd =>
+                    {
+                        Application.Current.Shutdown();
+                    })
+                }, "InnerDialog");
                 return;
             }
             if (string.IsNullOrEmpty(user.Password))
@@ -101,13 +112,25 @@ namespace NORSU.EncodeMe.ViewModels
 
             if (user.Password != pwd.Password)
             {
-                MessageBox.Show("Login Failed", "Invalid username/password.");
+                await DialogHost.Show(new MessageDialog()
+                {
+                    Icon = PackIconKind.KeyVariant,
+                    Title = "AUTHENTICATION FAILED",
+                    Message = "Invalid username and password. Please try again!",
+                    Affirmative = "QUIT PROGRAM",
+                    Negative = "TRY AGAIN",
+                    AffirmativeCommand = new DelegateCommand(dd =>
+                    {
+                        Application.Current.Shutdown();
+                    })
+                }, "InnerDialog");
                 return;
             }
             
             user.Save();
-            CurrentUser = user;
-            
+            LoginUsername = "";
+            pwd.Password = "";
+            Messenger.Default.Broadcast(Messages.InitiateLogin,user);
         },pwd=>pwd?.Password.Length>0 && !string.IsNullOrWhiteSpace(LoginUsername)));
 
         public bool HasLoggedIn => CurrentUser != null;
@@ -123,10 +146,11 @@ namespace NORSU.EncodeMe.ViewModels
                 _items = new ObservableCollection<Screen>()
                 {
                     //new Screen("Dashboard", PackIconKind.Home),
+                    Students.Instance,
                     Encoders.Instance,
-                    Terminals.Instance,
                     Subjects.Instance,
                     Requests.Instance,
+                    Terminals.Instance,
                     Users.Instance,
                  //   new Screen("Activity", PackIconKind.Clock),
                  //   new Screen("Settings", PackIconKind.Settings),

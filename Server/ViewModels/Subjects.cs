@@ -14,6 +14,7 @@ namespace NORSU.EncodeMe.ViewModels
     {
         private Subjects() : base("Subjects", PackIconKind.BookOpen)
         {
+            ShortName = "Subjects";
             Commands.Add(new ScreenMenu("COURSES", PackIconKind.Library, ShowCoursesCommand));
             
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
