@@ -14,6 +14,11 @@ namespace NORSU.EncodeMe.ViewModels
         private Students() : base("Enrolled Students", PackIconKind.School)
         {
             ShortName = "Students";
+            
+            Messenger.Default.AddListener<Student>(Messages.ModelSelected, s =>
+            {
+                OnPropertyChanged(nameof(CheckState));
+            });
         }
 
         private static Students _instance;
@@ -32,6 +37,41 @@ namespace NORSU.EncodeMe.ViewModels
             }
         }
 
+        private bool? _CheckState;
+
+        public bool? CheckState
+        {
+            get
+
+            {
+                bool? state = null;
+                foreach (var i in Items)
+                {
+                    if(!(i is Student item)) continue;
+                    if (state == null)
+                    {
+                        state = item.IsSelected;
+                    }
+                    else
+                    {
+                        if (state != item.IsSelected) return null;
+                    }
+                }
+                return state;
+            }
+            set
+            {
+                _CheckState = value;
+                OnPropertyChanged(nameof(CheckState));
+                foreach (var i in Items)
+                {
+                    if (!(i is Student item))
+                        continue;
+                    item.SetSelected(value??false);
+                }
+            }
+        }
+        
         private ICommand _deleteSelectedCommand;
 
         public ICommand DeleteSelectedCommand =>
@@ -46,7 +86,7 @@ namespace NORSU.EncodeMe.ViewModels
                     }
                     var msg = "student";
                     if (list.Count > 1) msg += "s";
-                    MainViewModel.EnqueueMessage($"{list.Count} {msg} deleted","UNDO",
+                    MainViewModel.EnqueueMessage($"{list.Count} {msg} were deleted.","UNDO",
                         () =>
                         {
                             list.ForEach(x=>x.Undelete());

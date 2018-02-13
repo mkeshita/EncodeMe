@@ -9,6 +9,7 @@
              xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
              xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data"
              xmlns:encodeMe="clr-namespace:NORSU.EncodeMe"
+             xmlns:viewModels="clr-namespace:NORSU.EncodeMe.ViewModels"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
     <DataGrid ItemsSource="{Binding Items}"
@@ -20,10 +21,28 @@
                       CanUserDeleteRows="False">
 
       <DataGrid.Columns>
-        <DataGridCheckBoxColumn Binding="{Binding IsSelected,UpdateSourceTrigger=PropertyChanged}"
-                                ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
-                                EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"/>
-        <DataGridTextColumn Header="ID" Binding="{Binding StudentId}"
+        <DataGridTemplateColumn IsReadOnly="True">
+          <DataGridTemplateColumn.Header>
+            <CheckBox IsThreeState="True" IsChecked="{Binding Source={x:Static viewModels:Students.Instance},Path=CheckState}"
+                      HorizontalAlignment="Center"
+                      Margin="4 0 0 0"/>
+          </DataGridTemplateColumn.Header>
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Grid>
+                <CheckBox IsChecked="{Binding IsSelected,UpdateSourceTrigger=PropertyChanged}"
+                          Visibility="{Binding (Validation.HasError), Converter={converters:BooleanToVisibility Collapsed,Visible}, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}"
+                          VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <md:PackIcon Kind="Alert" Foreground="{StaticResource ValidationErrorBrush}" VerticalAlignment="Center"
+                             HorizontalAlignment="Center"
+                             ToolTip="This item contains invalid data."
+                             Visibility="{Binding (Validation.HasError), Converter={converters:BooleanToVisibility}, RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}}" />
+              </Grid>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTextColumn Header="ID" Binding="{Binding StudentId,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}"
+                            MinWidth="111"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
         <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
