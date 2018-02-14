@@ -80,10 +80,16 @@ namespace NORSU.EncodeMe
         private bool workFetched;
         private async void Button_OnClick(object sender, RoutedEventArgs e)
         {
+            if (CurrentWork?.Result == ResultCodes.Success)
+            {
+                MainTransitioner.SelectedIndex = 3;
+                Content.SelectedIndex = 2;
+                return;
+            }
+            
             var NextButton = (Button) sender;
             if (MainViewModel.Instance.Encoder == null)
-            {
-                //_loginMagic.IsGenieOut = true;             
+            {     
                 MainTransitioner.SelectedIndex = 1;
                 PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
                 return;
@@ -144,20 +150,16 @@ namespace NORSU.EncodeMe
 
         private void EncoderPictureClicked(object sender, MouseButtonEventArgs e)
         {
-            //_workMagic.IsGenieOut = false;
-           
             if (MainViewModel.Instance.Encoder == null)
             {
-               // _loginMagic.IsGenieOut = !_loginMagic.IsGenieOut;
-               // MainTransitioner.SelectedIndex = _loginMagic.IsGenieOut ? 1 : 0;
+                MainTransitioner.SelectedIndex = 0;
+                Content.SelectedIndex = 0;
                 EnableLogin();
-                Username.Text = "";
-                Password.Password = "";
             }
             else
             {
-               // _encoderMagic.IsGenieOut = !_encoderMagic.IsGenieOut;
-              //  MainTransitioner.SelectedIndex = _encoderMagic.IsGenieOut ? 2 : 0;
+                MainTransitioner.SelectedIndex = 1;
+                Content.SelectedIndex = 2;
             }
         }
 
@@ -183,6 +185,8 @@ namespace NORSU.EncodeMe
                 MainViewModel.Instance.Encoder = result.Encoder;
                 MainTransitioner.SelectedIndex = 2;
                 Content.SelectedIndex = 1;
+                Username.Text = "";
+                Password.Password = "";
             }
             else
             {
@@ -309,6 +313,18 @@ namespace NORSU.EncodeMe
             {
                 MessageBox.Show("An error occured while contacting server. Please try again.");
             }
+        }
+
+        private void Enroll_Click(object sender, RoutedEventArgs e)
+        {
+            MainTransitioner.SelectedIndex = 5;
+            Content.SelectedIndex = 4;
+        }
+
+        private void CancelEnrollment_Click(object sender, RoutedEventArgs e)
+        {
+            MainTransitioner.SelectedIndex = 2;
+            Content.SelectedIndex = 1;
         }
     }
 }

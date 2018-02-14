@@ -52,9 +52,13 @@ namespace NORSU.EncodeMe.Network
                 TerminalLog.Add(client.Id, $"{encoder.Username} has logged in.");
                 //Logout previous session if any.
                 var cl = Client.Cache.FirstOrDefault(x => x.Encoder?.Id == encoder.Id);
-                if(cl!=null)
-                await new Logout() {Reason = $"You were logged in at another terminal ({cl.Hostname})."}
-                    .Send(new IPEndPoint(IPAddress.Parse(cl.IP), cl.Port));
+                if (cl != null)
+                {
+                    await new Logout() {Reason = $"You were logged in at another terminal ({cl.Hostname})."}
+                        .Send(new IPEndPoint(IPAddress.Parse(cl.IP), cl.Port));
+                    cl.Encoder = null;
+                }
+                
 
                 client.Encoder = encoder;
                 await new LoginResult(new Encoder()
@@ -90,8 +94,10 @@ namespace NORSU.EncodeMe.Network
             {
                 await TaskEx.Delay(5555);
                 client.IsOnline = false;
-                await new Ping().Send(new IPEndPoint(IPAddress.Parse(client.IP), 4444));
+                await new Ping().Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
                 await TaskEx.Delay(1111);
+                if (!client.IsOnline)
+                    client.Encoder = null;
             }
         }
 
