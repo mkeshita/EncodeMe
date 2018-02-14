@@ -205,6 +205,34 @@ namespace NORSU.EncodeMe.Network
             return new SaveWorkResult(){Result = ResultCodes.Timeout};
         }
 
+        public static async Task<EnrollStudentResult> EnrollStudent(Student student)
+        {
+            await FindServer();
+            if (Server == null) return null;
+
+            EnrollStudentResult result = null;
+
+            NetworkComms.AppendGlobalIncomingPacketHandler<EnrollStudentResult>(EnrollStudentResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(EnrollStudentResult.GetHeader());
+                    result = i;
+                });
+
+            await new EnrollStudent(){Student = student}.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(EnrollStudentResult.GetHeader());
+            return null;
+        }
+
         public static async Task<GetCoursesResult> GetCoursesDesktop()
         {
             await FindServer();

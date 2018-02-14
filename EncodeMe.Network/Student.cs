@@ -235,5 +235,40 @@ namespace NORSU.EncodeMe.Network
         }
 
         public string Error { get; } = null;
+
+        public bool HasError
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(GetErrorInfo(nameof(BirthDate)))) return true;
+                if (!string.IsNullOrEmpty(GetErrorInfo(nameof(StudentId))))
+                    return true;
+                if (!string.IsNullOrEmpty(GetErrorInfo(nameof(FirstName))))
+                    return true;
+                if (!string.IsNullOrEmpty(GetErrorInfo(nameof(LastName))))
+                    return true;
+                if (!string.IsNullOrEmpty(GetErrorInfo(nameof(Address))))
+                    return true;
+                return false;
+            }
+        }
+    }
+
+    [ProtoContract]
+    class EnrollStudent : Message<EnrollStudent>
+    {
+        [ProtoMember(1)]
+        public Student Student { get; set; }
+    }
+
+    [ProtoContract]
+    class EnrollStudentResult : Message<EnrollStudentResult>
+    {
+        [ProtoMember(1)]
+        public bool Success { get; set; }
+        [ProtoMember(2)]
+        public long Id { get; set; }
+        [ProtoMember(3)]
+        public string ErrorMessage { get; set; }
     }
 }

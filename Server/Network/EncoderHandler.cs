@@ -328,5 +328,44 @@ namespace NORSU.EncodeMe.Network
 
             result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
         }
+
+        private static async void EnrollStudentHandler(PacketHeader packetheader, Connection connection, EnrollStudent req)
+        {
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
+            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+
+            //Maybe do not ignore this on production
+            if (client == null)
+                return;
+
+            if (Models.Student.Cache.Any(x => x.StudentId.ToLower() == req.Student.StudentId.ToLower()))
+            {
+                await new EnrollStudentResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Student ID Taken"
+                }.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                return;
+            }
+            var stud = new Models.Student()
+            {
+                StudentId = req.Student.StudentId,
+                Address = req.Student.Address,
+                BirthDate = req.Student.BirthDate,
+                CourseId = req.Student.CourseId,
+                FirstName = req.Student.FirstName,
+                LastName = req.Student.LastName,
+                Major = req.Student.Major,
+                Minor = req.Student.Minor,
+                Scholarship = req.Student.Scholarship,
+            };
+            stud.Save();
+
+            await new EnrollStudentResult()
+            {
+                Success = true,
+                Id = stud.Id
+            }.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+        }
     }
 }

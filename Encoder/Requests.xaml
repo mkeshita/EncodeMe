@@ -294,6 +294,7 @@
                     Click="CancelEnrollment_Click"
                     Margin="10"/>
             <Button Grid.Column="2" Content="SUBMIT"
+                    Command="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=EnrollCommand}"
                     Margin="10"/>
           </Grid>
           
@@ -559,6 +560,7 @@
               </Grid>
             </Border>
           <ScrollViewer Background="White"
+                        IsEnabled="{Binding IsProcessing,Converter={converters:Inverter}}"
                         HorizontalScrollBarVisibility="Disabled"
                         VerticalScrollBarVisibility="Auto"
                           Grid.Row="1">
@@ -610,6 +612,27 @@
               
           </StackPanel>
           </ScrollViewer>
+            <Grid Grid.Row="1"
+                  Visibility="{Binding IsProcessing,Converter={converters:BooleanToVisibility}}">
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center"
+                  Visibility="{Binding EnrollmentSuccess,Converter={converters:BooleanToVisibility Collapsed,Visible}}">
+              <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Height="147" Width="147"
+                           Visibility="{Binding EnrollmentError,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                           IsIndeterminate="True"/>
+            </Grid>
+              <md:PackIcon Kind="CheckCircle" Height="147" Width="147" Foreground="{StaticResource PrimaryHueDarkBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Visibility="{Binding EnrollmentSuccess,Converter={converters:BooleanToVisibility}}"/>
+            <StackPanel Background="#77ffffff"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding EnrollmentError,Converter={converters:BooleanToVisibility}}">
+              <md:PackIcon Kind="CloseCircle" Height="147" Width="147"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="{StaticResource ValidationErrorBrush}"/>
+              <TextBlock Text="{Binding Status}" TextAlignment="Center" TextWrapping="Wrap"
+                         FontSize="11pt"/>
+            </StackPanel>
+          </Grid>
         </Grid>
         </Grid>
     </md:Transitioner>
