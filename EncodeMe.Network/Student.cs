@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using ProtoBuf;
 #if __ANDROID__
 using SQLite;
@@ -6,7 +7,7 @@ using SQLite;
 namespace NORSU.EncodeMe.Network
 {
     [ProtoContract]
-    class Student : Message<Student>
+    class Student : Message<Student>, IDataErrorInfo
     {
         public Student()
         {
@@ -83,9 +84,9 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
-        private string _BirthDAte;
+        private DateTime _BirthDAte;
         [ProtoMember(7)]
-        public string BirthDate
+        public DateTime BirthDate
         {
             get => _BirthDAte;
             set
@@ -167,5 +168,72 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
+        private string _Address;
+        [ProtoMember(13)]
+        public string Address
+        {
+            get => _Address;
+            set
+            {
+                if(value == _Address)
+                    return;
+                _Address = value;
+                OnPropertyChanged(nameof(Address));
+            }
+        }
+
+        private long _CourseId;
+        [ProtoMember(14)]
+        public long CourseId
+        {
+            get => _CourseId;
+            set
+            {
+                if(value == _CourseId)
+                    return;
+                _CourseId = value;
+                OnPropertyChanged(nameof(CourseId));
+            }
+        }
+
+        private bool _Male;
+        [ProtoMember(15)]
+        public bool Male
+        {
+            get => _Male;
+            set
+            {
+                if(value == _Male)
+                    return;
+                _Male = value;
+                OnPropertyChanged(nameof(Male));
+            }
+        }
+
+
+        public string this[string columnName] => GetErrorInfo(columnName);
+
+        private string GetErrorInfo(string prop)
+        {
+            if (prop == nameof(BirthDate))
+            {
+                if (BirthDate == DateTime.MinValue) return "Required";
+                if (BirthDate < DateTime.Now.AddYears(-174)) return "Too old";
+                if (BirthDate > DateTime.Now.AddYears(-7)) return "Too young";
+            }
+
+            if (prop == nameof(StudentId) && string.IsNullOrWhiteSpace(StudentId)) return "Required";
+            if (prop == nameof(FirstName) && string.IsNullOrWhiteSpace(FirstName))
+                return "Required";
+            if (prop == nameof(LastName) && string.IsNullOrWhiteSpace(LastName))
+                return "Required";
+            if (prop == nameof(CourseId) && CourseId==0) return "Required";
+            if (prop == nameof(Address) && string.IsNullOrWhiteSpace(Address))
+                return "Required";
+
+            return null;
+        }
+
+        public string Error { get; } = null;
     }
 }

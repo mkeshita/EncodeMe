@@ -36,19 +36,17 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<string>("PING", PingHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<Ping>(Ping.GetHeader(),PingPongHandler);
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
-
             PeerDiscovery.OnPeerDiscovered += OnPeerDiscovered;
             
-            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 4444));
-            
+            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0));
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
-            
             
         }
 
         private static async void PingPongHandler(PacketHeader packetheader, Connection connection, Ping incomingobject)
         {
-            await new Pong().Send(new IPEndPoint(IPAddress.Parse(Server.IP), 7777));
+            if(Server!=null)
+            await new Pong().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
         }
 
         private static async void PingHandler(PacketHeader packetHeader, Connection connection, string incomingObject)
@@ -205,6 +203,35 @@ namespace NORSU.EncodeMe.Network
             Server = null;
             NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
             return new SaveWorkResult(){Result = ResultCodes.Timeout};
+        }
+
+        public static async Task<GetCoursesResult> GetCoursesDesktop()
+        {
+            await FindServer();
+            if (Server == null) return null;
+
+            GetCoursesResult result = null;
+
+            NetworkComms.AppendGlobalIncomingPacketHandler<GetCoursesResult>(GetCoursesResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(GetCoursesResult.GetHeader());
+                    result = i;
+                });
+
+            await new GetCoursesDesktop().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(GetCoursesResult.GetHeader());
+            return null;
         }
 
         public static async Task<GetWorkResult> GetNextWork(string username="")

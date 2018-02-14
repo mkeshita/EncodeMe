@@ -130,6 +130,7 @@
     <Compile Include="..\Server\Converters\StringToColor.cs">
       <Link>Converters\StringToColor.cs</Link>
     </Compile>
+    <Compile Include="Converters\BirthToAge.cs" />
     <Compile Include="Converters\ScheduleStatusConverter.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="LoginView.xaml.cs">
@@ -140,6 +141,7 @@
     <Compile Include="Requests.xaml.cs">
       <DependentUpon>Requests.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\EnrollmentViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Screen.cs" />

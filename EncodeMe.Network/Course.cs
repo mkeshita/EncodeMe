@@ -13,5 +13,21 @@ namespace NORSU.EncodeMe.Network
         
         [ProtoMember(2)]
         public string Name { get; set; }
+        
+        [ProtoMember(3)]
+        public string Fullname { get; set; }
+    }
+
+    [ProtoContract]
+    class GetCoursesDesktop : Message<GetCoursesDesktop>
+    {
+        
+    }
+
+    [ProtoContract]
+    class GetCoursesResult : Message<GetCoursesResult>
+    {
+        [ProtoMember(1)]
+        public List<Course> Courses { get; set; } = new List<Course>();
     }
 }

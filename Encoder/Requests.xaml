@@ -17,7 +17,8 @@
         ShowInTaskbar="False"
         SizeToContent="WidthAndHeight"
         xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
-        xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters">
+        xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
+        xmlns:system="clr-namespace:System;assembly=mscorlib">
     <Window.Resources>
         <Storyboard x:Key="HideButton">
             <DoubleAnimation Storyboard.TargetName="Button" Storyboard.TargetProperty="Height"
@@ -530,7 +531,7 @@
 
       <!--ENROLLMENT-->
       
-        <Grid>
+        <Grid DataContext="{Binding Source={x:Static vm:EnrollmentViewModel.Instance}}">
           <Grid>
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
@@ -562,20 +563,49 @@
                         VerticalScrollBarVisibility="Auto"
                           Grid.Row="1">
             <StackPanel Background="White" Margin="20"
+                        DataContext="{Binding Student}"
                         Grid.Row="1">
               <TextBox md:HintAssist.Hint="STUDENT ID" 
+                       Text="{Binding StudentId,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True"/>
             <TextBox md:HintAssist.Hint="FIRST NAME"
+                     Text="{Binding FirstName,UpdateSourceTrigger=PropertyChanged}"
                      md:HintAssist.IsFloating="True" />
               <TextBox md:HintAssist.Hint="LAST NAME"
+                       Text="{Binding LastName,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />
+              <DatePicker Margin="0 15 0 0"
+                          DisplayDateStart="{Binding Source={x:Static vm:EnrollmentViewModel.MinDate},Mode=OneWay}"
+                          DisplayDateEnd="{Binding Source={x:Static system:DateTime.Now},Mode=OneWay}"
+                          SelectedDate="{Binding BirthDate,UpdateSourceTrigger=PropertyChanged}"
+                          md:HintAssist.IsFloating="True" >
+                <md:HintAssist.Hint>
+                  <TextBlock>
+                    <Run Text="Date of Birth (AGE: "/><Run Text="{Binding BirthDate,Converter={converters:BirthToAge}}"/><Run Text=")"/>
+                  </TextBlock>
+                </md:HintAssist.Hint>
+              </DatePicker>
+              <ComboBox md:HintAssist.Hint="GENDER"
+                        md:HintAssist.IsFloating="True" >
+                <ComboBoxItem Content="Male" IsSelected="{Binding Male}"/>
+                <ComboBoxItem Content="Female" IsSelected="{Binding Male,Converter={converters:Inverter}}"/>
+              </ComboBox>
               <TextBox md:HintAssist.Hint="ADDRESS"
+                       Text="{Binding Address,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />
+              <ComboBox ItemsSource="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=Courses}"
+                        md:HintAssist.Hint="COURSE"
+                        md:HintAssist.IsFloating="True"
+                        DisplayMemberPath="Fullname"
+                        SelectedValuePath="Id" SelectedValue="{Binding CourseId}"/>
               <TextBox md:HintAssist.Hint="MAJOR"
+                       Text="{Binding Major,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />
               <TextBox md:HintAssist.Hint="MINOR"
+                       Text="{Binding Minor,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />
               <TextBox md:HintAssist.Hint="SCHOLARSHIP"
+                       Text="{Binding Scholarship,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />
               
           </StackPanel>

@@ -305,5 +305,28 @@ namespace NORSU.EncodeMe.Network
             client.IsOnline = true;
             
         }
+
+        private static void GetCoursesHandler(PacketHeader packetheader, Connection connection, GetCoursesDesktop incomingobject)
+        {
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
+            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+
+            //Maybe do not ignore this on production
+            if (client == null)
+                return;
+
+            var result = new GetCoursesResult();
+            foreach (var course in Models.Course.Cache.ToList())
+            {
+                result.Courses.Add(new Course()
+                {
+                    Id = course.Id,
+                    Name = course.Acronym,
+                    Fullname = course.FullName
+                });
+            }
+
+            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+        }
     }
 }
