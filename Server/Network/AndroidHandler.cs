@@ -117,7 +117,7 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
             
             var result = new SchedulesResult(){Serial = incomingobject.Serial,Subject = incomingobject.SubjectCode};
-            var subject = Subject.GetByCode(incomingobject.SubjectCode);
+            var subject = Models.Subject.GetByCode(incomingobject.SubjectCode);
             if (subject == null)
                 result.Result = ResultCodes.NotFound;
             else
@@ -314,8 +314,15 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
 
             var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.TransactionId);
-            if (request == null) return;
-            if (request.StudentId != req.StudentId) return;
+            if ((request == null) || (request.StudentId != req.StudentId))
+            {
+                await new AddScheduleResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid request"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
             
             if(request.Details.Any(x=>x.ScheduleId==req.ClassId)) return;
             
@@ -329,6 +336,35 @@ namespace NORSU.EncodeMe.Network
             {
                 Success = true,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP),dev.Port));
+        }
+
+        public static async void CommitEnrollmentHandler(PacketHeader packetheader, Connection connection, CommitEnrollment req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.TransactionId);
+            if (request == null || request.StudentId != req.StudentId)
+            {
+                await new CommitEnrollmentResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid request"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+            request.Submitted = true;
+            request.DateSubmitted = DateTime.Now;
+            request.Save();
+            
+            await new CommitEnrollmentResult()
+            {
+                Success = true,
+                QueueNumber = request.GetQueueNumber()
+            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
     }
 }

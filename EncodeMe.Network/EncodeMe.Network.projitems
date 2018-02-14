@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AndroidInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CheckReceipt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClassSchedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommitEnrollment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Course.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Disconnected.cs" />

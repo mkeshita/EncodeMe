@@ -272,6 +272,52 @@ namespace NORSU.EncodeMe.Network
             return null;
         }
 
+        public static async Task<CommitEnrollmentResult> CommitEnrollment()
+        {
+            return await Instance._CommitEnrollment();
+        }
+
+        private async Task<CommitEnrollmentResult> _CommitEnrollment()
+        {
+            if (CurrentStudent == null)
+                return null;
+
+            if (TransactionId == 0) return null;
+
+            if (Server == null)
+                await FindServer();
+
+            if (Server == null)
+                return null;
+
+            CommitEnrollmentResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<CommitEnrollmentResult>(CommitEnrollmentResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(CommitEnrollmentResult.GetHeader());
+                    result = i;
+                });
+
+            await new CommitEnrollment()
+            {
+                ClassIds = ClassSchedules.Select(x=>x.ClassId).ToList(),
+                StudentId = CurrentStudent.StudentId,
+                TransactionId = TransactionId
+            }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(CommitEnrollmentResult.GetHeader());
+            return null;
+        }
+
         public static async Task<AddScheduleResult> AddSchedule(ClassSchedule schedule)
         {
             return await Instance._AddSchedule(schedule);
