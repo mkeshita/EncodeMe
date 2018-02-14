@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -21,7 +22,8 @@ namespace NORSU.EncodeMe.Network
             if (_started) return;
             _started = true;
             
-            NetworkComms.EnableLogging(new LiteLogger(LiteLogger.LogMode.ConsoleOnly));
+            //NetworkComms.EnableLogging(new LiteLogger(LiteLogger.LogMode.ConsoleOnly));
+            NetworkComms.DisableLogging();
             
             NetworkComms.IgnoreUnknownPacketTypes = true;
             var serializer = DPSManager.GetDataSerializer<ProtobufSerializer>();
@@ -32,15 +34,21 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<ServerInfo>(ServerInfo.GetHeader(), ServerInfoReceived);
             NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Network.Logout.GetHeader(), LogoutHandlger);
             NetworkComms.AppendGlobalIncomingPacketHandler<string>("PING", PingHandler);
-            
+            NetworkComms.AppendGlobalIncomingPacketHandler<Ping>(Ping.GetHeader(),PingPongHandler);
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
 
             PeerDiscovery.OnPeerDiscovered += OnPeerDiscovered;
-            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0));
+            
+            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 4444));
             
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             
             
+        }
+
+        private static async void PingPongHandler(PacketHeader packetheader, Connection connection, Ping incomingobject)
+        {
+            await new Pong().Send(new IPEndPoint(IPAddress.Parse(Server.IP), 7777));
         }
 
         private static async void PingHandler(PacketHeader packetHeader, Connection connection, string incomingObject)
@@ -97,11 +105,11 @@ namespace NORSU.EncodeMe.Network
             Server = incomingobject;
         }
 
-        private static void OnPeerDiscovered(ShortGuid peeridentifier, Dictionary<ConnectionType, List<EndPoint>> endPoints)
+        private static async void OnPeerDiscovered(ShortGuid peeridentifier, Dictionary<ConnectionType, List<EndPoint>> endPoints)
         {
             var info = new EndPointInfo(Environment.MachineName);
             
-            var eps = endPoints[ConnectionType.UDP];
+            var eps = endPoints[ConnectionType.UDP].Where(x=>((IPEndPoint)x).Port==7777);
             var localEPs = Connection.AllExistingLocalListenEndPoints();
             
             foreach (var value in eps)
@@ -112,16 +120,18 @@ namespace NORSU.EncodeMe.Network
                 foreach (var localEP in localEPs[ConnectionType.UDP])
                 {
                     var lEp = (IPEndPoint)localEP;
+                    if(lEp.AddressFamily!=AddressFamily.InterNetwork) continue;
                     if (!ip.Address.IsInSameSubnet(lEp.Address)) continue;
                     info.IP = lEp.Address.ToString();
                     info.Port = lEp.Port;                   
-                    info.Send(ip);
+                    await info.Send(ip);
                 }
             }
         }
 
         public static async Task FindServer()
         {
+            if (Server != null) return;
             Start();
             var start = DateTime.Now;
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
@@ -136,7 +146,7 @@ namespace NORSU.EncodeMe.Network
         
         public static async Task<LoginResult> Login(string username, string password)
         {
-                if(Server==null) await FindServer();
+                await FindServer();
                 if (Server == null) return new LoginResult(ResultCodes.Offline);
                 
                 var login = new Login(){Username = username,Password = password};
@@ -169,7 +179,7 @@ namespace NORSU.EncodeMe.Network
 
         public static async Task<SaveWorkResult> SaveWork(SaveWork work)
         {
-            if (Server == null) await FindServer();
+            await FindServer();
             if (Server == null) return new SaveWorkResult() { Result = ResultCodes.Offline};
 
             SaveWorkResult result = null;
@@ -199,7 +209,7 @@ namespace NORSU.EncodeMe.Network
 
         public static async Task<GetWorkResult> GetNextWork(string username="")
         {
-            if (Server == null) await FindServer();
+            await FindServer();
             if (Server == null) return new GetWorkResult(ResultCodes.Offline);
             
             var request = new GetWork(username);
@@ -228,7 +238,7 @@ namespace NORSU.EncodeMe.Network
 
         public static async void Logout()
         {
-            if (Server == null) await FindServer();
+            await FindServer();
             if (Server == null) return;
 
             await new Logout().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));

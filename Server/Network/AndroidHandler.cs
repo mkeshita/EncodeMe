@@ -165,6 +165,7 @@ namespace NORSU.EncodeMe.Network
             
             req.DateSubmitted = DateTime.Now;
             req.Status = Request.Statuses.Pending;
+            req.ReceiptNumber = incomingobject.ReceiptNumber;
             req.Save();
             
             //RequestDetail.DeleteWhere(nameof(RequestDetail.RequestId),req.Id);
