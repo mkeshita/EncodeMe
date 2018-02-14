@@ -84,9 +84,9 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
-        private DateTime _BirthDAte;
+        private DateTime? _BirthDAte;
         [ProtoMember(7)]
-        public DateTime BirthDate
+        public DateTime? BirthDate
         {
             get => _BirthDAte;
             set

@@ -58,7 +58,18 @@ namespace NORSU.EncodeMe.Network
             }
             //Not for production
             var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId == incomingobject.StudentId);
+            
             if (student == null)
+            {
+                result.Result = ResultCodes.NotFound;
+                SendStudentInfoResult(result, connection);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(student.Password))
+                student.Password = incomingobject.Password;
+
+            if (student.Password != incomingobject.Password)
             {
                 result.Result = ResultCodes.NotFound;
                 SendStudentInfoResult(result, connection);
@@ -73,7 +84,13 @@ namespace NORSU.EncodeMe.Network
                 Id = student.Id,
                 LastName = student.LastName,
                 Picture = student.Picture,
-                StudentId = student.StudentId
+                StudentId = student.StudentId,
+                BirthDate = student.BirthDate,
+                Male = student.Sex==Sexes.Male,
+                Address = student.Address,
+                Major = student.Major,
+                Minor = student.Minor,
+                Scholarship = student.Scholarship,
             };
             
             SendStudentInfoResult(result,connection);

@@ -19,7 +19,7 @@ namespace NORSU.EncodeMe
     public class StudentIntroActivity : Activity
     {
         private ProgressBar _progressBar;
-        private EditText _studentId;
+        private EditText _studentId,_password;
         private Button _next;
         
         protected override void OnCreate(Bundle savedInstanceState)
@@ -30,6 +30,7 @@ namespace NORSU.EncodeMe
             _progressBar = FindViewById<ProgressBar>(Resource.Id.Progress);
             _studentId = FindViewById<EditText>(Resource.Id.StudentId);
             _next = FindViewById<Button>(Resource.Id.NextButton);
+            _password = FindViewById<EditText>(Resource.Id.Password);
             
             _next.Click += NextOnClick;
 
@@ -59,7 +60,7 @@ namespace NORSU.EncodeMe
             edit.PutString("studentId", _studentId.Text);
             edit.Commit();
 
-            var result = await Client.GetStudentInfo(_studentId.Text);
+            var result = await Client.GetStudentInfo(_studentId.Text, _password.Text);
 
             _progressBar.Indeterminate = false;
             _studentId.Enabled = true;
@@ -70,7 +71,7 @@ namespace NORSU.EncodeMe
             {
                 await Db.DropTable<Student>();
                 await Db.Save(result.Student);
-                StartActivity(new Intent(Application.Context, typeof(SubjectsActivity)));
+                StartActivity(new Intent(Application.Context, typeof(StudentInfo)));
                 Finish();
             }
             else if (result.Result == ResultCodes.NotFound)

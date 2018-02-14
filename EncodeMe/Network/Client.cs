@@ -102,6 +102,7 @@ namespace NORSU.EncodeMe.Network
                 foreach (var localEP in localEPs[ConnectionType.UDP])
                 {
                     var lEp = (IPEndPoint)localEP;
+                    if(lEp.AddressFamily!=AddressFamily.InterNetwork) continue;
                     if (!ip.Address.IsInSameSubnet(lEp.Address)) continue;
                     info.IP = lEp.Address.ToString();
                     info.Port =lEp.Port;
@@ -179,18 +180,25 @@ namespace NORSU.EncodeMe.Network
             return null;
         }
 
-        public static async Task<StudentInfoResult> GetStudentInfo(string studentId)
+        public static async Task<StudentInfoResult> GetStudentInfo(string studentId,string password)
         {
-            return await Instance._GetStudentInfo(studentId);
+            return await Instance._GetStudentInfo(studentId,password);
         }
         
-        private async Task<StudentInfoResult> _GetStudentInfo(string studentId)
+        public static Student CurrentStudent { get; set; }
+        public static string Receipt { get; set; }
+        
+        private async Task<StudentInfoResult> _GetStudentInfo(string studentId,string password)
         {
             if (Server == null) await FindServer();
             
             if (Server == null) return new StudentInfoResult(ResultCodes.Offline);
             
-            var request = new StudentInfoRequest(){ StudentId = studentId};
+            var request = new StudentInfoRequest()
+            {
+                StudentId = studentId,
+                Password = password
+            };
             
             StudentInfoResult result = null;
             NetworkComms.AppendGlobalIncomingPacketHandler<StudentInfoResult>(StudentInfoResult.GetHeader(),
@@ -198,6 +206,8 @@ namespace NORSU.EncodeMe.Network
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(StudentInfoResult.GetHeader());
                     result = res;
+                    if(result.Result == ResultCodes.Success)
+                        CurrentStudent = res.Student;
                 });
             
             await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
