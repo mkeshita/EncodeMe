@@ -224,6 +224,98 @@ namespace NORSU.EncodeMe.Network
             return result;
         }
 
+        public static long TransactionId { get; set; }
+
+        public static List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
+        
+        public static async Task<StartEnrollmentResult> StartEnrollment(string receipt)
+        {
+            return await Instance._StartEnrollment(receipt);
+        }
+        
+        private async Task<StartEnrollmentResult> _StartEnrollment(string receipt)
+        {
+            if (CurrentStudent == null) return null;
+            if (string.IsNullOrWhiteSpace(receipt)) return null;
+
+            if(Server == null)
+                await FindServer();
+
+            if (Server == null)
+                return null;
+
+            StartEnrollmentResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<StartEnrollmentResult>(StartEnrollmentResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(StartEnrollmentResult.GetHeader());
+                    ClassSchedules = i.ClassSchedules;
+                    TransactionId = i.TransactionId;
+                    result = i;
+                });
+
+            await new StartEnrollment()
+            {
+                Receipt = receipt,
+                StudentId = CurrentStudent.StudentId
+            }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null) return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(StartEnrollmentResult.GetHeader());
+            return null;
+        }
+
+        public static async Task<AddScheduleResult> AddSchedule(ClassSchedule schedule)
+        {
+            return await Instance._AddSchedule(schedule);
+        }
+
+        private async Task<AddScheduleResult> _AddSchedule(ClassSchedule schedule)
+        {
+            if (CurrentStudent == null)
+                return null;
+            
+            if (Server == null)
+                await FindServer();
+
+            if (Server == null)
+                return null;
+
+            AddScheduleResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<AddScheduleResult>(AddScheduleResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(AddScheduleResult.GetHeader());
+                    result = i;
+                });
+
+            await new AddSchedule()
+            {
+                ClassId = schedule.ClassId,
+                StudentId = CurrentStudent.StudentId,
+                TransactionId = TransactionId
+            }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(AddScheduleResult.GetHeader());
+            return null;
+        }
+
         public static async Task<ResultCodes> Register(Student student)
         {
             return await Instance._Register(student);

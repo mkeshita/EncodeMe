@@ -20,6 +20,7 @@ namespace NORSU.EncodeMe
     {
         private EditText _receipt;
         private Button _submit;
+        private ProgressBar _progressBar;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -28,17 +29,37 @@ namespace NORSU.EncodeMe
             
             _receipt = FindViewById<EditText>(Resource.Id.OrNumber);
             _submit = FindViewById<Button>(Resource.Id.SubmitButton);
-            
+            _progressBar = FindViewById<ProgressBar>(Resource.Id.Progress);
+
             _submit.Click += SubmitOnClick;
         }
 
-        private void SubmitOnClick(object sender, EventArgs eventArgs)
+        private async void SubmitOnClick(object sender, EventArgs eventArgs)
         {
             if (string.IsNullOrEmpty(_receipt.Text)) return;
-
+            _progressBar.Indeterminate = true;
             Client.Receipt = _receipt.Text;
+
+            var res = await Client.StartEnrollment(_receipt.Text);
+
+            _progressBar.Indeterminate = false;
             
-            StartActivity(typeof(SubjectsActivity));
+            if (res?.Success ?? false)
+            {
+                StartActivity(typeof(SubjectsActivity));
+            }
+            else
+            {
+                var dlg = new AlertDialog.Builder(this);
+                dlg.SetTitle(res == null ? "Can not find server" : res.ErrorMessage);
+                dlg.SetPositiveButton("Okay", (o, args) =>
+                {
+
+                });
+                
+                dlg.Show();
+            }
+            
         }
     }
 }

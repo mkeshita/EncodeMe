@@ -74,32 +74,38 @@ namespace NORSU.EncodeMe
                 StartActivity(new Intent(Application.Context, typeof(StudentInfo)));
                 Finish();
             }
-            else if (result.Result == ResultCodes.NotFound)
-            {
-                var intent = new Bundle();
-                intent.PutString("StudentID", _studentId.Text);
-                StartActivity(new Intent(Application.Context, typeof(EditStudentActivity)),intent);
-                Finish();
-            }
             else
             {
-               
                 var dlg = new AlertDialog.Builder(this);
-                dlg.SetMessage("Please make sure you are connected to the network.");
-                dlg.SetTitle(result.Message);
-                dlg.SetCancelable(true);
-                dlg.SetNegativeButton("Cancel", (o, args) =>
+                if (result.Result == ResultCodes.NotFound)
                 {
-                    edit = pref.Edit();
-                    edit.PutBoolean("submitted", false);
-                    edit.PutInt("intro", 1);
-                    edit.Commit();
-                   
-                });
-                dlg.SetPositiveButton("Retry", (o, args) =>
+                    dlg.SetTitle("Student ID not found");
+                    dlg.SetPositiveButton("Okay", (o, args) =>
+                    {
+                        
+                    });
+                }
+                else
                 {
-                    NextOnClick(sender,eventArgs);
-                });
+                    dlg.SetTitle(result.Message);
+                    dlg.SetMessage("Please make sure you are connected to the network.");
+                    dlg.SetPositiveButton("Retry", (o, args) =>
+                    {
+                        NextOnClick(sender, eventArgs);
+                    });
+
+                    dlg.SetCancelable(true);
+                    dlg.SetNegativeButton("Cancel", (o, args) =>
+                    {
+                        edit = pref.Edit();
+                        edit.PutBoolean("submitted", false);
+                        edit.PutInt("intro", 1);
+                        edit.Commit();
+
+                    });
+                }
+                
+                
                 dlg.Show();
             }
         }

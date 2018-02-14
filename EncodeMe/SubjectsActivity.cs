@@ -36,12 +36,12 @@ namespace NORSU.EncodeMe
             _progress = FindViewById<ProgressBar>(Resource.Id.Progress);
 
             _progress.Visibility = ViewStates.Gone;
-            
-            _schedules = await Db.GetAll<ClassSchedule>();
+
+            _schedules = Client.ClassSchedules;// await Db.GetAll<ClassSchedule>();
             _submitButton.Enabled = _schedules.Any(d=>!d.Sent);
             _subjectsView.Adapter = new SubjectsAdapter(this,_schedules);
 
-            _student = (await Db.GetAll<Student>()).FirstOrDefault();
+            _student = Client.CurrentStudent;
             if (_student == null)
             {
                 StartActivity(typeof(StudentIntroActivity));
@@ -74,7 +74,7 @@ namespace NORSU.EncodeMe
             _addButton.Enabled = false;
             _progress.Visibility = ViewStates.Visible;
             
-            var result = await Client.Enroll(_student.StudentId, _schedules.Where(x=>!x.Sent).ToList());
+            var result = await Client.Enroll();
             
             edit = _pref.Edit();
             edit.PutBoolean("Subjects_Processing", true);

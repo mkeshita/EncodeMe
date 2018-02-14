@@ -252,5 +252,83 @@ namespace NORSU.EncodeMe.Network
 
             result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
+
+        public static async void StartEnrollmentHandler(PacketHeader packetheader, Connection connection, StartEnrollment req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var request = Models.Request.Cache.FirstOrDefault(x => x.ReceiptNumber?.ToLower() == req.Receipt.ToLower());
+            if (request == null)
+            {
+                request = new Request()
+                {
+                    StudentId = req.StudentId
+                };
+                request.Save();
+            }
+            if (request.StudentId == req.StudentId)
+            {
+                var result = new StartEnrollmentResult()
+                {
+                    Success = true,
+                    TransactionId = request.Id,
+                };
+
+                foreach (var item in request.Details)
+                {
+                    result.ClassSchedules.Add(new ClassSchedule()
+                    {
+                        ClassId = item.ScheduleId,
+                        Enrolled = Models.ClassSchedule.GetEnrolled(item.ScheduleId),
+                        Instructor = item.Schedule.Instructor,
+                        Schedule = item.Schedule.Description,
+                        Room = item.Schedule.Room,
+                        Slots = item.Schedule.Slots,
+                        SubjectCode = item.SubjectCode
+                    });
+                }
+
+                await result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+            }
+            else
+            {
+                await new StartEnrollmentResult()
+                {
+                    Success = false,
+                    ErrorMessage = "OR Number is already used"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+            }
+        }
+
+        public static async void AddScheduleHandler(PacketHeader packetheader, Connection connection, AddSchedule req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null) return;
+
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.TransactionId);
+            if (request == null) return;
+            if (request.StudentId != req.StudentId) return;
+            
+            if(request.Details.Any(x=>x.ScheduleId==req.ClassId)) return;
+            
+            new RequestDetail()
+            {
+                RequestId = req.TransactionId,
+                ScheduleId = req.ClassId,
+            }.Save();
+
+            await new AddScheduleResult()
+            {
+                Success = true,
+            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP),dev.Port));
+        }
     }
 }
