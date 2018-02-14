@@ -224,7 +224,7 @@ namespace NORSU.EncodeMe.Network
                 result.ClassSchedules.Add(new ClassSchedule()
                 {
                     ClassId = item.ScheduleId,
-                    SubjectCode = item.SubjectCode,
+                    SubjectCode = item.Schedule.Subject.Code,
                     Instructor = sched?.Instructor,
                     Room = sched?.Room,
                     Schedule = sched?.Description,

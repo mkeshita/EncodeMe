@@ -23,7 +23,9 @@ namespace NORSU.EncodeMe.Network
         public string ErrorMessage { get; set; }
         [ProtoMember(3)]
         public long TransactionId { get; set; }
-
+        [ProtoMember(4)]
         public List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
+        [ProtoMember(5)]
+        public bool Submitted { get; set; }
     }
 }

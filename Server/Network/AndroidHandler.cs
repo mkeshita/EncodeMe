@@ -117,12 +117,12 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
             
             var result = new SchedulesResult(){Serial = incomingobject.Serial,Subject = incomingobject.SubjectCode};
-            var subject = Models.Subject.GetByCode(incomingobject.SubjectCode);
+            var subject = Models.Subject.Cache.FirstOrDefault(x=>x.Code.ToLower()==incomingobject.SubjectCode.ToLower());
             if (subject == null)
                 result.Result = ResultCodes.NotFound;
             else
             {
-                var schedules = Models.ClassSchedule.Cache.Where(x => x.SubjectCode == subject.Code);
+                var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
                 result.Result = ResultCodes.Success;
                 result.Schedules = new List<ClassSchedule>();
                 foreach (var sched in schedules)
@@ -132,15 +132,13 @@ namespace NORSU.EncodeMe.Network
                         ClassId = sched.Id,
                         Instructor = sched.Instructor,
                         Schedule = sched.Description,
-                        SubjectCode = sched.SubjectCode,
+                        SubjectCode = sched.Subject.Code,
                         Room = sched.Room,
                         Slots = sched.Slots,
                         Enrolled = GetEnrolled(sched.Id)
                     });
                 }
             }
-            
-            
             
             result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
@@ -189,12 +187,11 @@ namespace NORSU.EncodeMe.Network
 
             foreach (var sched in incomingobject.ClassSchedules)
             {
-                var detail = RequestDetail.Cache.FirstOrDefault(x => x.SubjectCode == sched.SubjectCode) ?? new RequestDetail()
+                var detail = RequestDetail.Cache.FirstOrDefault(x => x.Schedule.Subject.Code == sched.SubjectCode) ?? new RequestDetail()
                 {
                     RequestId = req.Id,
                     ScheduleId = sched.ClassId,
                     Status = Request.Statuses.Pending,
-                    SubjectCode = sched.SubjectCode
                 };
                 detail.Save();
             }
@@ -267,16 +264,20 @@ namespace NORSU.EncodeMe.Network
             {
                 request = new Request()
                 {
-                    StudentId = req.StudentId
+                    StudentId = req.StudentId,
+                    ReceiptNumber = req.Receipt,
+                    
                 };
-                request.Save();
+                await request.SaveAsync();
             }
+            
             if (request.StudentId == req.StudentId)
             {
                 var result = new StartEnrollmentResult()
                 {
                     Success = true,
                     TransactionId = request.Id,
+                    Submitted = request.Submitted,
                 };
 
                 foreach (var item in request.Details)
@@ -289,7 +290,7 @@ namespace NORSU.EncodeMe.Network
                         Schedule = item.Schedule.Description,
                         Room = item.Schedule.Room,
                         Slots = item.Schedule.Slots,
-                        SubjectCode = item.SubjectCode
+                        SubjectCode = item.Schedule.Subject.Code
                     });
                 }
 

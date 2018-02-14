@@ -227,7 +227,8 @@ namespace NORSU.EncodeMe.Network
         public static long TransactionId { get; set; }
 
         public static List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
-        
+        public static bool EnrollmentCommited { get; set; }
+
         public static async Task<StartEnrollmentResult> StartEnrollment(string receipt)
         {
             return await Instance._StartEnrollment(receipt);
@@ -251,6 +252,7 @@ namespace NORSU.EncodeMe.Network
                     NetworkComms.RemoveGlobalIncomingPacketHandler(StartEnrollmentResult.GetHeader());
                     ClassSchedules = i.ClassSchedules;
                     TransactionId = i.TransactionId;
+                    EnrollmentCommited = i.Submitted;
                     result = i;
                 });
 

@@ -38,7 +38,7 @@ namespace NORSU.EncodeMe
             _progress.Visibility = ViewStates.Gone;
 
             //_schedules = Client.ClassSchedules;// await Db.GetAll<ClassSchedule>();
-            _submitButton.Enabled = Client.ClassSchedules.Any(d=>!d.Sent);
+            _submitButton.Enabled = !Client.EnrollmentCommited;
             _subjectsView.Adapter = new SubjectsAdapter(this, Client.ClassSchedules);
 
             _student = Client.CurrentStudent;
