@@ -117,29 +117,39 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
             
             var result = new SchedulesResult(){Serial = incomingobject.Serial,Subject = incomingobject.SubjectCode};
-            var subject = Models.Subject.Cache.FirstOrDefault(x=>x.Code.ToLower()==incomingobject.SubjectCode.ToLower());
-            if (subject == null)
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == incomingobject.StudentId);
+            
+            if (student == null || Models.CourseSubject.Cache
+                    .Any(x => x.CourseId == student?.CourseId &&
+                        x.Subject.Code.ToLower() == incomingobject.SubjectCode.ToLower()))
                 result.Result = ResultCodes.NotFound;
             else
             {
-                var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
-                result.Result = ResultCodes.Success;
-                result.Schedules = new List<ClassSchedule>();
-                foreach (var sched in schedules)
+                var subject = Models.Subject.Cache
+                    .FirstOrDefault(x => x.Code.ToLower() == incomingobject.SubjectCode.ToLower());
+                if (subject == null)
+                    result.Result = ResultCodes.NotFound;
+                else
                 {
-                    result.Schedules.Add(new ClassSchedule()
+                    var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
+                    result.Result = ResultCodes.Success;
+                    result.Schedules = new List<ClassSchedule>();
+                    foreach (var sched in schedules)
                     {
-                        ClassId = sched.Id,
-                        Instructor = sched.Instructor,
-                        Schedule = sched.Description,
-                        SubjectCode = sched.Subject.Code,
-                        Room = sched.Room,
-                        Slots = sched.Slots,
-                        Enrolled = GetEnrolled(sched.Id)
-                    });
+                        result.Schedules.Add(new ClassSchedule()
+                        {
+                            ClassId = sched.Id,
+                            Instructor = sched.Instructor,
+                            Schedule = sched.Description,
+                            SubjectCode = sched.Subject.Code,
+                            Room = sched.Room,
+                            Slots = sched.Slots,
+                            Enrolled = GetEnrolled(sched.Id)
+                        });
+                    }
                 }
             }
-            
             result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
 
@@ -360,11 +370,11 @@ namespace NORSU.EncodeMe.Network
             request.Submitted = true;
             request.DateSubmitted = DateTime.Now;
             request.Save();
-            
+            var qn = request.GetQueueNumber();
             await new CommitEnrollmentResult()
             {
                 Success = true,
-                QueueNumber = request.GetQueueNumber()
+                QueueNumber = qn,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
     }

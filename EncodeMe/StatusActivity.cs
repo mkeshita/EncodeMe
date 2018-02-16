@@ -25,7 +25,7 @@ namespace NORSU.EncodeMe
         private NetworkComms.PacketHandlerCallBackDelegate<StatusResult> _statusUpdateHandler;
         private bool _activityPaused;
         private Button _statusButton;
-        private int _queueNumber;
+        private long _queueNumber;
         private Button _editButton;
         private ImageView _statusImage;
         private TextView _messageText;
@@ -46,7 +46,7 @@ namespace NORSU.EncodeMe
             _progress = FindViewById<ProgressBar>(Resource.Id.Progress);
             _title = FindViewById<TextView>(Resource.Id.TitleText);
             
-            _queueNumber = pref.GetInt("QueueNumber", 0);
+            _queueNumber = pref.GetLong("QueueNumber", 0L);
             _statusButton.Text = _queueNumber.ToString();
 
             _statusButton.Click += (sender, args) => GetStatus();

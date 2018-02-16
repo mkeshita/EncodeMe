@@ -78,6 +78,8 @@ namespace NORSU.EncodeMe
             
             edit = _pref.Edit();
             edit.PutBoolean("Subjects_Processing", true);
+            edit.PutLong("QueueNumber", result.QueueNumber);
+                
             edit.Commit();
             
             _subjectsView.Enabled = true;

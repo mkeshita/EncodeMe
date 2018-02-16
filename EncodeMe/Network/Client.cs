@@ -320,6 +320,8 @@ namespace NORSU.EncodeMe.Network
             return null;
         }
 
+        public Action ScheduleAddedCallback { get; set; }
+        
         public static async Task<AddScheduleResult> AddSchedule(ClassSchedule schedule)
         {
             return await Instance._AddSchedule(schedule);
@@ -430,7 +432,7 @@ namespace NORSU.EncodeMe.Network
                     result = i;
                 });
 
-            await new SchedulesRequest() {SubjectCode = subject}
+            await new SchedulesRequest() {SubjectCode = subject, StudentId = CurrentStudent.Id}
                 .Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
