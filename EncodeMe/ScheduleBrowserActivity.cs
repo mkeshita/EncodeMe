@@ -46,37 +46,17 @@ namespace NORSU.EncodeMe
             _progress.Visibility = ViewStates.Gone;
             _schedulesListView.Enabled = true;
 
-            if (result == null) return;
-
+            if(result?.Success??false)
             _schedulesListView.Adapter = new SchedulesAdapter(this, result.Schedules);
-
-            if (result.Result != ResultCodes.Success)
+            else
             {
                 var dlg = new AlertDialog.Builder(this);
-
-                switch (result.Result)
-                {
-                    case ResultCodes.Offline:
-                        dlg.SetMessage("You are not connected to the server.");
-                        break;
-                    case ResultCodes.Timeout:
-                        dlg.SetMessage("Request timeout.");
-                        break;
-                    case ResultCodes.NotFound:
-                        dlg.SetMessage($"{_subjectCode.Text} does not exists.");
-                        break;
-                    case ResultCodes.Error:
-                        dlg.SetTitle("Request failed.");
-                        break;
-                }
+                if (string.IsNullOrEmpty(result?.ErrorMessage))
+                    dlg.SetMessage("You are not connected to the server.");
+                else
+                    dlg.SetMessage(result.ErrorMessage);
                 dlg.SetPositiveButton("OK", (o, args) => { });
                 dlg.Show();
-
-            }
-            else if (result.Schedules != null)
-            {
-                await Db.DropTable<ClassSchedule>("cache.db");
-                await Db.InsertAllAsync(result.Schedules,"cache.db");
             }
         }
 

@@ -119,21 +119,28 @@ namespace NORSU.EncodeMe.Network
             var result = new SchedulesResult(){Serial = incomingobject.Serial,Subject = incomingobject.SubjectCode};
 
             var student = Models.Student.Cache.FirstOrDefault(x => x.Id == incomingobject.StudentId);
-            
-            if (student == null || Models.CourseSubject.Cache
-                    .Any(x => x.CourseId == student?.CourseId &&
-                        x.Subject.Code.ToLower() == incomingobject.SubjectCode.ToLower()))
-                result.Result = ResultCodes.NotFound;
+            var subject = Models.Subject.Cache
+                .FirstOrDefault(x => x.Code.ToLower() == incomingobject.SubjectCode.ToLower());
+
+            if (student == null || subject == null)
+            {
+                result.Success = false;
+                result.ErrorMessage = $"{incomingobject.SubjectCode.ToUpper()} not found!";
+            }
             else
             {
-                var subject = Models.Subject.Cache
-                    .FirstOrDefault(x => x.Code.ToLower() == incomingobject.SubjectCode.ToLower());
-                if (subject == null)
-                    result.Result = ResultCodes.NotFound;
+
+                if (!(Models.CourseSubject.Cache
+                    .Any(x => x.CourseId == student?.CourseId &&
+                              x.SubjectId == subject.Id)))
+                {
+                    result.Success = false;
+                    result.ErrorMessage = $"{incomingobject.SubjectCode.ToUpper()} is not in your course.";
+                }
                 else
                 {
                     var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
-                    result.Result = ResultCodes.Success;
+                    result.Success = true;
                     result.Schedules = new List<ClassSchedule>();
                     foreach (var sched in schedules)
                     {

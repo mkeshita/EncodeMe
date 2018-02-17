@@ -420,7 +420,7 @@ namespace NORSU.EncodeMe.Network
             
             if (Server == null) await FindServer();
 
-            if (Server == null) return new SchedulesResult(){Result = ResultCodes.Offline};
+            if (Server == null) return null;
 
             if (_subjectRequested != subject) return null;
 
@@ -444,7 +444,7 @@ namespace NORSU.EncodeMe.Network
 
             Server = null;
             NetworkComms.RemoveGlobalIncomingPacketHandler(SchedulesResult.GetHeader()+subject);
-            return new SchedulesResult(){Result = ResultCodes.Timeout};
+            return null;
         }
 
         public static async Task<EnrollResult> Enroll(string studentId, List<ClassSchedule> schedules)
