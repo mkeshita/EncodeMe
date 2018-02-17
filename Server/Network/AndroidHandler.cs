@@ -344,7 +344,10 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
 
-            var prevSched = request.Details.FirstOrDefault(x => x.Schedule.SubjectId == sched.SubjectId);
+            var prevSched = request.Details.FirstOrDefault(x =>
+            {
+                return x.Schedule.SubjectId == sched.SubjectId && x.ScheduleId != req.ClassId;
+            });
 
             var result = new AddScheduleResult()
             {

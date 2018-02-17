@@ -92,8 +92,9 @@ namespace NORSU.EncodeMe
                 var remove = Client.ClassSchedules.FirstOrDefault(x => x.ClassId == res.ReplacedId);
                 if (remove != null)
                     Client.ClassSchedules.Remove(remove);
+                if(Client.ClassSchedules.All(x=>x.ClassId!=sched.ClassId))
+                    Client.ClassSchedules.Add(sched);
                 
-                Client.ClassSchedules.Add(sched);
                 SetResult(Result.Ok, resultIntent);
                 Finish();
             }
