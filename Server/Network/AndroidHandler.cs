@@ -433,6 +433,59 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
+        public static async void StatusRequestHandler(PacketHeader packetheader, Connection connection, StatusRequest req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.StudentId);
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.RequestId && x.ReceiptNumber == req.Receipt);
+
+            if (student == null || request == null)
+            {
+                await new StatusResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid Request",
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+
+            var res = new StatusResult()
+            {
+                Success = true,
+                RequestStatus = new RequestStatus()
+                {
+                    Id = request.Id,
+                    IsSubmitted = request.Submitted,
+                    QueueNumber = request.GetQueueNumber(),
+                    Receipt = request.ReceiptNumber,
+                    Status = GetStatus(request.Status),
+                },
+            };
+
+            foreach(var item in request.Details)
+            {
+                res.ClassSchedules.Add(new ClassSchedule()
+                {
+                    ClassId = item.ScheduleId,
+                    Enrolled = Models.ClassSchedule.GetEnrolled(item.ScheduleId),
+                    Instructor = item.Schedule.Instructor,
+                    Schedule = item.Schedule.Description,
+                    Room = item.Schedule.Room,
+                    Slots = item.Schedule.Slots,
+                    SubjectCode = item.Schedule.Subject.Code,
+                    EnrollmentStatus = GetClassStatus(item.Status)
+                });
+            }
+
+            await res.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
+
         private static ScheduleStatuses GetClassStatus(Request.Statuses itemStatus)
         {
             switch(itemStatus)

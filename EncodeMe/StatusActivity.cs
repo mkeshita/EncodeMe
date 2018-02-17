@@ -25,8 +25,7 @@ namespace NORSU.EncodeMe
         private NetworkComms.PacketHandlerCallBackDelegate<StatusResult> _statusUpdateHandler;
         private bool _activityPaused;
         private Button _statusButton;
-        private long _queueNumber;
-        private Button _editButton;
+        private Button _cancelButton;
         private ImageView _statusImage;
         private TextView _messageText;
         private ProgressBar _progress;
@@ -34,6 +33,19 @@ namespace NORSU.EncodeMe
         
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            if (Client.CurrentStudent == null)
+            {
+                StartActivity(typeof(StudentIntroActivity));
+                Finish();
+                return;
+            }
+            if (!(Client.RequestStatus?.IsSubmitted ?? false))
+            {
+                StartActivity(typeof(SubjectsActivity));
+                Finish();
+                return;
+            }
+            
             base.OnCreate(savedInstanceState);
             
             // Create your application here
@@ -46,19 +58,15 @@ namespace NORSU.EncodeMe
             _progress = FindViewById<ProgressBar>(Resource.Id.Progress);
             _title = FindViewById<TextView>(Resource.Id.TitleText);
             
-            _queueNumber = pref.GetLong("QueueNumber", 0L);
-            _statusButton.Text = _queueNumber.ToString();
-
             _statusButton.Click += (sender, args) => GetStatus();
+
+            _cancelButton = FindViewById<Button>(Resource.Id.CancelButton);
             
-            _editButton = FindViewById<Button>(Resource.Id.EditButton);
-            _editButton.Click += (sender, args) => StartActivity(typeof(SubjectsActivity));
-            _editButton.Enabled = _queueNumber > 0;
-            
-            _statusUpdateHandler = (h,c,i)=>Enrolled(i);
+            _statusUpdateHandler = (h,c,i)=>RefreshStatus();
             NetworkComms.AppendGlobalIncomingPacketHandler(StatusResult.GetHeader()+"update", _statusUpdateHandler);
 
             GetStatus();
+            
             _cancelButton.Click += CancelButtonOnClick;
         }
 
@@ -109,75 +117,106 @@ namespace NORSU.EncodeMe
         private bool _requestingStatus;
         private async void GetStatus()
         {
+            RefreshStatus();
+            if (_requestingStatus) return;
+            _requestingStatus = true;
             var status = await Client.Instance.GetStatus();
-            _editButton.Enabled = status.Status == EnrollmentStatus.Pending;
-            if (status.Result == ResultCodes.Success)
-                Enrolled(status);
+            _requestingStatus = false;
+            if (status?.Success ?? false)
+            {
+                RefreshStatus();
+            }
+            else
+            {
+                try
+                {
+                    var dlg = new AlertDialog.Builder(this);
+
+                    if (status == null)
+                    {
+                        dlg.SetTitle("Request Timeout");
+                        dlg.SetMessage("You are not connected to the server.");
+                        dlg.SetPositiveButton("QUIT", (sender, args) =>
+                        {
+                            FinishAffinity();
+                        });
+                    }
+                    else
+                    {
+                        dlg.SetTitle("Request Failed");
+                        dlg.SetMessage(status.ErrorMessage);
+                        dlg.SetPositiveButton("OKAY", (sender, args) =>
+                        {
+                        });
+                    }
+
+                   
+
+                    dlg.Show();
+                }
+                catch (Exception e)
+                {
+                    FinishAffinity();
+                }
+                
+            }
+                
         }
 
-        private async void Enrolled(StatusResult status)
+        private void RefreshStatus()
         {
-            var pref = PreferenceManager.GetDefaultSharedPreferences(this);
-            var edit = pref.Edit();
-            edit.PutInt("QueueNumber", status.QueueNumber);
-            edit.PutBoolean(Constants.ENROLLMENT_PROCESSING, status.Status>EnrollmentStatus.Processing);
-            edit.PutBoolean("Enrollment_Accepted", status.Status == EnrollmentStatus.Accepted);
-            edit.Commit();
-            _statusButton.Text = status.QueueNumber + "";
-            _queueNumber = status.QueueNumber;
+            if (Client.CurrentStudent == null)
+            {
+                StartActivity(typeof(StudentIntroActivity));
+                Finish();
+                return;
+            }
+            if (!(Client.RequestStatus?.IsSubmitted ?? false))
+            {
+                StartActivity(typeof(SubjectsActivity));
+                Finish();
+                return;
+            }
+
             
-            _editButton.Enabled = status.Status != EnrollmentStatus.Processing;
+            _statusButton.Text = Client.RequestStatus.QueueNumber + "";
             
-            switch (status.Status)
+            switch (Client.RequestStatus.Status)
             {
                 case EnrollmentStatus.Pending:
+                    _cancelButton.Visibility = ViewStates.Visible;
                     return;
                 case EnrollmentStatus.Processing:
                     _statusButton.Visibility = ViewStates.Gone;
                     _statusImage.Visibility = ViewStates.Visible;
                     _messageText.Text = "You request is now being processed.";
+                    _cancelButton.Visibility = ViewStates.Gone;
                     return;
                 case EnrollmentStatus.Accepted:
                     _progress.Indeterminate = false;
                     _progress.Progress = 1;
                     _title.Text = "OFFICIALLY ENROLLED";
-                    _messageText.Text = "Congratulations! Your are now officially enrolled.";
-                    _editButton.Text = "View Schedule";
+                    _messageText.Text = "Congratulations! Your are now officially enrolled. Please proceed to the PRINTING AREA and present your Official Receipt and ID.";
+                    _cancelButton.Visibility = ViewStates.Gone;
                     break;
                 case EnrollmentStatus.Closed:
                     _progress.Indeterminate = false;
                     _progress.Progress = 0;
                     _title.Text = "ENROLLMENT FAILED";
-                    _messageText.Text = "Some if not al of the classes you are enrolling are closed.";
+                    _messageText.Text = "Some if not all of the classes you are enrolling are closed.";
+                    _cancelButton.Visibility = ViewStates.Visible;
+                    _cancelButton.Text = "VIEW SUBJECTS";
                     break;
                 case EnrollmentStatus.Conflict:
                     _progress.Indeterminate = false;
                     _progress.Progress = 0;
                     _title.Text = "ENROLLMENT FAILED";
                     _messageText.Text = "The schedules of some classes you are enrolling are overlapping.";
+                    _cancelButton.Visibility = ViewStates.Visible;
+                    _cancelButton.Text = "VIEW SUBJECTS";
                     break;
             }
-
-
-            var scheds = await Db.GetAll<ClassSchedule>();
-            foreach (var stat in status.Schedules)
-            {
-                var sched = scheds.FirstOrDefault(x => x.ClassId == stat.ClassId);
-                if (sched == null) continue;
-                sched.Enrolled = stat.Enrolled;
-                sched.EnrollmentStatus = stat.Status;
-                await Db.Save(sched);
-            }
-
-           // if (_activityPaused)
-            //{
-              //  var notificationManager = (NotificationManager) GetSystemService(Context.NotificationService);
-              //  var channel = new NotificationChannel("NORSU_EncodeMe_Channel_07","EncodeMe", NotificationImportance.High);
-              //  channel.Description = "Enrollment status updated.";
-              //  notificationManager.CreateNotificationChannel(channel);
-           // } else
-               // StartActivity(typeof(SubjectsActivity));
-           // Finish();
+            
         }
 
         protected override void OnDestroy()
