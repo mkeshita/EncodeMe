@@ -23,5 +23,7 @@ namespace NORSU.EncodeMe.Network
         public bool Success { get; set; }
         [ProtoMember(2)]
         public string ErrorMessage { get; set; }
+        [ProtoMember(3)]
+        public long ReplacedId { get; set; }
     }
 }

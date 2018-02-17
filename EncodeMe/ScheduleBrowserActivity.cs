@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -88,6 +89,10 @@ namespace NORSU.EncodeMe
             var res = await Client.AddSchedule(sched);
             if (res?.Success ?? false)
             {
+                var remove = Client.ClassSchedules.FirstOrDefault(x => x.ClassId == res.ReplacedId);
+                if (remove != null)
+                    Client.ClassSchedules.Remove(remove);
+                
                 Client.ClassSchedules.Add(sched);
                 SetResult(Result.Ok, resultIntent);
                 Finish();

@@ -332,7 +332,9 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
 
             var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.TransactionId);
-            if ((request == null) || (request.StudentId != req.StudentId))
+            var sched = Models.ClassSchedule.Cache.FirstOrDefault(x => x.Id == req.ClassId);
+            
+            if ((request == null) || (request.StudentId != req.StudentId) || sched==null)
             {
                 await new AddScheduleResult()
                 {
@@ -341,19 +343,24 @@ namespace NORSU.EncodeMe.Network
                 }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
                 return;
             }
-            
-            if(request.Details.Any(x=>x.ScheduleId==req.ClassId)) return;
+
+            var prevSched = request.Details.FirstOrDefault(x => x.Schedule.SubjectId == sched.SubjectId);
+
+            var result = new AddScheduleResult()
+            {
+                Success = true,
+                ReplacedId = prevSched?.Id??0,
+            };
+
+            prevSched?.Delete();
             
             new RequestDetail()
             {
                 RequestId = req.TransactionId,
                 ScheduleId = req.ClassId,
             }.Save();
-
-            await new AddScheduleResult()
-            {
-                Success = true,
-            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP),dev.Port));
+            
+            await result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
 
         public static async void CommitEnrollmentHandler(PacketHeader packetheader, Connection connection, CommitEnrollment req)
