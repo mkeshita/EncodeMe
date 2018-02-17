@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Network;
 using NORSU.EncodeMe.Properties;
 
@@ -11,6 +13,8 @@ namespace NORSU.EncodeMe
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+           // PeerDiscovery.MaxTargetLocalIPPort = Int32.MaxValue;
+           // PeerDiscovery.MinTargetLocalIPPort = 7;
             awooo.IsRunning = true;
             base.OnStartup(e);
             Server.Start();

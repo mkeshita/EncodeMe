@@ -25,6 +25,8 @@ namespace NORSU.EncodeMe.Network
             
             NetworkComms.DefaultSendReceiveOptions = new SendReceiveOptions(serializer,
                 NetworkComms.DefaultSendReceiveOptions.DataProcessors, NetworkComms.DefaultSendReceiveOptions.Options);
+           // PeerDiscovery.MaxTargetLocalIPPort = Int32.MaxValue;
+            //PeerDiscovery.MinTargetLocalIPPort = 7777;
             
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             
@@ -45,7 +47,16 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<StartEnrollment>(StartEnrollment.GetHeader(),AndroidHandler.StartEnrollmentHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<AddSchedule>(AddSchedule.GetHeader(),AndroidHandler.AddScheduleHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<CommitEnrollment>(CommitEnrollment.GetHeader(),AndroidHandler.CommitEnrollmentHandler);
-            Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 7777), true);
+
+          //  try
+           // {
+                Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0), true);
+           // }
+           // catch (Exception e)
+           // {
+                //
+           // }
+            
         }
         
         public static void Stop()

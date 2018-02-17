@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
              xmlns:server="clr-namespace:NORSU.EncodeMe"
+             xmlns:models="clr-namespace:NORSU.EncodeMe.Models;assembly=NORSU.EncodeMe.Data"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     
@@ -20,7 +21,7 @@
             </ItemsControl.ItemsPanel>
 
             <ItemsControl.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate DataType="{x:Type models:Encoder}">
 
                     <materialDesign:Flipper Style="{StaticResource MaterialDesignCardFlipper}" Margin="20" 
                                     IsFlipped="{Binding IsFlipped,Mode=TwoWay}">
@@ -32,7 +33,7 @@
                                 </Grid.RowDefinitions>
                                 <materialDesign:ColorZone Mode="PrimaryLight" VerticalAlignment="Stretch">
                                     <Grid>
-                                        <Image Source="{Binding Picture, Converter={converters:BytesToImage}}"
+                                        <Image Source="{Binding Picture, Converter={converters:BytesToImage},Mode=OneWay}"
                                                Stretch="UniformToFill" />
                                         <materialDesign:PackIcon Kind="AccountCircle" Height="128" Width="128"
                                                                  Visibility="{Binding HasPicture,
@@ -50,7 +51,7 @@
                                     <UniformGrid Columns="2" HorizontalAlignment="Stretch"
                                                  Margin="0">
                                         <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                                                Command="{Binding FlipCommand}"
                                                 Margin="10 4 4 10"
                                                 Content="EDIT"
                                                 ToolTip="Edit"/>
@@ -72,10 +73,9 @@
                                 <materialDesign:ColorZone Mode="Accent" Padding="6">
                                     <StackPanel Orientation="Horizontal">
                                         <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                ToolTip="Save" 
                                                 Command="{Binding SaveCommand}" 
                                                 HorizontalAlignment="Left">
-                                            <materialDesign:PackIcon Kind="ContentSave" HorizontalAlignment="Right" />
+                                            <materialDesign:PackIcon Kind="ArrowLeftBold" HorizontalAlignment="Right" />
                                         </Button>
                                         <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">EDIT ENCODER</TextBlock>
                                     </StackPanel>
