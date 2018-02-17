@@ -59,8 +59,54 @@ namespace NORSU.EncodeMe
             NetworkComms.AppendGlobalIncomingPacketHandler(StatusResult.GetHeader()+"update", _statusUpdateHandler);
 
             GetStatus();
+            _cancelButton.Click += CancelButtonOnClick;
         }
 
+        private async void CancelButtonOnClick(object o, EventArgs eventArgs)
+        {
+            _cancelButton.Enabled = false;
+            var res = await Client.CancelEnrollment();
+            if (res?.Success ?? false)
+            {
+                StartActivity(typeof(SubjectsActivity));
+                Finish();
+            }
+            else
+            {
+                try
+                {
+                    var dlg = new AlertDialog.Builder(this);
+
+                    if (res == null)
+                    {
+                        dlg.SetTitle("Request Timeout");
+                        dlg.SetMessage("You are not connected to the server.");
+                        dlg.SetPositiveButton("QUIT", (sender, args) =>
+                        {
+                            FinishAffinity();
+                            return;
+                        });
+                    }
+                    else
+                    {
+                        dlg.SetTitle("Request Failed");
+                        dlg.SetMessage(res.ErrorMessage);
+                        dlg.SetPositiveButton("OKAY", (sender, args) =>
+                        {
+                        });
+                    }
+                    
+                    dlg.Show();
+                }
+                catch (Exception e)
+                {
+                    FinishAffinity();
+                }
+
+            }
+        }
+
+        private bool _requestingStatus;
         private async void GetStatus()
         {
             var status = await Client.Instance.GetStatus();

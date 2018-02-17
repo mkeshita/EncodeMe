@@ -538,6 +538,42 @@ namespace NORSU.EncodeMe.Network
         }
 
 
+        public static async Task<CancelEnrollmentResult> CancelEnrollment()
+        {
+            if (CurrentStudent == null) return null;
+            if (RequestStatus == null) return null;
+            if (Server == null)
+                await FindServer();
+
+            if (Server == null) return null;
+
+            var request = new CancelEnrollment()
+            {
+                StudentId = CurrentStudent.Id,
+                RequestId = RequestStatus.Id,
+            };
+
+            CancelEnrollmentResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<CancelEnrollmentResult>(CancelEnrollmentResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(CancelEnrollmentResult.GetHeader());
+                    result = i;
+                });
+
+            await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+            
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(CancelEnrollmentResult.GetHeader());
+            return null;
         }
     }
     

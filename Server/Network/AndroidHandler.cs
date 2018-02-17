@@ -433,6 +433,44 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
+        private static ScheduleStatuses GetClassStatus(Request.Statuses itemStatus)
+        {
+            switch(itemStatus)
+            {
+                case Request.Statuses.Pending:
+                    return ScheduleStatuses.Pending;
+                case Request.Statuses.Proccessing:
+                    return ScheduleStatuses.Pending;
+                case Request.Statuses.Conflict:
+                    return ScheduleStatuses.Conflict;
+                case Request.Statuses.Closed:
+                    return ScheduleStatuses.Closed;
+                case Request.Statuses.Accepted:
+                    return ScheduleStatuses.Accepted;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemStatus), itemStatus, null);
+            }
+        }
+
+        public static async void CancelEnrollmentHandler(PacketHeader packetheader, Connection connection, CancelEnrollment req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.StudentId);
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.RequestId);
+
+            if (student == null || request == null) return;
+            
+            request.Update(nameof(Models.Request.Submitted),false);
+
+            await new CancelEnrollmentResult()
+            {
+                Success = true,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
     }
