@@ -67,19 +67,18 @@ namespace NORSU.EncodeMe
             _next.Enabled = true;
             _studentId.SelectAll();
             
-            if (result.Result == ResultCodes.Success && result.Student != null)
+            if (result?.Success??false)
             {
-                await Db.DropTable<Student>();
-                await Db.Save(result.Student);
                 StartActivity(new Intent(Application.Context, typeof(StudentInfo)));
                 Finish();
             }
             else
             {
                 var dlg = new AlertDialog.Builder(this);
-                if (result.Result == ResultCodes.NotFound)
+                if (result!=null)
                 {
-                    dlg.SetTitle("Student ID not found");
+                    dlg.SetMessage(result.ErrorMessage);
+                    dlg.SetTitle("Request Failed");
                     dlg.SetPositiveButton("Okay", (o, args) =>
                     {
                         
@@ -87,7 +86,7 @@ namespace NORSU.EncodeMe
                 }
                 else
                 {
-                    dlg.SetTitle(result.Message);
+                    dlg.SetTitle("Request Timeout");
                     dlg.SetMessage("Please make sure you are connected to the network.");
                     dlg.SetPositiveButton("Retry", (o, args) =>
                     {

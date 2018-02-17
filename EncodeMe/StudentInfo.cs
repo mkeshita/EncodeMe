@@ -21,7 +21,7 @@ namespace NORSU.EncodeMe
     {
         private TextView _fullname, _studentId, _birthDate, _gender, _address, _course, _major, _minor, _scholarship;
         private ImageView _picture;
-        private Button _enroll;
+        private Button _enroll,_status;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -47,9 +47,16 @@ namespace NORSU.EncodeMe
             _scholarship = FindViewById<TextView>(Resource.Id.Scholarship);
             _picture = FindViewById<ImageView>(Resource.Id.Picture);
             _enroll = FindViewById<Button>(Resource.Id.EnrollButton);
+            _status = FindViewById<Button>(Resource.Id.StatusButton);
             SetupValues();
             
             _enroll.Click+= EnrollOnClick;
+            _status.Click += StatusOnClick;
+        }
+
+        private void StatusOnClick(object sender, EventArgs eventArgs)
+        {
+            StartActivity(typeof(StatusActivity));
         }
 
         private void EnrollOnClick(object sender, EventArgs eventArgs)
@@ -57,8 +64,24 @@ namespace NORSU.EncodeMe
             StartActivity(typeof(GetReceiptActivity));
         }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+            SetupValues();
+        }
+
         private void SetupValues()
         {
+            if (Client.RequestStatus?.IsSubmitted ?? false)
+            {
+                _enroll.Visibility = ViewStates.Gone;
+                _status.Visibility = ViewStates.Visible;
+            }
+            else
+            {
+                _enroll.Visibility = ViewStates.Visible;
+                _status.Visibility = ViewStates.Gone;
+            }
             _fullname.Text = $"{Client.CurrentStudent.FirstName} {Client.CurrentStudent.LastName}".ToUpper();
             _studentId.Text = Client.CurrentStudent.StudentId?.ToUpper();
             _birthDate.Text = Client.CurrentStudent.BirthDate?.ToString("MMM d, yyyy")??"N/A";

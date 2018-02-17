@@ -50,18 +50,14 @@ namespace NORSU.EncodeMe.Network
             StudentInfoRequest incomingobject)
         {
             var result = new StudentInfoResult();
-            if (string.IsNullOrWhiteSpace(incomingobject.StudentId))
-            {
-                result.Result = ResultCodes.NotFound;
-                SendStudentInfoResult(result, connection);
-                return;
-            }
-            //Not for production
-            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId == incomingobject.StudentId);
+            if (string.IsNullOrWhiteSpace(incomingobject.StudentId)) return;
+            
+            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId?.ToLower() == incomingobject.StudentId?.ToLower());
             
             if (student == null)
             {
-                result.Result = ResultCodes.NotFound;
+                result.Success = false;
+                result.ErrorMessage = "Student ID does not exists. Please check and try again.";
                 SendStudentInfoResult(result, connection);
                 return;
             }
@@ -71,12 +67,13 @@ namespace NORSU.EncodeMe.Network
 
             if (student.Password != incomingobject.Password)
             {
-                result.Result = ResultCodes.NotFound;
+                result.Success = false;
+                result.ErrorMessage = "Invalid password. Please try again.";
                 SendStudentInfoResult(result, connection);
                 return;
             }
-            
-            result.Result = ResultCodes.Success;
+
+            result.Success = true;
             result.Student = new Student()
             {
                 Course = student.Course.Acronym,
@@ -92,6 +89,19 @@ namespace NORSU.EncodeMe.Network
                 Minor = student.Minor,
                 Scholarship = student.Scholarship,
             };
+
+            var req = Models.Request.Cache.FirstOrDefault(x =>
+                x.StudentId.ToLower() == incomingobject.StudentId.ToLower());
+            if (req != null)
+            {
+                result.RequestStatus = new RequestStatus()
+                {
+                    Id=req.Id,
+                    IsSubmitted = req.Submitted,
+                    QueueNumber = req.GetQueueNumber(),
+                    Receipt = req.ReceiptNumber
+                };
+            }
             
             SendStudentInfoResult(result,connection);
         }
@@ -385,6 +395,7 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
             request.Submitted = true;
+            request.Status = Request.Statuses.Pending;
             request.DateSubmitted = DateTime.Now;
             request.Save();
             var qn = request.GetQueueNumber();
@@ -392,6 +403,36 @@ namespace NORSU.EncodeMe.Network
             {
                 Success = true,
                 QueueNumber = qn,
+                RequestStatus = new RequestStatus()
+                {
+                    Id = request.Id,
+                    IsSubmitted = request.Submitted,
+                    QueueNumber = request.GetQueueNumber(),
+                    Receipt = request.ReceiptNumber,
+                    Status = EnrollmentStatus.Pending,
+                 }
+        }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
+
+        private static EnrollmentStatus GetStatus(Request.Statuses requestStatus)
+        {
+            switch(requestStatus)
+            {
+                case Request.Statuses.Pending:
+                    return EnrollmentStatus.Pending;
+                case Request.Statuses.Proccessing:
+                    return EnrollmentStatus.Processing;
+                case Request.Statuses.Conflict:
+                    return EnrollmentStatus.Conflict;
+                case Request.Statuses.Closed:
+                    return EnrollmentStatus.Closed;
+                case Request.Statuses.Accepted:
+                    return EnrollmentStatus.Accepted;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(requestStatus), requestStatus, null);
+            }
+        }
+
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
     }

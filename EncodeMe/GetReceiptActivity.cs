@@ -23,6 +23,13 @@ namespace NORSU.EncodeMe
         private ProgressBar _progressBar;
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            if (Client.RequestStatus?.IsSubmitted ?? false)
+            {
+                StartActivity(typeof(StatusActivity));
+                Finish();
+                return;
+            }
+            
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.EnterOR);
@@ -32,6 +39,17 @@ namespace NORSU.EncodeMe
             _progressBar = FindViewById<ProgressBar>(Resource.Id.Progress);
 
             _submit.Click += SubmitOnClick;
+        }
+
+        protected override void OnResume()
+        {
+            if (Client.RequestStatus?.IsSubmitted ?? false)
+            {
+                StartActivity(typeof(StatusActivity));
+                Finish();
+                return;
+            }
+            base.OnResume();
         }
 
         private async void SubmitOnClick(object sender, EventArgs eventArgs)
