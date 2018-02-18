@@ -4,15 +4,6 @@ using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
-    public enum EnrollmentStatus
-    {
-        Pending,
-        Processing,
-        Accepted,
-        Conflict,
-        Closed
-    }
-    
     [ProtoContract]
     class StatusResult : Message<StatusResult>
     {

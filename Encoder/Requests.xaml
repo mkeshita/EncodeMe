@@ -18,7 +18,8 @@
         SizeToContent="WidthAndHeight"
         xmlns:vm="clr-namespace:NORSU.EncodeMe.ViewModels"
         xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
-        xmlns:system="clr-namespace:System;assembly=mscorlib">
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:network="clr-namespace:NORSU.EncodeMe.Network">
     <Window.Resources>
         <Storyboard x:Key="HideButton">
             <DoubleAnimation Storyboard.TargetName="Button" Storyboard.TargetProperty="Height"
@@ -34,7 +35,7 @@
         </Storyboard>
     </Window.Resources>
 
-    <Grid Width="333">
+    <Grid Width="333" MaxHeight="555">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -223,7 +224,8 @@
           </Grid>
 
           <!--Work toolbar-->
-          <Grid Margin="10 0" x:Name="WorkToolbar">
+          <Grid Margin="10 0" x:Name="WorkToolbar"
+                Visibility="{Binding ElementName=ListBoxItem1,Path=IsSelected,Converter={converters:BooleanToVisibility Hidden,Visible}}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
@@ -303,7 +305,8 @@
       </Grid>
         </md:ColorZone>
 
-    <md:Transitioner Grid.Row="0" x:Name="Content" SelectedIndex="0">
+    <md:Transitioner Grid.Row="0" x:Name="Content" SelectedIndex="0"
+                     VerticalAlignment="Bottom">
       <md:Transitioner.ItemContainerStyle>
         <Style TargetType="{x:Type md:TransitionerSlide}">
           <Setter Property="BackwardWipe">
@@ -449,8 +452,8 @@
         <Grid >
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
           <Border CornerRadius="4 4 0 0"
                                 Background="{StaticResource PrimaryHueDarkBrush}">
@@ -473,38 +476,120 @@
             </StackPanel>
           </Border>
 
-          <ListBox Grid.Row="1" Grid.IsSharedSizeScope="True"
+          <ListBox Grid.Row="1" x:Name="ListBox"
+                   SelectedIndex="0"
+                   HorizontalContentAlignment="Center">
+            <ListBox.ItemContainerStyle>
+              <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
+                     TargetType="ListBoxItem">
+                <Setter Property="BorderThickness" Value="0 0 0 2"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Style.Triggers>
+                  <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHueDarkBrush}"/>
+                  </Trigger>
+                </Style.Triggers>
+              </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Rows="1"/>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBoxItem x:Name="ListBoxItem1" IsSelected="True">
+              <TextBlock Text="INFO" VerticalAlignment="Center" Margin="4" 
+                         FontSize="14pt"
+                         TextAlignment="Center"/>
+            </ListBoxItem>
+            <ListBoxItem IsSelected="{Binding ElementName=ListBoxItem1,Path=IsSelected,Converter={converters:Inverter}}">
+              <TextBlock Text="SUBJECTS" VerticalAlignment="Center" Margin="4"
+                         FontSize="14pt"
+                         TextAlignment="Center" />
+            </ListBoxItem>
+          </ListBox>
+
+          <md:Transitioner Grid.Row="2" SelectedIndex="{Binding ElementName=ListBox,Path=SelectedIndex}">
+
+            <ScrollViewer Background="White"
+                          x:Name="Student"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          d:DataContext="{d:DesignInstance network:Student}">
+              <StackPanel Background="White" Margin="20">
+                <TextBlock Text="Date of Birth"/>
+                <TextBlock Text="{Binding BirthDate,StringFormat=MMMM\ d\, yyyy}"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}"
+                             Margin="0 0 0 7"/>
+
+                <TextBlock Text="Gender" />
+                <TextBlock Text="Male"
+                             Visibility="{Binding Male,Converter={converters:BooleanToVisibility}}"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}"
+                             Margin="0 0 0 7" />
+                <TextBlock Text="Female"
+                             Visibility="{Binding Male,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}"
+                             Margin="0 0 0 7" />
+
+                <TextBlock Text="Address" />
+                <TextBlock Text="{Binding Address}" TextWrapping="Wrap"
+                           Margin="0 0 0 7" 
+                           Style="{StaticResource MaterialDesignTitleTextBlock}"/>
+
+                <TextBlock Text="Course" />
+                <TextBlock Text="{Binding Course}" TextWrapping="Wrap"
+                             Margin="0 0 0 7"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}" />
+
+                <TextBlock Text="Major" />
+                <TextBlock Text="{Binding Major}" TextWrapping="Wrap"
+                             Margin="0 0 0 7"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}" />
+
+                <TextBlock Text="Minor" />
+                <TextBlock Text="{Binding Minor}" TextWrapping="Wrap"
+                             Margin="0 0 0 7"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}" />
+
+                <TextBlock Text="Scholarship" />
+                <TextBlock Text="{Binding Scholarship}"
+                             Style="{StaticResource MaterialDesignTitleTextBlock}" />
+
+              </StackPanel>
+            </ScrollViewer>
+
+            <ListBox Grid.IsSharedSizeScope="True"
                          SelectionMode="Extended"
                          HorizontalContentAlignment="Stretch"
                           x:Name="WorkDataGrid">
-            <ListBox.ItemContainerStyle>
-              <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
+              <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
                                TargetType="ListBoxItem">
-                <Setter Property="IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
-              </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <Grid HorizontalAlignment="Stretch">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-                  <CheckBox IsChecked="{Binding IsSelected}"
+                  <Setter Property="IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                </Style>
+              </ListBox.ItemContainerStyle>
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox IsChecked="{Binding IsSelected}"
                                           VerticalAlignment="Center"
                                           Margin="5"/>
-                  <TextBlock Grid.Column="1"
+                    <TextBlock Grid.Column="1"
                                            VerticalAlignment="Center"
                                            Margin="5">
                                     <Run FontWeight="Bold" Text="{Binding SubjectCode}" />
                                     [ <Run Text="{Binding Schedule}" /> ]
-                  </TextBlock>
-                  <Button Grid.Column="2"
+                    </TextBlock>
+                    <Button Grid.Column="2"
                                         Padding="0"
                                         Style="{StaticResource MaterialDesignToolButton}"
                                         Command="{Binding ToggleStatusCommand}">
-                    <md:PackIcon Height="24"
+                      <md:PackIcon Height="24"
                                              Width="24"
                                              Margin="5 0"
                                              Foreground="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusToBrushConverter
@@ -512,12 +597,15 @@
                                                 {StaticResource SecondaryAccentBrush}, 
                                                 {StaticResource MaterialDesignLightForeground}}}"
                                              Kind="{Binding EnrollmentStatus, Converter={converters:ScheduleStatusConverter}}" />
-                  </Button>
-                </Grid>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+                    </Button>
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </md:Transitioner>
+        
           <ProgressBar x:Name="SubmitProgress" Grid.Row="1"
+                       Grid.RowSpan="2"
                              VerticalAlignment="Center"
                              HorizontalAlignment="Center"
                              IsIndeterminate="True"

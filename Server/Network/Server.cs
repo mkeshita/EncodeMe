@@ -21,13 +21,13 @@ namespace NORSU.EncodeMe.Network
             if (_started) return;
             _started = true;
             
+            NetworkComms.DisableLogging();
+            
             var serializer = DPSManager.GetDataSerializer<ProtobufSerializer>();
             
             NetworkComms.DefaultSendReceiveOptions = new SendReceiveOptions(serializer,
                 NetworkComms.DefaultSendReceiveOptions.DataProcessors, NetworkComms.DefaultSendReceiveOptions.Options);
-           // PeerDiscovery.MaxTargetLocalIPPort = Int32.MaxValue;
-            //PeerDiscovery.MinTargetLocalIPPort = 7777;
-            
+           
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             
             NetworkComms.AppendGlobalIncomingPacketHandler<AndroidInfo>(AndroidInfo.GetHeader(), AndroidHandler.HandShakeHandler);

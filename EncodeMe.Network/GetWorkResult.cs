@@ -28,6 +28,9 @@ namespace NORSU.EncodeMe.Network
 
         [ProtoMember(5)]
         public string StudentName { get; set; }
+
+        [ProtoMember(6)]
+        public Student Student { get; set; }
     }
 }
 #endif

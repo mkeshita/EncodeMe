@@ -101,9 +101,9 @@ namespace NORSU.EncodeMe
             ButtonProgressAssist.SetIsIndeterminate(NextButton, true);
             var work = await Client.GetNextWork();
             CurrentWork = work;
+            Student.DataContext = work.Student;
             ButtonProgressAssist.SetIsIndicatorVisible(NextButton, false);
             ButtonProgressAssist.SetIsIndeterminate(NextButton, false);
-
             //_encoderMagic.IsGenieOut = false;
             var errorMessage = "";
             switch (work.Result)
@@ -112,6 +112,7 @@ namespace NORSU.EncodeMe
                     WorkDataGrid.ItemsSource = work.ClassSchedules;
                     //_workMagic.IsGenieOut = true;
                     MainTransitioner.SelectedIndex = 3;
+                    Content.SelectedIndex = 2;
                     LoginLamp.Visibility = Visibility.Collapsed;
                     StudentId.Text = work.StudentId;
                     StudentName.Text = work.StudentName;
@@ -303,7 +304,8 @@ namespace NORSU.EncodeMe
             if (result.Result == ResultCodes.Success)
             {
                // _workMagic.IsGenieOut = false;
-                MainTransitioner.SelectedIndex = 0;
+                MainTransitioner.SelectedIndex = 1;
+                Content.SelectedIndex = 1;
                 LoginLamp.Visibility = Visibility.Visible;
             } else if (result.Result == ResultCodes.Denied)
             {

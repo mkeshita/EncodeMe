@@ -214,7 +214,23 @@ namespace NORSU.EncodeMe.Network
             {
                 RequestId = work.Id,
                 StudentId = work.StudentId?.ToUpper(),
-                StudentName = $"{student?.FirstName} {student?.LastName}"
+                StudentName = $"{student?.FirstName} {student?.LastName}",
+                Student = new Student()
+                {
+                    Address = student.Address,
+                    BirthDate = student.BirthDate,
+                    Course = student.Course.Acronym,
+                    CourseId = student.CourseId,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Major = student.Major,
+                    Minor = student.Minor,
+                    Male = student.Sex == Sexes.Male,
+                    Id = student.Id,
+                    Scholarship = student.Scholarship,
+                    StudentId = student.StudentId,
+                    
+                }
             };
 
             var items = RequestDetail.Cache.Where(x => x.RequestId == work.Id).ToList();

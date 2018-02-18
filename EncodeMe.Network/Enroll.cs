@@ -2,6 +2,15 @@
 
 namespace NORSU.EncodeMe.Network
 {
+    public enum EnrollmentStatus
+    {
+        Pending,
+        Processing,
+        Accepted,
+        Conflict,
+        Closed
+    }
+    
     [ProtoContract]
     class Enroll : Message<Enroll>
     {

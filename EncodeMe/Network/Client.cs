@@ -558,6 +558,10 @@ namespace NORSU.EncodeMe.Network
                 (h, c, i) =>
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(CancelEnrollmentResult.GetHeader());
+                    if (i.Success)
+                    {
+                        RequestStatus.IsSubmitted = false;
+                    }
                     result = i;
                 });
 

@@ -107,7 +107,7 @@ namespace NORSU.EncodeMe.Network
         {
             var info = new EndPointInfo(Environment.MachineName);
             
-            var eps = endPoints[ConnectionType.UDP].Where(x=>((IPEndPoint)x).Port==7777);
+            var eps = endPoints[ConnectionType.UDP];//.Where(x=>((IPEndPoint)x).Port==7777);
             var localEPs = Connection.AllExistingLocalListenEndPoints();
             
             foreach (var value in eps)
