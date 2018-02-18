@@ -418,7 +418,23 @@
 
               </StackPanel>
             </md:ColorZone>
-            <md:ColorZone Margin="5" ToolTip="Rate of encoding. Students per hour." >
+            <md:ColorZone Margin="5" ToolTip="Average Time">
+              <StackPanel Orientation="Horizontal">
+                <md:PackIcon Kind="Speedometer"
+                             Height="32" Width="32"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Margin="5" />
+                <Rectangle Width="1" Fill="{StaticResource MaterialDesignDivider}" />
+                <TextBlock FontSize="20pt" HorizontalAlignment="Right"
+                           Margin="10 0"
+                           Text="{Binding Encoder.AverageTime}"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold" />
+
+              </StackPanel>
+            </md:ColorZone>
+            <md:ColorZone Margin="5" ToolTip="Best Time" >
               <StackPanel Orientation="Horizontal">
                 <md:PackIcon Kind="Speedometer"
                                      Height="32" Width="32"
@@ -428,10 +444,9 @@
                 <Rectangle Width="1" Fill="{StaticResource MaterialDesignDivider}" />
                 <TextBlock FontSize="20pt" HorizontalAlignment="Right"
                                        Margin="10 0"
+                           Text="{Binding Encoder.BestTime}"
                                        VerticalAlignment="Center"
-                               FontWeight="Bold">
-                                <Run Text="{Binding Encoder.Rate,StringFormat={}#\,##0.##}"/><Run Text="/HR"/>
-                </TextBlock>
+                               FontWeight="Bold"/>
 
               </StackPanel>
             </md:ColorZone>
@@ -613,6 +628,16 @@
                              Height="64"
                              Width="64"
                              Style="{StaticResource MaterialDesignCircularProgressBar}"/>
+          
+          <md:PackIcon Kind="CheckCircle"
+                       Grid.Row="1"
+                       x:Name="SubmitResult"
+                       Grid.RowSpan="2"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Visibility="Collapsed"
+                       Height="64"
+                       Width="64" />
         </Grid>
       </Border>
       

@@ -178,7 +178,7 @@ namespace NORSU.EncodeMe.Network
         public static async Task<SaveWorkResult> SaveWork(SaveWork work)
         {
             await FindServer();
-            if (Server == null) return new SaveWorkResult() { Result = ResultCodes.Offline};
+            if (Server == null) return null;
 
             SaveWorkResult result = null;
             
@@ -187,7 +187,7 @@ namespace NORSU.EncodeMe.Network
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
                     result = i;
-                    if (i?.Result == ResultCodes.Denied)
+                    if (!i.Success)
                         Encoder = null;
                 });
 
@@ -202,7 +202,7 @@ namespace NORSU.EncodeMe.Network
 
             Server = null;
             NetworkComms.RemoveGlobalIncomingPacketHandler(SaveWorkResult.GetHeader());
-            return new SaveWorkResult(){Result = ResultCodes.Timeout};
+            return null;
         }
 
         public static async Task<EnrollStudentResult> EnrollStudent(Student student)

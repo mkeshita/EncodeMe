@@ -23,7 +23,6 @@ namespace NORSU.EncodeMe.ViewModels
             get => _Encoder;
             set
             {
-                if (value == _Encoder) return;
                 _Encoder = value;
                 OnPropertyChanged(nameof(Encoder));
             }

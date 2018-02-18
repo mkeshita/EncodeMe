@@ -68,6 +68,8 @@ namespace NORSU.EncodeMe.Network
                     Picture = encoder.Thumbnail,
                     WorkCount = Request.Cache.Count(x=>x.Status > Request.Statuses.Proccessing && x.EncoderId == encoder.Id),
                     Rate = encoder.WorkRate,
+                    BestTime = TimeSpan.FromSeconds(encoder.BestTime).ToString(),
+                    AverageTime = TimeSpan.FromSeconds(encoder.AverageTime).ToString(),
                 }).Send((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
                 client.LoginAttempts = 0;
             }
@@ -194,6 +196,8 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
 
+            if(client.Encoder == null) return;
+            
             client.IsOnline = true;
             client.LastHeartBeat = DateTime.Now;
             TerminalLog.Add(client.Id, "Work item requested.");
@@ -250,9 +254,11 @@ namespace NORSU.EncodeMe.Network
             await result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
             
             await SendEncoderUpdates(Client.Cache.ToList());
+
+            client.Encoder.StartWork();
         }
 
-        private static void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)
+        private static async void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)
         {
             var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
             var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
@@ -265,8 +271,9 @@ namespace NORSU.EncodeMe.Network
             if (client.Encoder == null)
             {
                 var res = new SaveWorkResult();
-                res.Result = ResultCodes.Denied;
-                res.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                res.Success = false;
+                res.ErrorMessage = "Request Denied";
+                await res.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
                 return;
             }
             
@@ -297,10 +304,20 @@ namespace NORSU.EncodeMe.Network
             }
             req.EncoderId = client.Encoder.Id;
             req.Save();
+
+            client.Encoder.EndWork();
+
+            var result = new SaveWorkResult
+            {
+                Success = true,
+                WorkCount = Request.Cache.Count(x =>x.Status > Request.Statuses.Proccessing && x.EncoderId == client.Encoder.Id),
+                BestTime = TimeSpan.FromSeconds(client.Encoder.BestTime).ToString(),
+                AverageTime = TimeSpan.FromSeconds(client.Encoder.AverageTime).ToString()
+            };
+
+            await result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
             
-            var result = new SaveWorkResult();
-            result.Result = ResultCodes.Success;
-            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            await SendEncoderUpdates(Client.Cache.ToList());
         }
 
         private static void LogoutHandler(PacketHeader packetheader, Connection connection, Logout incomingobject)
