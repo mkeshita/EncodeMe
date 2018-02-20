@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
 using NORSU.EncodeMe.Models;
 
@@ -18,12 +19,38 @@ namespace NORSU.EncodeMe.ViewModels
             
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
             VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
-            
+
+            Commands.Add(new ScreenMenu("DELETE ALL", PackIconKind.DeleteSweep, DeleteAllCommand));
+
             Messenger.Default.AddListener<Models.Request>(Messages.RequestUpdated, req =>
             {
                 Items.Filter = FilterRequest;
             });
         }
+
+        private static ICommand _deleteAllCommand;
+
+        private ICommand DeleteAllCommand => _deleteAllCommand ?? (_deleteAllCommand = new DelegateCommand(async d =>
+        {
+            await DialogHost.Show(new MessageDialog()
+            {
+                Icon = PackIconKind.DeleteForever,
+                Title = "CONFIRM DELETE",
+                Message = "Are you sure you want to delete all requests?\nThis action cannot be undone.",
+                Affirmative = "DELETE ALL",
+                Negative = "CANCEL",
+                AffirmativeCommand = new DelegateCommand(dd =>
+                {
+                    Models.RequestDetail.DeleteAll(false);
+                    Models.Request.DeleteAll(false);
+                    IsDialogOpen = false;
+                    Open();
+                })
+            }, "InnerDialog");
+            
+            Open();
+
+        }, d => !IsDialogOpen && Items.Count > 0));
 
         private static Requests _instance;
         public static Requests Instance => _instance ?? (_instance = new Requests());
