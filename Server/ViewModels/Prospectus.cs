@@ -135,14 +135,16 @@ namespace NORSU.EncodeMe.ViewModels
             var subject = new CourseSubject
             {
                 CourseId = Course.Id,
-                YearLevel = YearLevel.Value,
-                Semester = Semester.Value
+                YearLevel = YearLevel??YearLevels.First,
+                Semester = Semester??Semesters.First,
             };
 
             var s = Subject.Cache.FirstOrDefault(x => x.Code.ToUpper() == SubjectCode.ToUpper());
             if (s == null)
-                s = Subject.Add(SubjectCode, Description);
+                s = Subject.Add(SubjectCode, Description,Units);
             subject.SubjectId = s.Id;
+            
+            s.Update(nameof(Subject.Units),Units);
             subject.Save();
             
             AvailableSubjects.Refresh();
@@ -189,6 +191,20 @@ namespace NORSU.EncodeMe.ViewModels
             }
         }
 
+        private double _Units;
+
+        public double Units
+        {
+            get => _Units;
+            set
+            {
+                if(value == _Units)
+                    return;
+                _Units = value;
+                OnPropertyChanged(nameof(Units));
+            }
+        }
+        
         private bool FilterAvailable(object o)
         {
             if (!(o is Subject subject)) return false;

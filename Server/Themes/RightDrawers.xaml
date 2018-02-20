@@ -64,15 +64,17 @@
                              materialDesign:HintAssist.Hint="DESCRIPTIVE TITLE"
                              materialDesign:HintAssist.IsFloating="False"/>
                     </Grid>
-                    <UniformGrid Columns="2" Margin="10 10 10 20">
+                    <UniformGrid Rows="1" Margin="10 10 10 20">
                         <ComboBox materialDesign:HintAssist.Hint="YEAR LEVEL"
                                   ItemsSource="{server:EnumBinding EnumType={x:Type models:YearLevels}}"
                                   SelectedItem="{Binding YearLevel}"
                                   Margin="0 0 10 0"/>
-                        <ComboBox Margin="10 0 0 0"
+                        <ComboBox Margin="10 0"
                                   materialDesign:HintAssist.Hint="SEMESTER"
                                   ItemsSource="{server:EnumBinding EnumType={x:Type models:Semesters}}"
                                   SelectedItem="{Binding Semester}" />
+                        <TextBox Text="{Binding Units}"
+                                 materialDesign:HintAssist.Hint="UNITS"/>
                     </UniformGrid>
                     <UniformGrid Columns="2" Margin="10 20 10 10">
                         <Button Margin="0 0 10 0" Command="{Binding ResetCommand}">RESET</Button>
