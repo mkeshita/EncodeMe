@@ -391,6 +391,7 @@ namespace NORSU.EncodeMe.Network
                 Major = req.Student.Major,
                 Minor = req.Student.Minor,
                 Scholarship = req.Student.Scholarship,
+                Sex = req.Student.Male?Sexes.Male:Sexes.Female,
             };
             stud.Save();
 
