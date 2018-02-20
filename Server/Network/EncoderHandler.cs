@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NORSU.EncodeMe.Models;
@@ -113,20 +114,34 @@ namespace NORSU.EncodeMe.Network
               //  Client client = null;
               //  lock (_clients)
               //  {
-                 var   client = Client.Cache.FirstOrDefault(x => x.IP == ep.IP);
+                var clients = Client.Cache.ToList();
+                var client = clients.FirstOrDefault(x=>x.IP==ep.IP);
                     if (client == null)
                     {
                         client = new Client()
                         {
                             IP = ep.IP
                         };
+                        
                     }
-               // }
+                // }
+                if (client.IsDeleted && client.Id>0)
+                {
+                    client.Undelete();
+                }
                 client.Hostname = ep.Hostname;
                 client.Port = ep.Port;
                 client.LastHeartBeat = DateTime.Now;
                 var isNew = client.Id == 0;
-                await client.SaveAsync();
+                try
+                {
+                    client.Save();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+                
                 client.IsOnline = true;
                 
                 StartPinger(client);

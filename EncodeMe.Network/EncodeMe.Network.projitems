@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RegisterStudent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RegisterStudentResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RunCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SaveWork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SchedulesRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SchedulesResult.cs" />

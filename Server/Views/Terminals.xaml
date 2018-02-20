@@ -7,6 +7,7 @@
              xmlns:network="clr-namespace:NORSU.EncodeMe.Network"
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:NORSU.EncodeMe.Converters"
+             xmlns:viewModels="clr-namespace:NORSU.EncodeMe.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -65,27 +66,69 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!--<DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal"
+        <DataGridTemplateColumn>
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <StackPanel Orientation="Horizontal"
                                         Visibility="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},Path=IsMouseOver,Converter={converters:BooleanToVisibility}}">
-                                <Button Content="{md:PackIcon Refresh}" Style="{StaticResource MaterialDesignToolButton}" 
+                <Button Content="{md:PackIcon Delete}" Style="{StaticResource MaterialDesignToolButton}"
+                        Command="{Binding DeleteCommand}"
+                        Foreground="{StaticResource PrimaryHueDarkBrush}"
+                        Focusable="False"
+                        ToolTip="Delete"
+                        FontWeight="Bold" />
+                <Button Content="{md:PackIcon CalendarClock}" Style="{StaticResource MaterialDesignToolButton}"
+                        Command="{Binding Source={x:Static viewModels:Terminals.Instance},Path=ClearLogCommand}"
+                        CommandParameter="{Binding}"
+                        Foreground="{StaticResource PrimaryHueDarkBrush}"
+                        Focusable="False"
+                        ToolTip="Clear Logs"
+                        FontWeight="Bold" />
+                <Button Content="{md:PackIcon PlusNetwork}" Style="{StaticResource MaterialDesignToolButton}"
+                        Command="{Binding Source={x:Static viewModels:Terminals.Instance},Path=EnableCommand}"
+                        CommandParameter="{Binding}"
+                        Visibility="{Binding IsEnabled,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                        Foreground="{StaticResource PrimaryHueDarkBrush}"
+                        Focusable="False"
+                        ToolTip="Enable"
+                        FontWeight="Bold" />
+                <Button Content="{md:PackIcon MinusNetwork}" Style="{StaticResource MaterialDesignToolButton}"
+                        Command="{Binding Source={x:Static viewModels:Terminals.Instance},Path=DisableCommand}"
+                        CommandParameter="{Binding}"
+                        Visibility="{Binding IsEnabled,Converter={converters:BooleanToVisibility}}"
+                        Foreground="{StaticResource PrimaryHueDarkBrush}"
+                        Focusable="False"
+                        ToolTip="Disable"
+                        FontWeight="Bold" />
+                <Rectangle Width="1" Margin="4 0" Fill="{StaticResource MaterialDesignDivider}"/>
+                <Button Content="{md:PackIcon CloseBox}" Style="{StaticResource MaterialDesignToolButton}"
+                        Command="{Binding Source={x:Static viewModels:Terminals.Instance},Path=CloseCommand}"
+                        CommandParameter="{Binding}"
                                         Foreground="{StaticResource PrimaryHueDarkBrush}"
                                         Focusable="False"
-                                        ToolTip="Refresh"
+                                        ToolTip="Close Encoder"
                                         FontWeight="Bold"/>
-                                <Button Content="{md:PackIcon Logout}"
+                <Button Content="{md:PackIcon Power}"
+                        Command="{Binding Source={x:Static viewModels:Terminals.Instance},Path=ShutdownCommand}"
+                        CommandParameter="{Binding}"
                                         Foreground="{StaticResource PrimaryHueDarkBrush}"
                                         FontWeight="Bold"
-                                        ToolTip="Logout Encoder"
+                                        ToolTip="Shutdown"
                                         Style="{StaticResource MaterialDesignToolButton}"
                                         Focusable="False" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>-->
-            </DataGrid.Columns>
+                <Button Content="{md:PackIcon Refresh}"
+                        Command="{Binding Source={x:Static viewModels:Terminals.Instance},Path=RestartCommand}"
+                        CommandParameter="{Binding}"
+                        Foreground="{StaticResource PrimaryHueDarkBrush}"
+                        FontWeight="Bold"
+                        ToolTip="Restart"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        Focusable="False" />
+              </StackPanel>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+      </DataGrid.Columns>
 
         </DataGrid>
         

@@ -131,6 +131,17 @@ namespace NORSU.EncodeMe.Network
             return pong;
         }
 
+        public static async void SendCommand(Client client, Commands command, string param = null)
+        {
+           // if (!(client?.IsOnline ?? false)) return;
+            
+            await new RunCommand()
+            {
+                Command = command,
+                Parameter = param
+            }.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+        }
+        
         public static Task SendEncoderUpdates(List<Client> clients)
         {
             return Task.Factory.StartNew(() =>

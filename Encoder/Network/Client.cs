@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Windows;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet.Connections.UDP;
@@ -35,12 +37,42 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<Logout>(Network.Logout.GetHeader(), LogoutHandlger);
             NetworkComms.AppendGlobalIncomingPacketHandler<string>("PING", PingHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<Ping>(Ping.GetHeader(),PingPongHandler);
+            NetworkComms.AppendGlobalIncomingPacketHandler<RunCommand>(RunCommand.GetHeader(),RunCommandHandler);
+            
             PeerDiscovery.EnableDiscoverable(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             PeerDiscovery.OnPeerDiscovered += OnPeerDiscovered;
             
             Connection.StartListening(ConnectionType.UDP, new IPEndPoint(IPAddress.Any, 0));
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
             
+        }
+
+        private static void RunCommandHandler(PacketHeader packetheader, Connection connection, RunCommand req)
+        {
+            try
+            {
+                if (req.Command == Commands.CloseEncoder)
+                    awooo.Post(() => Application.Current.Shutdown());
+                else if (req.Command == Commands.Shutdown)
+                    RunExternalCommand("shutdown", "/s /f /p");
+                else if (req.Command == Commands.Restart)
+                    RunExternalCommand("shutdown", "/r /f /p");
+            }
+            catch (Exception e)
+            {
+                //
+            }
+            
+            
+        }
+
+        private static void RunExternalCommand(string command, string param)
+        {
+            var proc = new ProcessStartInfo(command,param);
+            proc.CreateNoWindow = true;
+            proc.UseShellExecute = true;
+            
+            Process.Start(proc);
         }
 
         private static async void PingPongHandler(PacketHeader packetheader, Connection connection, Ping incomingobject)
@@ -103,6 +135,8 @@ namespace NORSU.EncodeMe.Network
             Server = incomingobject;
         }
 
+        private static List<string> _discoveredPeers = new List<string>();
+        
         private static async void OnPeerDiscovered(ShortGuid peeridentifier, Dictionary<ConnectionType, List<EndPoint>> endPoints)
         {
             var info = new EndPointInfo(Environment.MachineName);
@@ -115,7 +149,10 @@ namespace NORSU.EncodeMe.Network
                 var ip = value as IPEndPoint;
                 if (ip?.AddressFamily != AddressFamily.InterNetwork) continue;
 
-                foreach (var localEP in localEPs[ConnectionType.UDP])
+                if (_discoveredPeers.Contains(ip.Address.ToString())) continue;
+                _discoveredPeers.Add(ip.Address.ToString());
+
+                    foreach (var localEP in localEPs[ConnectionType.UDP])
                 {
                     var lEp = (IPEndPoint)localEP;
                     if(lEp.AddressFamily!=AddressFamily.InterNetwork) continue;
