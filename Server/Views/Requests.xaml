@@ -19,14 +19,17 @@
                   CanUserDeleteRows="False"
                   AutoGenerateColumns="False">
             <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Status}" Header="Status"/>
                 <DataGridTextColumn Binding="{Binding Student.StudentId}"
                                     Header="Student's ID"/>
                 <DataGridTextColumn Binding="{Binding Student.Fullname}"
                                     Header="Name"/>
-                <DataGridTextColumn Binding="{Binding Student.Course}"
+                <DataGridTextColumn Binding="{Binding Student.Course.Acronym}"
                                     Header="Course" />
                 <DataGridTextColumn Binding="{Binding DateSubmitted,StringFormat=g}"
                                     Header="Date Submitted"/>
+                <DataGridTextColumn Header="Encoder"
+                                    Binding="{Binding Encoder.Username}"/>
             </DataGrid.Columns>
         </DataGrid>
         <DataGrid ItemsSource="{Binding Items/Details}"
@@ -37,7 +40,7 @@
                   CanUserDeleteRows="False"
                   AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding SubjectCode}"
+                <DataGridTextColumn Binding="{Binding Schedule.Subject.Code}"
                                     Header="Subject Code" />
                 <DataGridTextColumn Binding="{Binding Schedule.Description}"
                                     Header="Schedule" />

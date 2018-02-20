@@ -376,7 +376,8 @@ namespace NORSU.EncodeMe.Network
             await result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
 
-        public static async void CommitEnrollmentHandler(PacketHeader packetheader, Connection connection, CommitEnrollment req)
+        public static async void CommitEnrollmentHandler(PacketHeader packetheader, Connection connection,
+            CommitEnrollment req)
         {
             var dev = AndroidDevice.Cache.FirstOrDefault(
                 d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
@@ -410,8 +411,10 @@ namespace NORSU.EncodeMe.Network
                     QueueNumber = request.GetQueueNumber(),
                     Receipt = request.ReceiptNumber,
                     Status = EnrollmentStatus.Pending,
-                 }
-        }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                }
+            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+
+            Messenger.Default.Broadcast(Messages.RequestUpdated, request);
         }
 
         private static EnrollmentStatus GetStatus(Request.Statuses requestStatus)
@@ -521,6 +524,8 @@ namespace NORSU.EncodeMe.Network
             
             request.Update(nameof(Models.Request.Submitted),false);
 
+            Messenger.Default.Broadcast(Messages.RequestUpdated,request);
+            
             await new CancelEnrollmentResult()
             {
                 Success = true,

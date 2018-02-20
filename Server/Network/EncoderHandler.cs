@@ -256,6 +256,7 @@ namespace NORSU.EncodeMe.Network
             await SendEncoderUpdates(Client.Cache.ToList());
 
             client.Encoder.StartWork();
+            work.StartWorking();
         }
 
         private static async void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)
@@ -306,7 +307,8 @@ namespace NORSU.EncodeMe.Network
             req.Save();
 
             client.Encoder.EndWork();
-
+            req.StopWorking();
+            
             var result = new SaveWorkResult
             {
                 Success = true,
