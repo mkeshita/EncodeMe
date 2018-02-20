@@ -27,6 +27,11 @@ namespace NORSU.EncodeMe.ViewModels
                     Items.Filter = FilterSubjects;
                 }
             });
+            
+            Messenger.Default.AddListener<Models.CourseSubject>(Messages.ModelDeleted, m =>
+            {
+                Items.Filter = FilterSubjects;
+            });
         }
 
 
@@ -48,12 +53,14 @@ namespace NORSU.EncodeMe.ViewModels
 
         private bool FilterSubjects(object o)
         {
-            if (!FilterByCourse) return true;
             var subject = o as Models.Subject;
             if (subject == null) return false;
             
             var cs =  Models.CourseSubject.Cache.FirstOrDefault(x => x.SubjectId == subject.Id);
             if (cs == null) return false;
+            
+            if (!FilterByCourse)
+                return true;
             var course = Models.Course.Cache.FirstOrDefault(x => x.Id == cs.CourseId);
             return course?.IsSelected ?? false;
         }
@@ -160,10 +167,12 @@ namespace NORSU.EncodeMe.ViewModels
                 _items.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtBeginning;
                 _items.CurrentChanged += (sender, args) =>
                 {
+                    if (_items.IsAddingNew) return;
                     if (_items.CurrentItem == null) return;
                     Models.ClassSchedule.SetNewScheduleSubject(((Models.Subject) _items.CurrentItem).Id);
                     Schedules.Filter = FilterSchedule;
                 };
+                _items.Filter = FilterSubjects;
                 return _items;
             }
         }

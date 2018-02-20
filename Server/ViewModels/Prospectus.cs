@@ -33,6 +33,10 @@ namespace NORSU.EncodeMe.ViewModels
             {
                 AvailableSubjects.Refresh();
             });
+            Messenger.Default.AddListener<Models.Subject>(Messages.ModelDeleted, c =>
+            {
+                AvailableSubjects.Refresh();
+            });
         }
 
         public PackIconKind Icon => PackIconKind.ViewList;
@@ -167,7 +171,8 @@ namespace NORSU.EncodeMe.ViewModels
 
         private bool FilterSubjects(object o)
         {
-            var subject = o as CourseSubject;
+            if (!(o is CourseSubject subject)) return false;
+            if (subject.Subject.IsDeleted) return false;
             return subject?.CourseId == Course.Id;
         }
 
@@ -178,7 +183,6 @@ namespace NORSU.EncodeMe.ViewModels
             get
             {
                 if (_availableSubjects != null) return _availableSubjects;
-                
                 _availableSubjects = new ListCollectionView(Subject.Cache);
                 _availableSubjects.Filter = FilterAvailable;
                 return _availableSubjects;
@@ -187,7 +191,9 @@ namespace NORSU.EncodeMe.ViewModels
 
         private bool FilterAvailable(object o)
         {
-            var subject = o as Subject;
+            if (!(o is Subject subject)) return false;
+            if(subject.IsDeleted)
+                return false;
             return CourseSubject.Cache.FirstOrDefault(x => x.CourseId == Course.Id && x.SubjectId == subject?.Id) ==
                    null;
         }
