@@ -183,6 +183,11 @@ namespace NORSU.EncodeMe.ViewModels
             {
                 if (_schedulesView != null) return _schedulesView;
                 _schedulesView = new ListCollectionView(Models.ClassSchedule.Cache);
+                Items.CurrentChanged += (sender, args) =>
+                {
+                    if (Items.IsAddingNew) return;
+                    _schedulesView.Filter = FilterSchedule;
+                };
                 _schedulesView.Filter = FilterSchedule;
                 return _schedulesView;
             }

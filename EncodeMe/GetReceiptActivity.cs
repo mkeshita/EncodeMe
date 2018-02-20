@@ -65,6 +65,7 @@ namespace NORSU.EncodeMe
             if (res?.Success ?? false)
             {
                 StartActivity(typeof(SubjectsActivity));
+                Finish();
             }
             else
             {
