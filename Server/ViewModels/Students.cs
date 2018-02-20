@@ -39,7 +39,7 @@ namespace NORSU.EncodeMe.ViewModels
                 return _items;
             }
         }
-
+        
         private bool? _CheckState;
 
         public bool? CheckState
@@ -74,6 +74,36 @@ namespace NORSU.EncodeMe.ViewModels
                 }
             }
         }
+
+        private ICommand _resetPasswordCommand;
+
+        public ICommand ResetPasswordCommand => _resetPasswordCommand ?? (_resetPasswordCommand = new DelegateCommand(
+            d =>
+            {
+                var list = Student.Cache.Where(x => x.IsSelected).ToList();
+                if (list.Count == 0)
+                    return;
+                
+                var pwds = new Dictionary<long,string>();
+                
+                foreach (var student in list)
+                {
+                    pwds.Add(student.Id,student.Password);
+                    student.Update(nameof(Student.Password),"");
+                }
+                
+                var msg = "student";
+                if (list.Count > 1)
+                    msg += "s";
+                MainViewModel.EnqueueMessage($"Password of {list.Count} {msg} were reset.", "UNDO",
+                    () =>
+                    {
+                        foreach (var i in pwds)
+                        {
+                            Student.Cache.FirstOrDefault(x=>x.Id==i.Key)?.Update(nameof(Student.Password),i.Value);
+                        }
+                    });
+            }, d => Student.Cache.Any(x => x.IsSelected)));
         
         private ICommand _deleteSelectedCommand;
 

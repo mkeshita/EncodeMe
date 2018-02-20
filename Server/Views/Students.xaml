@@ -21,7 +21,7 @@
                       CanUserDeleteRows="False">
 
       <DataGrid.Columns>
-        <DataGridTemplateColumn IsReadOnly="True">
+        <DataGridTemplateColumn IsReadOnly="True" CanUserResize="False" CanUserReorder="False">
           <DataGridTemplateColumn.Header>
             <CheckBox IsThreeState="True" IsChecked="{Binding Source={x:Static viewModels:Students.Instance},Path=CheckState}"
                       HorizontalAlignment="Center"
@@ -41,6 +41,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
+        
         <DataGridTextColumn Header="ID" Binding="{Binding StudentId,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}"
                             MinWidth="111"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
@@ -83,10 +84,15 @@
       </DataGrid.Columns>
 
     </DataGrid>
-      
-      <Button VerticalAlignment="Bottom" HorizontalAlignment="Left"
-              Margin="10" Content="DELETE SELECTED"
+
+    <UniformGrid Rows="1" Margin="10" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+      <Button Content="DELETE SELECTED"
+              Margin="0 0 4 0"
               Command="{Binding DeleteSelectedCommand}"/>
+      <Button Content="RESET PASSWORD"
+              Margin="4 0 0 0"
+              Command="{Binding ResetPasswordCommand}"/>
+    </UniformGrid>
 
     <md:ColorZone Margin="10"
                   BorderBrush="{StaticResource MaterialDesignDivider}"
