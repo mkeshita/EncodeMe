@@ -300,7 +300,6 @@ namespace NORSU.EncodeMe
 
             SubmitProgress.Visibility = Visibility.Collapsed;
             
-
             SubmitResult.Visibility = Visibility.Visible;
             
             if (result?.Success??false)
@@ -316,7 +315,6 @@ namespace NORSU.EncodeMe
                 
                 MainTransitioner.SelectedIndex = 2;
                 Content.SelectedIndex = 1;
-                
             } else
             {
                 SubmitResult.Kind = PackIconKind.CloseCircle;
@@ -335,6 +333,8 @@ namespace NORSU.EncodeMe
 
             WorkDataGrid.IsEnabled = true;
             WorkToolbar.IsEnabled = true;
+            CurrentWork = null;
+            SubmitResult.Visibility = Visibility.Collapsed;
         }
 
         private void Enroll_Click(object sender, RoutedEventArgs e)
