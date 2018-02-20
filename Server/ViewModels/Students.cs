@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
@@ -14,6 +15,8 @@ namespace NORSU.EncodeMe.ViewModels
         private Students() : base("Enrolled Students", PackIconKind.School)
         {
             ShortName = "Students";
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
             
             Messenger.Default.AddListener<Student>(Messages.ModelSelected, s =>
             {
