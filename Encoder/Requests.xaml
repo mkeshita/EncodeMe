@@ -579,6 +579,22 @@
                              Margin="0 0 0 7"
                              Style="{StaticResource MaterialDesignTitleTextBlock}" />
 
+                <TextBlock Text="Year Level" />
+                <TextBlock Text="{Binding YearLevel,Converter={converters:YearLevelConverter}}" 
+                           Margin="0 0 0 7"
+                           Style="{StaticResource MaterialDesignTitleTextBlock}" />
+
+                <TextBlock Text="Status" />
+                <TextBlock Text="NEW STUDENT"
+                           Visibility="{Binding IsNew,Converter={converters:BooleanToVisibility}}"
+                           Style="{StaticResource MaterialDesignTitleTextBlock}"
+                           Margin="0 0 0 7" />
+                <TextBlock Text="RETURNEE"
+                           Visibility="{Binding IsNew,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                           Style="{StaticResource MaterialDesignTitleTextBlock}"
+                           Margin="0 0 0 7" />
+
+
                 <TextBlock Text="Major" />
                 <TextBlock Text="{Binding Major}" TextWrapping="Wrap"
                              Margin="0 0 0 7"

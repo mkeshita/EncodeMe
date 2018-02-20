@@ -211,6 +211,36 @@ namespace NORSU.EncodeMe.Network
         }
 
 
+
+        private int _YearLevel;
+        [ProtoMember(17)]
+        public int YearLevel
+        {
+            get => _YearLevel;
+            set
+            {
+                if(value == _YearLevel)
+                    return;
+                _YearLevel = value;
+                OnPropertyChanged(nameof(YearLevel));
+            }
+        }
+
+
+        private bool _IsNew;
+        [ProtoMember(18)]
+        public bool IsNew
+        {
+            get => _IsNew;
+            set
+            {
+                if (value == _IsNew)
+                    return;
+                _IsNew = value;
+                OnPropertyChanged(nameof(IsNew));
+            }
+        }
+
         public string this[string columnName] => GetErrorInfo(columnName);
 
         private string GetErrorInfo(string prop)

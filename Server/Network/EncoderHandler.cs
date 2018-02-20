@@ -392,6 +392,8 @@ namespace NORSU.EncodeMe.Network
                 Minor = req.Student.Minor,
                 Scholarship = req.Student.Scholarship,
                 Sex = req.Student.Male?Sexes.Male:Sexes.Female,
+                YearLevel = (YearLevels) req.Student.YearLevel,
+                Status = req.Student.IsNew?StudentStatus.NewStudent:StudentStatus.Returnee,
             };
             stud.Save();
 

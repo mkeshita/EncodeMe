@@ -75,6 +75,19 @@
                                 Header="Course"
                                 EditingElementStyle="{StaticResource MaterialDesignDataGridComboBox}"
                                 ElementStyle="{StaticResource MaterialDesignDataGridComboBox}" />
+        <DataGridComboBoxColumn
+          ItemsSource="{Binding Source={encodeMe:EnumBinding EnumType={x:Type models:YearLevels}}}"
+          SelectedItemBinding="{Binding YearLevel}"
+          Header="Year Level"
+          EditingElementStyle="{StaticResource MaterialDesignDataGridComboBox}"
+          ElementStyle="{StaticResource MaterialDesignDataGridComboBox}" />
+        
+        <DataGridComboBoxColumn ItemsSource="{Binding Source={encodeMe:EnumBinding EnumType={x:Type models:StudentStatus}}}"
+                                SelectedItemBinding="{Binding Status}"
+                                Header="Status"
+                                EditingElementStyle="{StaticResource MaterialDesignDataGridComboBox}"
+                                ElementStyle="{StaticResource MaterialDesignDataGridComboBox}" />
+        
         <DataGridTextColumn Header="Major" Binding="{Binding Major}"
                             EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
         <DataGridTextColumn Header="Minor" Binding="{Binding Minor}"
