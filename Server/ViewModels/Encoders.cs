@@ -24,7 +24,7 @@ namespace NORSU.EncodeMe.ViewModels
 
             Messenger.Default.AddListener<Models.Encoder>(Messages.EncoderFlipped, encoder =>
             {
-                if(_previousFlipped!=null)
+                if(_previousFlipped!=null && _previousFlipped.Id!=encoder.Id)
                      _previousFlipped.IsFlipped = false;
                 _previousFlipped = encoder;
             });
@@ -139,13 +139,13 @@ namespace NORSU.EncodeMe.ViewModels
                     dlg.InitialDirectory = Settings.Default.OpenFileLocation;
 
                 if (!dlg.ShowDialog(App.Current.MainWindow) ?? false) return;
-
+                
                 Settings.Default.OpenFileLocation = Path.GetDirectoryName(dlg.FileName);
                 Settings.Default.Save();
 
                 try
                 {
-
+                    encoder.BackupPicture();
                     using (var img = Image.FromFile(dlg.FileName))
                     {
                         using (var bmp = ImageProcessor.Resize(img, 471))
@@ -165,15 +165,13 @@ namespace NORSU.EncodeMe.ViewModels
                             }
                         }
                     }
-                    var pic = encoder.Picture;
-
+                   
                     encoder.Save();
-                    encoder.IsFlipped = false;
 
                     MainViewModel.EnqueueMessage($"{encoder.Username}'s picture has been changed.", "UNDO",
                         en =>
                         {
-                            en.Picture = pic;
+                            en.RestorePicture();
                             en.Save();
                         }, encoder, true);
 

@@ -11,7 +11,7 @@ namespace NORSU.EncodeMe.Network
     class SchedulesResult : Message<SchedulesResult>
     {
         [ProtoMember(1, IsRequired = true)]
-        public ResultCodes Result { get; set; }
+        public bool Success { get; set; }
         
         [ProtoMember(2)]
         public List<ClassSchedule> Schedules { get; set; }
@@ -22,6 +22,9 @@ namespace NORSU.EncodeMe.Network
         [ProtoMember(4)]
         public string Subject { get; set; }
 
+        [ProtoMember(5)]
+        public string ErrorMessage { get; set; }
+        
         public override Task Send(IPEndPoint ip)
         {
             return Send($"{nameof(SchedulesResult)}{Subject}", this, ip);

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using GenieLib;
 using MaterialDesignThemes.Wpf;
@@ -101,9 +102,9 @@ namespace NORSU.EncodeMe
             ButtonProgressAssist.SetIsIndeterminate(NextButton, true);
             var work = await Client.GetNextWork();
             CurrentWork = work;
+            Student.DataContext = work.Student;
             ButtonProgressAssist.SetIsIndicatorVisible(NextButton, false);
             ButtonProgressAssist.SetIsIndeterminate(NextButton, false);
-
             //_encoderMagic.IsGenieOut = false;
             var errorMessage = "";
             switch (work.Result)
@@ -112,6 +113,7 @@ namespace NORSU.EncodeMe
                     WorkDataGrid.ItemsSource = work.ClassSchedules;
                     //_workMagic.IsGenieOut = true;
                     MainTransitioner.SelectedIndex = 3;
+                    Content.SelectedIndex = 2;
                     LoginLamp.Visibility = Visibility.Collapsed;
                     StudentId.Text = work.StudentId;
                     StudentName.Text = work.StudentName;
@@ -297,22 +299,42 @@ namespace NORSU.EncodeMe
             var result = await Client.SaveWork(work);
 
             SubmitProgress.Visibility = Visibility.Collapsed;
+            
+
+            SubmitResult.Visibility = Visibility.Visible;
+            
+            if (result?.Success??false)
+            {
+                SubmitResult.Kind = PackIconKind.CheckCircle;
+                SubmitResult.Foreground = SubmitProgress.Foreground;
+
+                MainViewModel.Instance.Encoder.AverageTime = result.AverageTime;
+                MainViewModel.Instance.Encoder.BestTime = result.BestTime;
+                MainViewModel.Instance.Encoder.WorkCount = result.WorkCount;
+                MainViewModel.Instance.Encoder = MainViewModel.Instance.Encoder;
+                await TaskEx.Delay(2222);
+                
+                MainTransitioner.SelectedIndex = 2;
+                Content.SelectedIndex = 1;
+                
+            } else
+            {
+                SubmitResult.Kind = PackIconKind.CloseCircle;
+                SubmitResult.Foreground = Brushes.Red;
+                if (result == null)
+                {
+                    await ShowMessage("Request Timeout");
+                }
+                else
+                {
+                    await ShowMessage(result.ErrorMessage);
+                }
+                MainTransitioner.SelectedIndex = 1;
+                Content.SelectedIndex = 0;
+            }
+
             WorkDataGrid.IsEnabled = true;
             WorkToolbar.IsEnabled = true;
-
-            if (result.Result == ResultCodes.Success)
-            {
-               // _workMagic.IsGenieOut = false;
-                MainTransitioner.SelectedIndex = 0;
-                LoginLamp.Visibility = Visibility.Visible;
-            } else if (result.Result == ResultCodes.Denied)
-            {
-                EncoderPictureClicked(null, null);
-            }
-            else
-            {
-                MessageBox.Show("An error occured while contacting server. Please try again.");
-            }
         }
 
         private void Enroll_Click(object sender, RoutedEventArgs e)

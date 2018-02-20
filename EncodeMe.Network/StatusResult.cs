@@ -4,41 +4,32 @@ using ProtoBuf;
 
 namespace NORSU.EncodeMe.Network
 {
-    public enum EnrollmentStatus
-    {
-        Pending,
-        Processing,
-        Accepted,
-        Conflict,
-        Closed
-    }
-    
     [ProtoContract]
     class StatusResult : Message<StatusResult>
     {
         [ProtoMember(1)]
-        public int QueueNumber { get; set; }
+        public bool Success { get; set; }
         
         [ProtoMember(2)]
-        public List<ScheduleStatus> Schedules { get; set; }
+        public List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
 
         [ProtoMember(3)]
-        public ResultCodes Result { get; set; }
-        
+        public string ErrorMessage { get; set; }
+
         [ProtoMember(4)]
-        public string Encoder { get; set; }
-
-        [ProtoMember(5)]
-        public byte[] EncoderPicture { get; set; }
-
-        [ProtoMember(6)]
-        public EnrollmentStatus Status { get; set; }
+        public RequestStatus RequestStatus { get; set; }
+        
     }
 
     [ProtoContract]
     class StatusRequest : Message<StatusRequest>
     {
-        
+        [ProtoMember(1)]
+        public long StudentId { get; set; }
+        [ProtoMember(2)]
+        public long RequestId { get; set; }
+        [ProtoMember(3)]
+        public string Receipt { get; set; }
     }
 }
 #endif

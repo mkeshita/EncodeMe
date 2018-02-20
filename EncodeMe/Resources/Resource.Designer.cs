@@ -1898,11 +1898,11 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060025
 			public const int CTRL = 2131099685;
 			
+			// aapt resource value: 0x7f060093
+			public const int CancelButton = 2131099795;
+			
 			// aapt resource value: 0x7f060070
 			public const int Course = 2131099760;
-			
-			// aapt resource value: 0x7f060093
-			public const int EditButton = 2131099795;
 			
 			// aapt resource value: 0x7f06009d
 			public const int EnrollButton = 2131099805;

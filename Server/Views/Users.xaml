@@ -75,10 +75,9 @@
                 <materialDesign:ColorZone Mode="Accent" Padding="6">
                   <StackPanel Orientation="Horizontal">
                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                ToolTip="Save" 
                                                 Command="{Binding SaveCommand}" 
                                                 HorizontalAlignment="Left">
-                      <materialDesign:PackIcon Kind="ContentSave" HorizontalAlignment="Right" />
+                      <materialDesign:PackIcon Kind="ArrowLeftBold" HorizontalAlignment="Right" />
                     </Button>
                     <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">EDIT USER</TextBlock>
                   </StackPanel>
@@ -103,14 +102,12 @@
                                                  Margin="10"
                                                  VerticalAlignment="Bottom">
                     <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                Command="{Binding Source={x:Static viewModels:Users.Instance},Path=ResetPasswordCommand}"
-                            CommandParameter="{Binding}"
+                                                Command="{Binding ChangePasswordCommand}"
                                                 Content="RESET PASSWORD" />
                     <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                 Content="CHANGE PICTURE"
                                                     Margin="0 10 0 0"
-                                                Command="{Binding Source={x:Static viewModels:Users.Instance},Path=ChangePictureCommand}"
-                            CommandParameter="{Binding}"/>
+                                                Command="{Binding ChangePictureCommand}"/>
                   </StackPanel>
                 </Grid>
               </Grid>

@@ -50,18 +50,14 @@ namespace NORSU.EncodeMe.Network
             StudentInfoRequest incomingobject)
         {
             var result = new StudentInfoResult();
-            if (string.IsNullOrWhiteSpace(incomingobject.StudentId))
-            {
-                result.Result = ResultCodes.NotFound;
-                SendStudentInfoResult(result, connection);
-                return;
-            }
-            //Not for production
-            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId == incomingobject.StudentId);
+            if (string.IsNullOrWhiteSpace(incomingobject.StudentId)) return;
+            
+            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId?.ToLower() == incomingobject.StudentId?.ToLower());
             
             if (student == null)
             {
-                result.Result = ResultCodes.NotFound;
+                result.Success = false;
+                result.ErrorMessage = "Student ID does not exists. Please check and try again.";
                 SendStudentInfoResult(result, connection);
                 return;
             }
@@ -71,12 +67,13 @@ namespace NORSU.EncodeMe.Network
 
             if (student.Password != incomingobject.Password)
             {
-                result.Result = ResultCodes.NotFound;
+                result.Success = false;
+                result.ErrorMessage = "Invalid password. Please try again.";
                 SendStudentInfoResult(result, connection);
                 return;
             }
-            
-            result.Result = ResultCodes.Success;
+
+            result.Success = true;
             result.Student = new Student()
             {
                 Course = student.Course.Acronym,
@@ -92,6 +89,19 @@ namespace NORSU.EncodeMe.Network
                 Minor = student.Minor,
                 Scholarship = student.Scholarship,
             };
+
+            var req = Models.Request.Cache.FirstOrDefault(x =>
+                x.StudentId.ToLower() == incomingobject.StudentId.ToLower());
+            if (req != null)
+            {
+                result.RequestStatus = new RequestStatus()
+                {
+                    Id=req.Id,
+                    IsSubmitted = req.Submitted,
+                    QueueNumber = req.GetQueueNumber(),
+                    Receipt = req.ReceiptNumber
+                };
+            }
             
             SendStudentInfoResult(result,connection);
         }
@@ -117,29 +127,46 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
             
             var result = new SchedulesResult(){Serial = incomingobject.Serial,Subject = incomingobject.SubjectCode};
-            var subject = Models.Subject.Cache.FirstOrDefault(x=>x.Code.ToLower()==incomingobject.SubjectCode.ToLower());
-            if (subject == null)
-                result.Result = ResultCodes.NotFound;
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == incomingobject.StudentId);
+            var subject = Models.Subject.Cache
+                .FirstOrDefault(x => x.Code.ToLower() == incomingobject.SubjectCode.ToLower());
+
+            if (student == null || subject == null)
+            {
+                result.Success = false;
+                result.ErrorMessage = $"{incomingobject.SubjectCode.ToUpper()} not found!";
+            }
             else
             {
-                var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
-                result.Result = ResultCodes.Success;
-                result.Schedules = new List<ClassSchedule>();
-                foreach (var sched in schedules)
+
+                if (!(Models.CourseSubject.Cache
+                    .Any(x => x.CourseId == student?.CourseId &&
+                              x.SubjectId == subject.Id)))
                 {
-                    result.Schedules.Add(new ClassSchedule()
+                    result.Success = false;
+                    result.ErrorMessage = $"{incomingobject.SubjectCode.ToUpper()} is not in your course.";
+                }
+                else
+                {
+                    var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
+                    result.Success = true;
+                    result.Schedules = new List<ClassSchedule>();
+                    foreach (var sched in schedules)
                     {
-                        ClassId = sched.Id,
-                        Instructor = sched.Instructor,
-                        Schedule = sched.Description,
-                        SubjectCode = sched.Subject.Code,
-                        Room = sched.Room,
-                        Slots = sched.Slots,
-                        Enrolled = GetEnrolled(sched.Id)
-                    });
+                        result.Schedules.Add(new ClassSchedule()
+                        {
+                            ClassId = sched.Id,
+                            Instructor = sched.Instructor,
+                            Schedule = sched.Description,
+                            SubjectCode = sched.Subject.Code,
+                            Room = sched.Room,
+                            Slots = sched.Slots,
+                            Enrolled = GetEnrolled(sched.Id)
+                        });
+                    }
                 }
             }
-            
             result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
 
@@ -315,7 +342,9 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
 
             var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.TransactionId);
-            if ((request == null) || (request.StudentId != req.StudentId))
+            var sched = Models.ClassSchedule.Cache.FirstOrDefault(x => x.Id == req.ClassId);
+            
+            if ((request == null) || (request.StudentId != req.StudentId) || sched==null)
             {
                 await new AddScheduleResult()
                 {
@@ -324,19 +353,27 @@ namespace NORSU.EncodeMe.Network
                 }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
                 return;
             }
-            
-            if(request.Details.Any(x=>x.ScheduleId==req.ClassId)) return;
+
+            var prevSched = request.Details.FirstOrDefault(x =>
+            {
+                return x.Schedule.SubjectId == sched.SubjectId && x.ScheduleId != req.ClassId;
+            });
+
+            var result = new AddScheduleResult()
+            {
+                Success = true,
+                ReplacedId = prevSched?.Id??0,
+            };
+
+            prevSched?.Delete();
             
             new RequestDetail()
             {
                 RequestId = req.TransactionId,
                 ScheduleId = req.ClassId,
             }.Save();
-
-            await new AddScheduleResult()
-            {
-                Success = true,
-            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP),dev.Port));
+            
+            await result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
 
         public static async void CommitEnrollmentHandler(PacketHeader packetheader, Connection connection, CommitEnrollment req)
@@ -358,13 +395,135 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
             request.Submitted = true;
+            request.Status = Request.Statuses.Pending;
             request.DateSubmitted = DateTime.Now;
             request.Save();
-            
+            var qn = request.GetQueueNumber();
             await new CommitEnrollmentResult()
             {
                 Success = true,
-                QueueNumber = request.GetQueueNumber()
+                QueueNumber = qn,
+                RequestStatus = new RequestStatus()
+                {
+                    Id = request.Id,
+                    IsSubmitted = request.Submitted,
+                    QueueNumber = request.GetQueueNumber(),
+                    Receipt = request.ReceiptNumber,
+                    Status = EnrollmentStatus.Pending,
+                 }
+        }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
+
+        private static EnrollmentStatus GetStatus(Request.Statuses requestStatus)
+        {
+            switch(requestStatus)
+            {
+                case Request.Statuses.Pending:
+                    return EnrollmentStatus.Pending;
+                case Request.Statuses.Proccessing:
+                    return EnrollmentStatus.Processing;
+                case Request.Statuses.Conflict:
+                    return EnrollmentStatus.Conflict;
+                case Request.Statuses.Closed:
+                    return EnrollmentStatus.Closed;
+                case Request.Statuses.Accepted:
+                    return EnrollmentStatus.Accepted;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(requestStatus), requestStatus, null);
+            }
+        }
+
+        public static async void StatusRequestHandler(PacketHeader packetheader, Connection connection, StatusRequest req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.StudentId);
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.RequestId && x.ReceiptNumber == req.Receipt);
+
+            if (student == null || request == null)
+            {
+                await new StatusResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid Request",
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+
+            var res = new StatusResult()
+            {
+                Success = true,
+                RequestStatus = new RequestStatus()
+                {
+                    Id = request.Id,
+                    IsSubmitted = request.Submitted,
+                    QueueNumber = request.GetQueueNumber(),
+                    Receipt = request.ReceiptNumber,
+                    Status = GetStatus(request.Status),
+                },
+            };
+
+            foreach(var item in request.Details)
+            {
+                res.ClassSchedules.Add(new ClassSchedule()
+                {
+                    ClassId = item.ScheduleId,
+                    Enrolled = Models.ClassSchedule.GetEnrolled(item.ScheduleId),
+                    Instructor = item.Schedule.Instructor,
+                    Schedule = item.Schedule.Description,
+                    Room = item.Schedule.Room,
+                    Slots = item.Schedule.Slots,
+                    SubjectCode = item.Schedule.Subject.Code,
+                    EnrollmentStatus = GetClassStatus(item.Status)
+                });
+            }
+
+            await res.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
+
+        private static ScheduleStatuses GetClassStatus(Request.Statuses itemStatus)
+        {
+            switch(itemStatus)
+            {
+                case Request.Statuses.Pending:
+                    return ScheduleStatuses.Pending;
+                case Request.Statuses.Proccessing:
+                    return ScheduleStatuses.Pending;
+                case Request.Statuses.Conflict:
+                    return ScheduleStatuses.Conflict;
+                case Request.Statuses.Closed:
+                    return ScheduleStatuses.Closed;
+                case Request.Statuses.Accepted:
+                    return ScheduleStatuses.Accepted;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemStatus), itemStatus, null);
+            }
+        }
+
+        public static async void CancelEnrollmentHandler(PacketHeader packetheader, Connection connection, CancelEnrollment req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.StudentId);
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.RequestId);
+
+            if (student == null || request == null) return;
+            
+            request.Update(nameof(Models.Request.Submitted),false);
+
+            await new CancelEnrollmentResult()
+            {
+                Success = true,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
     }

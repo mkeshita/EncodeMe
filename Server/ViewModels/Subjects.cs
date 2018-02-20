@@ -160,6 +160,7 @@ namespace NORSU.EncodeMe.ViewModels
                 _items.NewItemPlaceholderPosition = NewItemPlaceholderPosition.AtBeginning;
                 _items.CurrentChanged += (sender, args) =>
                 {
+                    if (_items.CurrentItem == null) return;
                     Models.ClassSchedule.SetNewScheduleSubject(((Models.Subject) _items.CurrentItem).Id);
                     Schedules.Filter = FilterSchedule;
                 };

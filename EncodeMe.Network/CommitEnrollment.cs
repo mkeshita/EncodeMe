@@ -27,5 +27,25 @@ namespace NORSU.EncodeMe.Network
         public string ErrorMessage { get; set; }
         [ProtoMember(3)]
         public long QueueNumber { get; set; }
+        [ProtoMember(4)]
+        public RequestStatus RequestStatus { get; set; }
+    }
+
+    [ProtoContract]
+    class CancelEnrollment : Message<CancelEnrollment>
+    {
+        [ProtoMember(1)]
+        public long RequestId { get; set; }
+        [ProtoMember(2)]
+        public long StudentId { get; set; }
+    }
+
+    [ProtoContract]
+    class CancelEnrollmentResult : Message<CancelEnrollmentResult>
+    {
+        [ProtoMember(1)]
+        public bool Success { get; set; }
+        [ProtoMember(2)]
+        public string ErrorMessage { get; set; }
     }
 }

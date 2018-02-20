@@ -12,6 +12,8 @@ namespace NORSU.EncodeMe.Converters
             if (value == null) return Binding.DoNothing;
 
             var bmp = new BitmapImage();
+            
+            
             bmp.BeginInit();
             bmp.CacheOption = BitmapCacheOption.OnLoad;
 

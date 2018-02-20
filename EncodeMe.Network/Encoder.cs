@@ -19,5 +19,10 @@ namespace NORSU.EncodeMe.Network
         
         [ProtoMember(5)]
         public long WorkCount { get; set; }
+        [ProtoMember(6)]
+        public string BestTime { get; set; }
+
+        [ProtoMember(7)]
+        public string AverageTime { get; set; }
     }
 }
