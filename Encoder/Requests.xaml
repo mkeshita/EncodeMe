@@ -554,6 +554,19 @@
                           VerticalScrollBarVisibility="Auto"
                           d:DataContext="{d:DesignInstance network:Student}">
               <StackPanel Background="White" Margin="20">
+                <TextBlock Text="First Name" />
+                <TextBlock Text="{Binding FirstName}"
+                           Style="{StaticResource MaterialDesignTitleTextBlock}"
+                           Margin="0 0 0 7" />
+                <TextBlock Text="Middle Name" />
+                <TextBlock Text="{Binding MiddleName}"
+                           Style="{StaticResource MaterialDesignTitleTextBlock}"
+                           Margin="0 0 0 7" />
+                <TextBlock Text="Last Name" />
+                <TextBlock Text="{Binding LastName}"
+                           Style="{StaticResource MaterialDesignTitleTextBlock}"
+                           Margin="0 0 0 7" />
+                
                 <TextBlock Text="Date of Birth"/>
                 <TextBlock Text="{Binding BirthDate,StringFormat=MMMM\ d\, yyyy}"
                              Style="{StaticResource MaterialDesignTitleTextBlock}"
@@ -725,6 +738,10 @@
             <TextBox md:HintAssist.Hint="FIRST NAME"
                      Text="{Binding FirstName,UpdateSourceTrigger=PropertyChanged}"
                      md:HintAssist.IsFloating="True" />
+              <TextBox md:HintAssist.Hint="MIDDLE NAME"
+                       Margin="4"
+                       Text="{Binding MiddleName,UpdateSourceTrigger=PropertyChanged}"
+                       md:HintAssist.IsFloating="True" />
               <TextBox md:HintAssist.Hint="LAST NAME"
                        Text="{Binding LastName,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />

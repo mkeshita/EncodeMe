@@ -6,6 +6,7 @@ using SQLite;
 #endif
 namespace NORSU.EncodeMe.Network
 {
+    
     [ProtoContract]
     class Student : Message<Student>, IDataErrorInfo
     {
@@ -44,7 +45,7 @@ namespace NORSU.EncodeMe.Network
                 OnPropertyChanged(nameof(FirstName));
             }
         }
-
+        
         private string _LastName;
         [ProtoMember(4)]
         public string LastName
@@ -211,6 +212,19 @@ namespace NORSU.EncodeMe.Network
         }
 
 
+        private string _MiddleName;
+        [ProtoMember(16)]
+        public string MiddleName
+        {
+            get => _MiddleName;
+            set
+            {
+                if(value == _MiddleName)
+                    return;
+                _MiddleName = value;
+                OnPropertyChanged(nameof(MiddleName));
+            }
+        }
 
         private int _YearLevel;
         [ProtoMember(17)]
@@ -282,6 +296,9 @@ namespace NORSU.EncodeMe.Network
                 return false;
             }
         }
+
+
+        
     }
 
     [ProtoContract]
