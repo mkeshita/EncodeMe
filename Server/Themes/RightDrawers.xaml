@@ -115,11 +115,11 @@
                                   Style="{StaticResource MaterialDesignCheckBox}"/>
                         </DataGridCheckBoxColumn.Header>
                     </DataGridCheckBoxColumn>
-                    <DataGridTextColumn Header="Acronym" Binding="{Binding Acronym}"
+                    <DataGridTextColumn Header="Acronym" Binding="{Binding Acronym,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"/>
-                    <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}"
+          <DataGridTextColumn Header="Full Name" Binding="{Binding FullName,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
                                     EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}"/>
-          <DataGridTextColumn Header="College" Binding="{Binding College}"
+          <DataGridTextColumn Header="College" Binding="{Binding College,ValidatesOnDataErrors=True,UpdateSourceTrigger=PropertyChanged}"
                               EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
           <DataGridTemplateColumn Header="Prospectus" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
