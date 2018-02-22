@@ -286,51 +286,61 @@ namespace NORSU.EncodeMe.Network
             if (dev == null)
                 return;
 
-            var request = Models.Request.Cache.FirstOrDefault(x => x.ReceiptNumber?.ToLower() == req.Receipt.ToLower());
+            
+            var request = Models.Request.GetByOR(req.Receipt);
+            
+            //Fail if OR number was already used by someone else
+            if(request!=null && request.StudentId.ToLower()!=req.StudentId.ToLower() && request.Submitted)
+            {
+                await new StartEnrollmentResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid OR number"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+            
+            //Try looking for initiated request by StudentId and create new if nothing exists
+            if(request==null)
+                request = Models.Request.Cache.FirstOrDefault(x => x.StudentId.ToLower() == req.StudentId.ToLower() && !x.Submitted);
+
             if (request == null)
             {
                 request = new Request()
                 {
                     StudentId = req.StudentId,
-                    ReceiptNumber = req.Receipt,
-                    
-                };
-                request.Save();
+                };    
             }
             
-            if (request.StudentId == req.StudentId)
+            if(request.IsDeleted)
+                request.Undelete();
+            
+            request.ReceiptNumber = req.Receipt;
+            request.Save();
+            
+            var result = new StartEnrollmentResult()
             {
-                var result = new StartEnrollmentResult()
-                {
-                    Success = true,
-                    TransactionId = request.Id,
-                    Submitted = request.Submitted,
-                };
+                Success = true,
+                TransactionId = request.Id,
+                Submitted = request.Submitted,
+            };
 
-                foreach (var item in request.Details)
-                {
-                    result.ClassSchedules.Add(new ClassSchedule()
-                    {
-                        ClassId = item.ScheduleId,
-                        Enrolled = Models.ClassSchedule.GetEnrolled(item.ScheduleId),
-                        Instructor = item.Schedule.Instructor,
-                        Schedule = item.Schedule.Description,
-                        Room = item.Schedule.Room,
-                        Slots = item.Schedule.Slots,
-                        SubjectCode = item.Schedule.Subject.Code
-                    });
-                }
-
-                await result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
-            }
-            else
+            foreach (var item in request.Details)
             {
-                await new StartEnrollmentResult()
+                result.ClassSchedules.Add(new ClassSchedule()
                 {
-                    Success = false,
-                    ErrorMessage = "OR Number is already used"
-                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                    ClassId = item.ScheduleId,
+                    Enrolled = Models.ClassSchedule.GetEnrolled(item.ScheduleId),
+                    Instructor = item.Schedule.Instructor,
+                    Schedule = item.Schedule.Description,
+                    Room = item.Schedule.Room,
+                    Slots = item.Schedule.Slots,
+                    SubjectCode = item.Schedule.Subject.Code
+                });
             }
+
+            await result.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+           
         }
 
         public static async void AddScheduleHandler(PacketHeader packetheader, Connection connection, AddSchedule req)
@@ -353,16 +363,13 @@ namespace NORSU.EncodeMe.Network
                 }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
                 return;
             }
-
-            var prevSched = request.Details.FirstOrDefault(x =>
-            {
-                return x.Schedule.SubjectId == sched.SubjectId && x.ScheduleId != req.ClassId;
-            });
+          
+            var prevSched = request.Details.FirstOrDefault(x => x.Schedule.SubjectId == sched.SubjectId);
 
             var result = new AddScheduleResult()
             {
                 Success = true,
-                ReplacedId = prevSched?.Id??0,
+                ReplacedId = prevSched?.ScheduleId??0,
             };
 
             prevSched?.Delete();
