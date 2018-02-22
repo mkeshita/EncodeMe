@@ -172,6 +172,10 @@ namespace NORSU.EncodeMe.ViewModels
                     Models.ClassSchedule.SetNewScheduleSubject(((Models.Subject) _items.CurrentItem).Id);
                     Schedules.Filter = FilterSchedule;
                 };
+                Models.CourseSubject.Cache.CollectionChanged += (sender, args) =>
+                {
+                    _items.Filter = FilterSubjects;
+                };
                 _items.Filter = FilterSubjects;
                 return _items;
             }
