@@ -775,6 +775,18 @@
                         md:HintAssist.IsFloating="True"
                         DisplayMemberPath="Fullname"
                         SelectedValuePath="Id" SelectedValue="{Binding CourseId,ValidatesOnDataErrors=True}"/>
+
+              <ComboBox Margin="4"
+                        md:HintAssist.Hint="YEAR LEVEL"
+                        md:HintAssist.IsFloating="True"
+                        SelectedValuePath="Id" SelectedIndex="{Binding YearLevel}" >
+                <ComboBoxItem Content="First Year"/>
+                <ComboBoxItem Content="Second Year" />
+                <ComboBoxItem Content="Third Year" />
+                <ComboBoxItem Content="Fourth Year" />
+                <ComboBoxItem Content="Fifth Year" />
+              </ComboBox>
+              
               <TextBox md:HintAssist.Hint="MAJOR"
                        Margin="4"
                        Text="{Binding Major,UpdateSourceTrigger=PropertyChanged}"
