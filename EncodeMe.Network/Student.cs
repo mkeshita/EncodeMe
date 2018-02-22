@@ -259,21 +259,12 @@ namespace NORSU.EncodeMe.Network
 
         private string GetErrorInfo(string prop)
         {
-            if (prop == nameof(BirthDate))
-            {
-                if (BirthDate == DateTime.MinValue) return "Required";
-                if (BirthDate < DateTime.Now.AddYears(-174)) return "Too old";
-                if (BirthDate > DateTime.Now.AddYears(-7)) return "Too young";
-            }
-
             if (prop == nameof(StudentId) && string.IsNullOrWhiteSpace(StudentId)) return "Required";
             if (prop == nameof(FirstName) && string.IsNullOrWhiteSpace(FirstName))
                 return "Required";
             if (prop == nameof(LastName) && string.IsNullOrWhiteSpace(LastName))
                 return "Required";
             if (prop == nameof(CourseId) && CourseId==0) return "Required";
-            if (prop == nameof(Address) && string.IsNullOrWhiteSpace(Address))
-                return "Required";
 
             return null;
         }
