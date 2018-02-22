@@ -295,7 +295,7 @@ namespace NORSU.EncodeMe.Network
                     ReceiptNumber = req.Receipt,
                     
                 };
-                await request.SaveAsync();
+                request.Save();
             }
             
             if (request.StudentId == req.StudentId)
