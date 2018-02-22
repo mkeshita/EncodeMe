@@ -41,7 +41,9 @@ namespace NORSU.EncodeMe
             //_schedules = Client.ClassSchedules;// await Db.GetAll<ClassSchedule>();
             _submitButton.Enabled = !Client.EnrollmentCommited;
             _subjectsView.Adapter = new SubjectsAdapter(this, Client.ClassSchedules);
-
+            
+            RefreshSubjects();
+            
             _student = Client.CurrentStudent;
             if (_student == null)
             {
@@ -61,6 +63,69 @@ namespace NORSU.EncodeMe
             };
             
             _submitButton.Click+= SubmitButtonOnClick;
+        }
+
+        private void RefreshSubjects()
+        {
+            _subjectsView.ItemClick += (sender, args) =>
+            {
+                Toast.MakeText(this, "Long press to remove", ToastLength.Short).Show();
+            };
+
+            _subjectsView.ItemLongClick += async (sender, args) =>
+            {
+                _progress.Visibility = ViewStates.Visible;
+                _subjectsView.Enabled = false;
+                _submitButton.Enabled = false;
+                _addButton.Enabled = false;
+                var sched = ((SubjectsAdapter) _subjectsView.Adapter)[args.Position];
+                var res = await Client.RemoveSchedule(sched.ClassId);
+
+                _progress.Visibility = ViewStates.Gone;
+                _subjectsView.Enabled = true;
+                _submitButton.Enabled = true;
+                _addButton.Enabled = true;
+
+                if(res?.Success ?? false)
+                {
+                    Toast.MakeText(this, "Class removed", ToastLength.Short).Show();
+                    _subjectsView.Adapter = new SubjectsAdapter(this, Client.ClassSchedules);
+                    if (Client.ClassSchedules.Count == 0)
+                    {
+                        _submitButton.Enabled = false;
+                    }
+                } else
+                {
+                    if(res != null)
+                    {
+                        Toast.MakeText(this, res.ErrorMessage, ToastLength.Short).Show();
+                    } else
+                    {
+                        try
+                        {
+                            if(CurrentFocus != null)
+                            {
+                                var imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
+                                imm.HideSoftInputFromWindow(CurrentFocus.WindowToken, 0);
+                            }
+                            var dlg = new Android.App.AlertDialog.Builder(this);
+                            dlg.SetTitle("Disconnected from server");
+                            dlg.SetMessage("You are disconnection from server. Please try again later.");
+                            dlg.SetPositiveButton("Exit", (s, a) =>
+                            {
+                                FinishAffinity();
+                            });
+                            dlg.SetCancelable(false);
+                            dlg.Show();
+
+                        } catch(Exception e)
+                        {
+                            FinishAffinity();
+                        }
+                    }
+                }
+            };
+
         }
 
         private async void SubmitButtonOnClick(object sender, EventArgs eventArgs)
@@ -156,6 +221,8 @@ namespace NORSU.EncodeMe
         protected override void OnRestoreInstanceState(Bundle savedInstanceState)
         {
             base.OnRestoreInstanceState(savedInstanceState);
+            
+            RefreshSubjects();
             _subjectsView.Adapter = new SubjectsAdapter(this, Client.ClassSchedules);
         }
     }

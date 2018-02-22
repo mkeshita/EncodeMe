@@ -351,13 +351,22 @@ namespace NORSU.EncodeMe.Network
                 (h, c, i) =>
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(RemoveScheduleResult.GetHeader());
+                    if (i.Success)
+                    {
+                        var sched = ClassSchedules.FirstOrDefault(x => x.ClassId == id);
+                        if (sched != null)
+                        {
+                            ClassSchedules.Remove(sched);
+                        }
+                    }
                     result = i;
                 });
 
             await new RemoveSchedule()
             {
                 ClassId = id,
-                StudentId = CurrentStudent.Id
+                StudentId = CurrentStudent.Id,
+                TransactionId = TransactionId,
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;

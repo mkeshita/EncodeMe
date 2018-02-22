@@ -531,5 +531,37 @@ namespace NORSU.EncodeMe.Network
                 Success = true,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
+
+        public static async void RemoveScheduleHandler(PacketHeader packetheader, Connection connection, RemoveSchedule req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.TransactionId);
+            var sched = Models.ClassSchedule.Cache.FirstOrDefault(x => x.Id == req.ClassId);
+            
+            var reqDetail = request?.Details.FirstOrDefault(x => req.ClassId == x.ScheduleId);
+            
+            if ((request == null) || (request.Student?.Id != req.StudentId) || sched == null || reqDetail==null)
+            {
+                await new RemoveScheduleResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid request"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+            
+            reqDetail.Delete(false);
+
+            await new RemoveScheduleResult()
+            {
+                Success = true,
+            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
     }
 }
