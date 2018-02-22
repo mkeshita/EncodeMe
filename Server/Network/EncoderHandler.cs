@@ -217,7 +217,7 @@ namespace NORSU.EncodeMe.Network
             client.LastHeartBeat = DateTime.Now;
             TerminalLog.Add(client.Id, "Work item requested.");
             
-            var work = Request.GetNextRequest(false);
+            var work = Request.GetNextRequest(false); //also closes #41
             if (work == null)
             {
                 await new GetWorkResult(ResultCodes.NotFound).Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
