@@ -111,20 +111,15 @@ namespace NORSU.EncodeMe.Network
             _handshakeTasks.Enqueue(new Task(async () =>
             {
                 //Get known client or create new one.
-              //  Client client = null;
-              //  lock (_clients)
-              //  {
-                var clients = Client.Cache.ToList();
-                var client = Client.GetByIp(ep.IP);// clients.FirstOrDefault(x=>x.IP==ep.IP);
-                    if (client == null)
+                var client = Client.GetByIp(ep.IP);
+                if (client == null)
+                {
+                    client = new Client()
                     {
-                        client = new Client()
-                        {
-                            IP = ep.IP
-                        };
+                        IP = ep.IP
+                    };
                         
-                    }
-                // }
+                }
                 if (client.IsDeleted && client.Id>0)
                 {
                     client.Undelete();
@@ -173,6 +168,7 @@ namespace NORSU.EncodeMe.Network
 
                 await TaskEx.Delay(100);
             }));
+            
             if(_handshakeTasksRunning)
                 return;
             _handshakeTasksRunning = true;

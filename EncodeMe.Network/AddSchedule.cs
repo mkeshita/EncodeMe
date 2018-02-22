@@ -26,4 +26,25 @@ namespace NORSU.EncodeMe.Network
         [ProtoMember(3)]
         public long ReplacedId { get; set; }
     }
+
+    [ProtoContract]
+    class RemoveSchedule : Message<RemoveSchedule>
+    {
+        [ProtoMember(1)]
+        public long ClassId { get; set; }
+        
+        [ProtoMember(2)]
+        public long StudentId { get; set; }
+    }
+
+    [ProtoContract]
+    class RemoveScheduleResult : Message<RemoveScheduleResult>
+    {
+        [ProtoMember(1)]
+        public bool Success { get; set; }
+
+        [ProtoMember(2)]
+        public string ErrorMessage { get; set; }
+        
+    }
 }

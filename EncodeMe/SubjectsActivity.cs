@@ -6,6 +6,7 @@ using Android.Content;
 using Android.OS;
 using Android.Preferences;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using NORSU.EncodeMe.Network;
 
@@ -105,16 +106,56 @@ namespace NORSU.EncodeMe
         protected override async void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             if (requestCode != 7 || resultCode != Result.Ok) return;
+
+            var id = data.GetLongExtra("id", 0);
+            if (id == 0) return;
+            var sched = Client.PendingAddition;
+            if (sched == null) return;
             
+
+            _progress.Visibility = ViewStates.Visible;
+            _submitButton.Enabled = false;
+            _addButton.Enabled = false;
+            _subjectsView.Enabled = false;
+            
+            var res = await Client.AddSchedule(sched);
+
+            _progress.Visibility = ViewStates.Gone;
+            _submitButton.Enabled = true;
+            _addButton.Enabled = true;
+            _subjectsView.Enabled = true;
+
+            if (res?.Success ?? false)
+            {
+                var remove = Client.ClassSchedules.FirstOrDefault(x => x.ClassId == res.ReplacedId);
+                if (remove != null)
+                    Client.ClassSchedules.Remove(remove);
+                if (Client.ClassSchedules.All(x => x.ClassId != sched.ClassId))
+                    Client.ClassSchedules.Add(sched);
+
+
+            }
+            else
+            {
+                var dlg = new AlertDialog.Builder(this);
+                dlg.SetTitle(res == null ? "Can not find server" : res.ErrorMessage);
+                dlg.SetPositiveButton("Okay", (o, args) =>
+                {
+
+                });
+
+                dlg.Show();
+            }
+            
+
             _subjectsView.Adapter = new SubjectsAdapter(this, Client.ClassSchedules);
+            
             _submitButton.Enabled = true;
         }
         
         protected override void OnRestoreInstanceState(Bundle savedInstanceState)
         {
             base.OnRestoreInstanceState(savedInstanceState);
-
-            //_schedules = await Db.GetAll<ClassSchedule>();
             _subjectsView.Adapter = new SubjectsAdapter(this, Client.ClassSchedules);
         }
     }

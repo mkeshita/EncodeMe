@@ -10,6 +10,7 @@ using Android.Content;
 using Android.Net.Wifi;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.Annotation;
 using Android.Telephony;
 using Android.Views;
 using Android.Widget;
@@ -81,6 +82,8 @@ namespace NORSU.EncodeMe.Network
                 _server = value;
             }
         }
+        
+        public static ClassSchedule PendingAddition { get; set; }
 
         private static void ServerInfoReceived(PacketHeader packetheader, Connection connection, ServerInfo incomingobject)
         {
@@ -326,7 +329,50 @@ namespace NORSU.EncodeMe.Network
         }
 
         public Action ScheduleAddedCallback { get; set; }
-        
+
+        public static async Task<RemoveScheduleResult> RemoveSchedule(long id)
+        {
+            return await Instance._RemoveSchedule(id);
+        }
+
+        private async Task<RemoveScheduleResult> _RemoveSchedule(long id)
+        {
+            if (CurrentStudent == null)
+                return null;
+
+            if (Server == null)
+                await FindServer();
+
+            if (Server == null)
+                return null;
+
+            RemoveScheduleResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<RemoveScheduleResult>(RemoveScheduleResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(RemoveScheduleResult.GetHeader());
+                    result = i;
+                });
+
+            await new RemoveSchedule()
+            {
+                ClassId = id,
+                StudentId = CurrentStudent.Id
+            }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(RemoveScheduleResult.GetHeader());
+            return null;
+        }
+
         public static async Task<AddScheduleResult> AddSchedule(ClassSchedule schedule)
         {
             return await Instance._AddSchedule(schedule);

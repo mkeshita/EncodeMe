@@ -31,6 +31,11 @@ namespace NORSU.EncodeMe
 
             var view = convertView ?? _context.LayoutInflater.Inflate(Resource.Layout.SubjectItem, null);
 
+            return GetView(view, item);
+        }
+
+        public static View GetView(View view, ClassSchedule item)
+        {
             view.FindViewById<TextView>(Resource.Id.SubjectCode).Text = item.SubjectCode;
             view.FindViewById<TextView>(Resource.Id.Schedule).Text = item.Schedule;
             view.FindViewById<TextView>(Resource.Id.Enrolled).Text = $"{item.Enrolled}/{item.Slots}";

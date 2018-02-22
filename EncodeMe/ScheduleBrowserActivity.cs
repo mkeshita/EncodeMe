@@ -4,6 +4,7 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using NORSU.EncodeMe.Network;
 using SQLite;
@@ -30,14 +31,48 @@ namespace NORSU.EncodeMe
             _progress = FindViewById<ProgressBar>(Resource.Id.Progress);
 
             _schedulesListView.ItemClick += SchedulesListViewOnItemClick;
+            _schedulesListView.ItemLongClick += SchedulesListViewOnItemLongClick;
             
             _progress.Visibility = ViewStates.Gone;
             _goButton.Click += GoButtonOnClick;
         }
 
+        private bool _clicked;
+
+        private void SchedulesListViewOnItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            Toast.MakeText(this,"Long press to add schedule", ToastLength.Short).Show();
+        }
+        
+        private void SchedulesListViewOnItemLongClick(object sender, AdapterView.ItemLongClickEventArgs e)
+        {
+            if (_clicked)
+                return;
+            _clicked = true;
+
+            var adapter = _schedulesListView.Adapter as SchedulesAdapter;
+            if (adapter == null)
+                return;
+            var sched = adapter[e.Position];
+            
+            Client.PendingAddition = sched;
+            
+            var resultIntent = new Intent();
+            resultIntent.PutExtra("id", sched.ClassId);
+            SetResult(Result.Ok, resultIntent);
+            Finish();
+            
+            
+
+            _clicked = false;
+        }
+
         private async void GoButtonOnClick(object sender, EventArgs eventArgs)
         {
             if (string.IsNullOrWhiteSpace(_subjectCode.Text)) return;
+
+            var imm = (InputMethodManager) GetSystemService(Context.InputMethodService);
+            imm.HideSoftInputFromWindow(_subjectCode.WindowToken, 0);
 
             _progress.Visibility = ViewStates.Visible;
             _schedulesListView.Enabled = false;
@@ -77,40 +112,6 @@ namespace NORSU.EncodeMe
             base.OnSaveInstanceState(outState);
         }
 
-        private async void SchedulesListViewOnItemClick(object sender, AdapterView.ItemClickEventArgs e)
-        {
-            var adapter = _schedulesListView.Adapter as SchedulesAdapter;
-            if (adapter == null) return;
-            var sched = adapter[e.Position];
-            
-            var resultIntent = new Intent();
-            resultIntent.PutExtra("id", sched.ClassId);
-
-            var res = await Client.AddSchedule(sched);
-            if (res?.Success ?? false)
-            {
-                var remove = Client.ClassSchedules.FirstOrDefault(x => x.ClassId == res.ReplacedId);
-                if (remove != null)
-                    Client.ClassSchedules.Remove(remove);
-                if(Client.ClassSchedules.All(x=>x.ClassId!=sched.ClassId))
-                    Client.ClassSchedules.Add(sched);
-                
-                SetResult(Result.Ok, resultIntent);
-                Finish();
-            }
-            else
-            {
-                var dlg = new AlertDialog.Builder(this);
-                dlg.SetTitle(res == null ? "Can not find server" : res.ErrorMessage);
-                dlg.SetPositiveButton("Okay", (o, args) =>
-                {
-
-                });
-
-                dlg.Show();
-            }
-            
-            
-        }
+        
     }
 }
