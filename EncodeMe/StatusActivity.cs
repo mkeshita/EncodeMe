@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Graphics;
@@ -64,11 +64,24 @@ namespace NORSU.EncodeMe
             
             _statusUpdateHandler = (h,c,i)=>RefreshStatus();
             NetworkComms.AppendGlobalIncomingPacketHandler(StatusResult.GetHeader()+"update", _statusUpdateHandler);
-
+            
             GetStatus();
             
             _cancelButton.Click += CancelButtonOnClick;
+
+            _statusUpdater = Task.Factory.StartNew(async () =>
+            {
+                while (!_cancelUpdater)
+                {
+                    await Task.Delay(3333);
+                    if (_cancelUpdater) return;
+                    GetStatus();
+                }
+            });
         }
+
+        private bool _cancelUpdater;
+        private Task _statusUpdater;
 
         private async void CancelButtonOnClick(object o, EventArgs eventArgs)
         {
@@ -117,6 +130,7 @@ namespace NORSU.EncodeMe
         private bool _requestingStatus;
         private async void GetStatus()
         {
+            if (_activityPaused) return;
             RefreshStatus();
             if (_requestingStatus) return;
             _requestingStatus = true;
@@ -128,99 +142,105 @@ namespace NORSU.EncodeMe
             }
             else
             {
-                try
+                RunOnUiThread(() =>
                 {
-                    var dlg = new AlertDialog.Builder(this);
-
-                    if (status == null)
+                    try
                     {
-                        dlg.SetTitle("Request Timeout");
-                        dlg.SetMessage("You are not connected to the server.");
-                        dlg.SetPositiveButton("QUIT", (sender, args) =>
+                        var dlg = new AlertDialog.Builder(this);
+
+                        if (status == null)
                         {
-                            FinishAffinity();
-                        });
+                            dlg.SetTitle("Request Timeout");
+                            dlg.SetMessage("You are not connected to the server.");
+                            dlg.SetPositiveButton("QUIT", (sender, args) =>
+                            {
+                                FinishAffinity();
+                            });
+                        }
+                        else
+                        {
+                            dlg.SetTitle("Request Failed");
+                            dlg.SetMessage(status.ErrorMessage);
+                            dlg.SetPositiveButton("OKAY", (sender, args) =>
+                            {
+                            });
+                        }
+
+
+
+                        dlg.Show();
                     }
-                    else
+                    catch (Exception e)
                     {
-                        dlg.SetTitle("Request Failed");
-                        dlg.SetMessage(status.ErrorMessage);
-                        dlg.SetPositiveButton("OKAY", (sender, args) =>
-                        {
-                        });
+                        FinishAffinity();
                     }
-
-                   
-
-                    dlg.Show();
-                }
-                catch (Exception e)
-                {
-                    FinishAffinity();
-                }
-                
+                });
             }
                 
         }
 
         private void RefreshStatus()
         {
-            if (Client.CurrentStudent == null)
+            RunOnUiThread(() =>
             {
-                StartActivity(typeof(StudentIntroActivity));
-                Finish();
-                return;
-            }
-            if (!(Client.RequestStatus?.IsSubmitted ?? false))
-            {
-                StartActivity(typeof(SubjectsActivity));
-                Finish();
-                return;
-            }
+                if (Client.CurrentStudent == null)
+                {
+                    StartActivity(typeof(StudentIntroActivity));
+                    Finish();
+                    return;
+                }
+                if (!(Client.RequestStatus?.IsSubmitted ?? false))
+                {
+                    StartActivity(typeof(SubjectsActivity));
+                    Finish();
+                    return;
+                }
 
-            
-            _statusButton.Text = Client.RequestStatus.QueueNumber + "";
-            
-            switch (Client.RequestStatus.Status)
-            {
-                case EnrollmentStatus.Pending:
-                    _cancelButton.Visibility = ViewStates.Visible;
-                    return;
-                case EnrollmentStatus.Processing:
-                    _statusButton.Visibility = ViewStates.Gone;
-                    _statusImage.Visibility = ViewStates.Visible;
-                    _messageText.Text = "You request is now being processed.";
-                    _cancelButton.Visibility = ViewStates.Gone;
-                    return;
-                case EnrollmentStatus.Accepted:
-                    _progress.Indeterminate = false;
-                    _progress.Progress = 1;
-                    _title.Text = "OFFICIALLY ENROLLED";
-                    _messageText.Text = "Congratulations! Your are now officially enrolled. Please proceed to the PRINTING AREA and present your Official Receipt and ID.";
-                    _cancelButton.Visibility = ViewStates.Gone;
-                    break;
-                case EnrollmentStatus.Closed:
-                    _progress.Indeterminate = false;
-                    _progress.Progress = 0;
-                    _title.Text = "ENROLLMENT FAILED";
-                    _messageText.Text = "Some if not all of the classes you are enrolling are closed.";
-                    _cancelButton.Visibility = ViewStates.Visible;
-                    _cancelButton.Text = "VIEW SUBJECTS";
-                    break;
-                case EnrollmentStatus.Conflict:
-                    _progress.Indeterminate = false;
-                    _progress.Progress = 0;
-                    _title.Text = "ENROLLMENT FAILED";
-                    _messageText.Text = "The schedules of some classes you are enrolling are overlapping.";
-                    _cancelButton.Visibility = ViewStates.Visible;
-                    _cancelButton.Text = "VIEW SUBJECTS";
-                    break;
-            }
-            
+
+                _statusButton.Text = Client.RequestStatus.QueueNumber + "";
+
+                switch (Client.RequestStatus.Status)
+                {
+                    case EnrollmentStatus.Pending:
+                        _cancelButton.Visibility = ViewStates.Visible;
+                        return;
+                    case EnrollmentStatus.Processing:
+                        _statusButton.Visibility = ViewStates.Gone;
+                        _statusImage.Visibility = ViewStates.Visible;
+                        _messageText.Text = "You request is now being processed.";
+                        _cancelButton.Visibility = ViewStates.Gone;
+                        return;
+                    case EnrollmentStatus.Accepted:
+                        _progress.Indeterminate = false;
+                        _progress.Progress = 1;
+                        _title.Text = "OFFICIALLY ENROLLED";
+                        _messageText.Text =
+                            "Congratulations! Your are now officially enrolled. Please proceed to the PRINTING AREA and present your Official Receipt and ID.";
+                        _cancelButton.Visibility = ViewStates.Gone;
+                        break;
+                    case EnrollmentStatus.Closed:
+                        _progress.Indeterminate = false;
+                        _progress.Progress = 0;
+                        _title.Text = "ENROLLMENT FAILED";
+                        _messageText.Text = "Some if not all of the classes you are enrolling are closed.";
+                        _cancelButton.Visibility = ViewStates.Visible;
+                        _cancelButton.Text = "VIEW SUBJECTS";
+                        break;
+                    case EnrollmentStatus.Conflict:
+                        _progress.Indeterminate = false;
+                        _progress.Progress = 0;
+                        _title.Text = "ENROLLMENT FAILED";
+                        _messageText.Text = "The schedules of some classes you are enrolling are overlapping.";
+                        _cancelButton.Visibility = ViewStates.Visible;
+                        _cancelButton.Text = "VIEW SUBJECTS";
+                        break;
+                }
+            });
         }
 
         protected override void OnDestroy()
         {
+            _cancelUpdater = true;
             NetworkComms.RemoveGlobalIncomingPacketHandler(StatusResult.GetHeader()+"update", _statusUpdateHandler);
             base.OnDestroy();
         }
