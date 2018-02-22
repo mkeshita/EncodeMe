@@ -371,8 +371,8 @@ namespace NORSU.EncodeMe.Network
                     Fullname = course.FullName
                 });
             }
-
-            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            var rep = (IPEndPoint) connection.ConnectionInfo.RemoteEndPoint;
+            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), rep.Port));
         }
 
         private static async void EnrollStudentHandler(PacketHeader packetheader, Connection connection, EnrollStudent req)

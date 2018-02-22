@@ -149,8 +149,8 @@ namespace NORSU.EncodeMe.Network
                 var ip = value as IPEndPoint;
                 if (ip?.AddressFamily != AddressFamily.InterNetwork) continue;
 
-                if (_discoveredPeers.Contains(ip.Address.ToString())) continue;
-                _discoveredPeers.Add(ip.Address.ToString());
+               // if (_discoveredPeers.Contains(ip.Address.ToString())) continue;
+               // _discoveredPeers.Add(ip.Address.ToString());
 
                     foreach (var localEP in localEPs[ConnectionType.UDP])
                 {
@@ -170,10 +170,10 @@ namespace NORSU.EncodeMe.Network
             Start();
             var start = DateTime.Now;
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
-            while ((DateTime.Now-start).TotalSeconds<20)
+            while ((DateTime.Now-start).TotalSeconds<7)
             {
                 if(Server!=null) break;
-                await TaskEx.Delay(TimeSpan.FromSeconds(7));
+                await TaskEx.Delay(TimeSpan.FromMilliseconds(777));
             }
         }
         
@@ -273,7 +273,8 @@ namespace NORSU.EncodeMe.Network
         public static async Task<GetCoursesResult> GetCoursesDesktop()
         {
             await FindServer();
-            if (Server == null) return null;
+            if (Server == null)
+                return null;
 
             GetCoursesResult result = null;
 
@@ -287,11 +288,11 @@ namespace NORSU.EncodeMe.Network
             await new GetCoursesDesktop().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 17)
+            while ((DateTime.Now - start).TotalSeconds < 7)
             {
                 if (result != null)
                     return result;
-                await TaskEx.Delay(TimeSpan.FromSeconds(1));
+                await TaskEx.Delay(TimeSpan.FromMilliseconds(111));
             }
 
             Server = null;

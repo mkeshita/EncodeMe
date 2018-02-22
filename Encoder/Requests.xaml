@@ -769,12 +769,23 @@
                        Margin="4"
                        Text="{Binding Address,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}"
                        md:HintAssist.IsFloating="True" />
+              <Grid>
               <ComboBox ItemsSource="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=Courses}"
+                        IsEnabled="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=CoursesDownloaded}"
                         Margin="4"
                         md:HintAssist.Hint="COURSE"
                         md:HintAssist.IsFloating="True"
                         DisplayMemberPath="Fullname"
                         SelectedValuePath="Id" SelectedValue="{Binding CourseId,ValidatesOnDataErrors=True}"/>
+                <StackPanel Orientation="Horizontal"
+                            Visibility="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=CoursesDownloaded,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                  <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                               IsIndeterminate="True"/>
+                  <TextBlock Text=" Loading..."/>
+                </StackPanel>
+              </Grid>
 
               <ComboBox Margin="4"
                         md:HintAssist.Hint="YEAR LEVEL"

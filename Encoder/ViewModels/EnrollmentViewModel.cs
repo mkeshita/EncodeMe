@@ -25,21 +25,47 @@ namespace NORSU.EncodeMe.ViewModels
                 if (_courses != null)
                     return _courses;
                 _courses = new ObservableCollection<Course>();
+                CoursesDownloaded = false;
+                
                 Task.Factory.StartNew(async () =>
                 {
-                    var res = await Client.GetCoursesDesktop();
-                    if (res == null)
-                        return;
-                    foreach (var course in res.Courses)
+                    while (true)
                     {
-                        if (_courses.Any(x => x.Id == course.Id))
+                        var res = await Client.GetCoursesDesktop();
+                        if (res == null)
+                        {
+                            await TaskEx.Delay(1111);
                             continue;
-                        awooo.Post(() =>_courses.Add(course));
+                        }
+                        foreach (var course in res.Courses)
+                        {
+                            if (_courses.Any(x => x.Id == course.Id))
+                                continue;
+                            awooo.Post(() => _courses.Add(course));
+                        }
+                        break;
                     }
+                    CoursesDownloaded = true;
                 });
                 return _courses;
             }
         }
+
+        private bool _DownloadingCourses;
+
+        public bool CoursesDownloaded
+        {
+            get => _DownloadingCourses;
+            set
+            {
+                if(value == _DownloadingCourses)
+                    return;
+                _DownloadingCourses = value;
+                OnPropertyChanged(nameof(CoursesDownloaded));
+            }
+        }
+
+        
 
         private Student _Student = new Student()
         {
