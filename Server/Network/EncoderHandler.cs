@@ -115,7 +115,7 @@ namespace NORSU.EncodeMe.Network
               //  lock (_clients)
               //  {
                 var clients = Client.Cache.ToList();
-                var client = clients.FirstOrDefault(x=>x.IP==ep.IP);
+                var client = Client.GetByIp(ep.IP);// clients.FirstOrDefault(x=>x.IP==ep.IP);
                     if (client == null)
                     {
                         client = new Client()

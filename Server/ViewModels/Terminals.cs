@@ -39,6 +39,7 @@ namespace NORSU.EncodeMe.ViewModels
         public ICommand EnableCommand => _enableCommand ?? (_enableCommand = new DelegateCommand<Client>(d =>
         {
             d.Update(nameof(Client.IsEnabled),true);
+            TerminalLog.Add(d.Id, $"Terminal enabled by {MainViewModel.Instance.CurrentUser?.Username}");
         }));
 
         private ICommand _disableCommand;
@@ -46,6 +47,10 @@ namespace NORSU.EncodeMe.ViewModels
         public ICommand DisableCommand => _disableCommand ?? (_disableCommand = new DelegateCommand<Client>(d =>
         {
             d.Update(nameof(Client.IsEnabled), false);
+            Server.SendCommand(d, Network.Commands.CloseEncoder);
+            d.IsOnline = false;
+            d.Encoder = null;
+            TerminalLog.Add(d.Id, $"Terminal disabled by {MainViewModel.Instance.CurrentUser?.Username}");
         }));
 
         private ICommand _shutdownCommand;
@@ -53,6 +58,7 @@ namespace NORSU.EncodeMe.ViewModels
         public ICommand ShutdownCommand => _shutdownCommand ?? (_shutdownCommand = new DelegateCommand<Client>(d =>
         {
             Server.SendCommand(d, Network.Commands.Shutdown);
+            TerminalLog.Add(d.Id, $"Remotely shutdown by {MainViewModel.Instance.CurrentUser?.Username}");
         },d=>d?.IsOnline??false));
 
         private ICommand _CloseCommand;
@@ -60,13 +66,17 @@ namespace NORSU.EncodeMe.ViewModels
         public ICommand CloseCommand => _CloseCommand ?? (_CloseCommand = new DelegateCommand<Client>(d =>
         {
             Server.SendCommand(d, Network.Commands.CloseEncoder);
-        }));
+            d.IsOnline = false;
+            d.Encoder = null;
+            TerminalLog.Add(d.Id, $"Remotely closed by {MainViewModel.Instance.CurrentUser?.Username}");
+        }, d => d?.IsOnline ?? false));
 
         private ICommand _RestartCommand;
 
         public ICommand RestartCommand => _RestartCommand ?? (_RestartCommand = new DelegateCommand<Client>(d =>
         {
             Server.SendCommand(d, Network.Commands.Restart);
+            TerminalLog.Add(d.Id, $"Remotely restarted by {MainViewModel.Instance.CurrentUser?.Username}");
         }, d => d?.IsOnline ?? false));
 
         private static Terminals _instance;
