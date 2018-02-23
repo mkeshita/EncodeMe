@@ -174,5 +174,13 @@
         
             </DataGrid.Columns>
         </DataGrid>
+
+    <Button Grid.ColumnSpan="2" Grid.Column="0"
+              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="47"
+            Command="{Binding PrintLogCommand}"
+              Style="{StaticResource MaterialDesignFloatingActionButton}">
+      <md:PackIcon Kind="Printer" Height="32" Width="32"/>
+    </Button>
     </Grid>
 </UserControl>
