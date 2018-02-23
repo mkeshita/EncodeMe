@@ -178,6 +178,8 @@
     <Button Grid.ColumnSpan="2" Grid.Column="0"
               HorizontalAlignment="Right" VerticalAlignment="Bottom"
               Margin="47"
+            md:ButtonProgressAssist.IsIndeterminate="{Binding IsPrinting}"
+            md:ButtonProgressAssist.IsIndicatorVisible="{Binding IsPrinting}"
             Command="{Binding PrintLogCommand}"
               Style="{StaticResource MaterialDesignFloatingActionButton}">
       <md:PackIcon Kind="Printer" Height="32" Width="32"/>
