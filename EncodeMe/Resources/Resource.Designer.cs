@@ -1886,8 +1886,8 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060024
 			public const int ALT = 2131099684;
 			
-			// aapt resource value: 0x7f0600a4
-			public const int AddSubjectButton = 2131099812;
+			// aapt resource value: 0x7f0600a5
+			public const int AddSubjectButton = 2131099813;
 			
 			// aapt resource value: 0x7f060099
 			public const int Address = 2131099801;
@@ -1982,6 +1982,9 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f06008d
 			public const int Slots = 2131099789;
 			
+			// aapt resource value: 0x7f0600a2
+			public const int Status = 2131099810;
+			
 			// aapt resource value: 0x7f060091
 			public const int StatusButton = 2131099793;
 			
@@ -1997,11 +2000,11 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060087
 			public const int SubjectText = 2131099783;
 			
-			// aapt resource value: 0x7f0600a2
-			public const int SubjectsLayout = 2131099810;
-			
 			// aapt resource value: 0x7f0600a3
-			public const int SubjectsListView = 2131099811;
+			public const int SubjectsLayout = 2131099811;
+			
+			// aapt resource value: 0x7f0600a4
+			public const int SubjectsListView = 2131099812;
 			
 			// aapt resource value: 0x7f060073
 			public const int SubmitButton = 2131099763;
@@ -2195,8 +2198,8 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f06007a
 			public const int media_actions = 2131099770;
 			
-			// aapt resource value: 0x7f0600a5
-			public const int message = 2131099813;
+			// aapt resource value: 0x7f0600a6
+			public const int message = 2131099814;
 			
 			// aapt resource value: 0x7f060023
 			public const int middle = 2131099683;

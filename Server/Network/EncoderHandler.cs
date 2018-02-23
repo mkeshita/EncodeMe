@@ -76,7 +76,7 @@ namespace NORSU.EncodeMe.Network
             }
             else
             {
-                TerminalLog.Add(client.Id, $"Login attempt failed. Username: {login.Username}");
+                TerminalLog.Add(client.Id, $"Login attempt failed. Username: {login.Username}", TerminalLog.Types.Warning);
                 await new LoginResult(ResultCodes.Error, "Invalid username/password").Send((IPEndPoint)connection.ConnectionInfo.RemoteEndPoint);
             }
          //   List<Client> clients;
@@ -289,7 +289,7 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
             
-            TerminalLog.Add(client.Id, "Enrollment item completed.");
+            TerminalLog.Add(client.Id, $"Enrollment request completed. Encoder: {client.Encoder.Username}");
 
             var req = Request.Cache.FirstOrDefault(x => string.Equals(x.StudentId, i.StudentId, StringComparison.CurrentCultureIgnoreCase));
             if (req == null) return;
@@ -319,6 +319,8 @@ namespace NORSU.EncodeMe.Network
 
             client.Encoder.EndWork();
             req.StopWorking();
+
+            //PushRequestUpdate(req);
             
             var result = new SaveWorkResult
             {

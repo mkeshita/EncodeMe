@@ -136,23 +136,42 @@
                   Margin="1 0 0 0"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
+                  HeadersVisibility="None"
                   SelectionUnit="FullRow"
                   SelectionMode="Single"
                   CanUserReorderColumns="False"
                   CanUserDeleteRows="False"
                   ItemsSource="{Binding Logs}">
             <DataGrid.Columns>
-                <DataGridTemplateColumn>
+                <DataGridTemplateColumn md:DataGridAssist.CellPadding="2">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <md:PackIcon Kind="Information" Foreground="{StaticResource PrimaryHueDarkBrush}"/>
+                            <Grid ToolTip="{Binding Type}">
+                                <md:PackIcon Height="24" Width="24" Kind="{Binding Type,Converter={converters:LogTypeConverter}}" Foreground="{Binding Type,Converter={converters:LogTypeToBrush}}"/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Time" Binding="{Binding Time}"/>
-                <DataGridTextColumn Header="Message" Binding="{Binding Message}"/>
+              
+        <DataGridTemplateColumn>
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Time,StringFormat={}MM-dd-yyyy hh:mm tt}"
+                         VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+
+        <DataGridTemplateColumn>
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Message}" 
+                         VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+
+        
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
