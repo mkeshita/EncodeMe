@@ -39,6 +39,16 @@ namespace NORSU.EncodeMe
             view.FindViewById<TextView>(Resource.Id.SubjectCode).Text = item.SubjectCode;
             view.FindViewById<TextView>(Resource.Id.Schedule).Text = item.Schedule;
             view.FindViewById<TextView>(Resource.Id.Enrolled).Text = $"{item.Enrolled}/{item.Slots}";
+            var stat = view.FindViewById<TextView>(Resource.Id.Status);
+            if (item.EnrollmentStatus == ScheduleStatuses.Pending)
+            {
+                stat.Visibility = ViewStates.Invisible;
+            }
+            else
+            {
+                stat.Visibility = ViewStates.Visible;
+                stat.Text = item.EnrollmentStatus.ToString();
+            }
             return view;
         }
     }
