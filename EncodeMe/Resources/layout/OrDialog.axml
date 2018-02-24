@@ -70,7 +70,7 @@
       android:layout_width="170dp"
       android:layout_marginLeft="20dp"
       android:layout_marginTop="20dp"
-      android:text="DAITE PAID"
+      android:text="DATE PAID"
       android:textColor="#000000"
       android:textSize="14dp"
       android:paddingLeft="5dp"
@@ -83,7 +83,7 @@
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
       android:layout_marginLeft="20dp"
-      android:hint="ENTER AMOUNT PAID"
+      android:hint="ENTER DATE PAID"
       android:layout_marginRight="20dp" />
 
   <LinearLayout
