@@ -222,7 +222,7 @@ namespace NORSU.EncodeMe
                         _progress.Indeterminate = false;
                         _progress.Progress = 0;
                         _title.Text = "ENROLLMENT FAILED";
-                        _messageText.Text = "Some if not all of the classes you are enrolling are closed.";
+                        _messageText.Text = "Problem occured during the process. Some class schedules are closed.";
                         _cancelButton.Visibility = ViewStates.Visible;
                         _cancelButton.Text = "VIEW SUBJECTS";
                         break;
@@ -230,7 +230,7 @@ namespace NORSU.EncodeMe
                         _progress.Indeterminate = false;
                         _progress.Progress = 0;
                         _title.Text = "ENROLLMENT FAILED";
-                        _messageText.Text = "The schedules of some classes you are enrolling are overlapping.";
+                        _messageText.Text = "Problem occured during the process. Some class schedules are in conflict.";
                         _cancelButton.Visibility = ViewStates.Visible;
                         _cancelButton.Text = "VIEW SUBJECTS";
                         break;
