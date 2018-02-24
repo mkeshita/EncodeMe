@@ -534,12 +534,17 @@
                 <UniformGrid Rows="1"/>
               </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
-            <ListBoxItem x:Name="ListBoxItem1" IsSelected="True">
+            <ListBoxItem>
               <TextBlock Text="INFO" VerticalAlignment="Center" Margin="4" 
                          FontSize="14pt"
                          TextAlignment="Center"/>
             </ListBoxItem>
-            <ListBoxItem IsSelected="{Binding ElementName=ListBoxItem1,Path=IsSelected,Converter={converters:Inverter}}">
+            <ListBoxItem>
+              <TextBlock Text="RECEIPTS" VerticalAlignment="Center" Margin="4"
+                         FontSize="14pt"
+                         TextAlignment="Center" />
+            </ListBoxItem>
+            <ListBoxItem>
               <TextBlock Text="SUBJECTS" VerticalAlignment="Center" Margin="4"
                          FontSize="14pt"
                          TextAlignment="Center" />
@@ -624,6 +629,29 @@
 
               </StackPanel>
             </ScrollViewer>
+
+            <ListBox x:Name="ReceiptsListBox"
+                     HorizontalContentAlignment="Stretch">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type network:Receipt}">
+                  <StackPanel Margin="10">
+                    <TextBlock Text="{Binding Number}" FontSize="14pt" FontWeight="Bold"/>
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                      </Grid.ColumnDefinitions>
+                      <TextBlock Text="{Binding DatePaid,StringFormat={}MMM\ d\,\ yyyy}"
+                                 FontSize="12pt"/>
+                      <TextBlock Text="{Binding Amount,StringFormat={}#\,##.00}"
+                                 Grid.Column="1"
+                                 TextAlignment="Right"
+                                 FontSize="12pt"/>
+                    </Grid>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
 
             <ListBox Grid.IsSharedSizeScope="True"
                          SelectionMode="Extended"
@@ -813,9 +841,12 @@
               
               <ComboBox md:HintAssist.Hint="STATUS"
                         Margin="4"
+                        SelectedIndex="{Binding Status}"
                         md:HintAssist.IsFloating="True">
-                <ComboBoxItem Content="New Student" IsSelected="{Binding IsNew}" />
-                <ComboBoxItem Content="Returnee" IsSelected="{Binding IsNew,Converter={converters:Inverter}}" />
+                <ComboBoxItem Content="Ongoing" />
+                <ComboBoxItem Content="Returnee" />
+                <ComboBoxItem Content="Shiftee" />
+                <ComboBoxItem Content="Transferee" />
               </ComboBox>
             </StackPanel>
           </ScrollViewer>

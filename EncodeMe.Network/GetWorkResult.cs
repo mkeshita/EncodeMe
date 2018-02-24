@@ -19,18 +19,18 @@ namespace NORSU.EncodeMe.Network
         
         [ProtoMember(1)]
         public long RequestId { get; set; }
+
         [ProtoMember(2)]
-        public string StudentId { get; set; }
-        [ProtoMember(3)]
         public List<ClassSchedule> ClassSchedules { get; set; }
-        [ProtoMember(4)]
+        
+        [ProtoMember(3)]
         public ResultCodes Result { get; set; }
-
-        [ProtoMember(5)]
-        public string StudentName { get; set; }
-
-        [ProtoMember(6)]
+        
+        [ProtoMember(4)]
         public Student Student { get; set; }
+        
+        [ProtoMember(5)]
+        public List<Receipt> Receipts { get; set; } = new List<Receipt>();
     }
 }
 #endif

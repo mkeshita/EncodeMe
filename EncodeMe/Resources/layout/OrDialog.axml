@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="25px"
+    android:minHeight="25px"
+    android:background="#ffffff">
+  <TextView
+      android:id="@+id/titleLogin"
+      android:layout_height="48dp"
+      android:layout_width="match_parent"
+      android:text="RECEIPT DETAILS"
+      android:textSize="20dp"
+      android:textColor="#FFFFFF"
+      android:paddingTop="4dp"
+      android:background="#ff40c4ff"
+      android:textStyle="bold"
+      android:gravity="center" />
+  <TextView
+      android:id="@+id/lblUsername"
+      android:layout_below="@+id/titleLogin"
+      android:layout_height="25dp"
+      android:layout_width="170dp"
+      android:layout_marginTop="30dp"
+      android:layout_marginLeft="20dp"
+      android:text="OR NUMBER"
+      android:textColor="#000000"
+      android:textSize="14dp"
+      android:paddingLeft="5dp"
+      android:paddingTop="2dp"
+      android:typeface="sans" />
+  <EditText
+      android:inputType="text"
+      android:id="@+id/ReceiptNumber"
+      android:layout_below="@+id/lblUsername"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_marginLeft="20dp"
+      android:hint="OFFICIAL RECEIPT NUMBER"
+      android:textColor="@android:color/black"
+      android:layout_marginRight="20dp" />
+  <TextView
+      android:id="@+id/lblPassword"
+      android:layout_below="@+id/OrNumber"
+      android:layout_height="25dp"
+      android:layout_width="170dp"
+      android:layout_marginLeft="20dp"
+      android:layout_marginTop="20dp"
+      android:text="AMOUNT PAID"
+      android:textColor="#000000"
+      android:textSize="14dp"
+      android:paddingLeft="5dp"
+      android:paddingTop="2dp"
+      android:typeface="sans" />
+  <EditText
+      android:id="@+id/AmountPaid"
+      android:layout_below="@+id/lblPassword"
+      android:inputType="text|numberDecimal"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_marginLeft="20dp"
+      android:hint="ENTER AMOUNT PAID"
+      android:layout_marginRight="20dp" />
+
+  <TextView
+      android:id="@+id/lblPassword2"
+      android:layout_below="@+id/AmountPaid"
+      android:layout_height="25dp"
+      android:layout_width="170dp"
+      android:layout_marginLeft="20dp"
+      android:layout_marginTop="20dp"
+      android:text="DAITE PAID"
+      android:textColor="#000000"
+      android:textSize="14dp"
+      android:paddingLeft="5dp"
+      android:paddingTop="2dp"
+      android:typeface="sans" />
+  <EditText
+      android:id="@+id/DatePaid"
+      android:layout_below="@+id/lblPassword2"
+      android:inputType="text|date"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_marginLeft="20dp"
+      android:hint="ENTER AMOUNT PAID"
+      android:layout_marginRight="20dp" />
+
+  <LinearLayout
+      android:id="@+id/linearLayoutBtns"
+      android:layout_below="@+id/DatePaid"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="47dp">
+    <Button
+        android:id="@+id/Accept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ACCEPT"
+        android:layout_weight="7"
+        android:gravity="center"/>
+    <Button
+        android:id="@+id/Cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:layout_weight="7"
+        android:gravity="center"/>
+  </LinearLayout>
+</RelativeLayout>

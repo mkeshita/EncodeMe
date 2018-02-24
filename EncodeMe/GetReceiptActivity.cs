@@ -18,14 +18,21 @@ namespace NORSU.EncodeMe
         ConfigurationChanges = ConfigChanges.Orientation, ScreenOrientation = ScreenOrientation.Portrait)]
     public class GetReceiptActivity : Activity
     {
-        private EditText _receipt;
+        private ListView _receipts;
         private Button _submit;
         private ProgressBar _progressBar;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             if (Client.RequestStatus?.IsSubmitted ?? false)
             {
-                StartActivity(typeof(StatusActivity));
+                try
+                {
+                    StartActivity(typeof(StatusActivity));
+                }
+                catch (Exception e)
+                {
+                    //
+                }
                 Finish();
                 return;
             }
@@ -34,11 +41,97 @@ namespace NORSU.EncodeMe
 
             SetContentView(Resource.Layout.EnterOR);
             
-            _receipt = FindViewById<EditText>(Resource.Id.OrNumber);
+            _receipts = FindViewById<ListView>(Resource.Id.ReceiptsList);
+            Receipts.Add(NewReceipt);
+            _receipts.Adapter = new ReceiptsAdapter(this, Receipts);
+
+
             _submit = FindViewById<Button>(Resource.Id.SubmitButton);
             _progressBar = FindViewById<ProgressBar>(Resource.Id.Progress);
 
             _submit.Click += SubmitOnClick;
+            _receipts.ItemClick += ReceiptsOnItemClick;
+        }
+
+        private void ReceiptsOnItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            if (!(_receipts.Adapter is ReceiptsAdapter adapter)) return;
+            var receipt = adapter[e.Position];
+            if (!receipt.IsPlaceHolder)
+            {
+                Toast.MakeText(this,"Long press to delete",ToastLength.Short).Show();
+                return;
+            }
+
+            var dlg = new AlertDialog.Builder(this).Create();
+
+            var dlgView = LayoutInflater.Inflate(Resource.Layout.OrDialog, null);
+            var cancel = dlgView.FindViewById<Button>(Resource.Id.Cancel);
+            var accept = dlgView.FindViewById<Button>(Resource.Id.Accept);
+            var number = dlgView.FindViewById<EditText>(Resource.Id.ReceiptNumber);
+            var date = dlgView.FindViewById<EditText>(Resource.Id.DatePaid);
+            var amount = dlgView.FindViewById<EditText>(Resource.Id.AmountPaid);
+            accept.Enabled = false;
+
+            cancel.Click += (o, args) =>
+            {
+                dlg.Dismiss();
+            };
+
+            accept.Click += (o, args) =>
+            {
+                var or = ParseReceipt(number.Text, date.Text, amount.Text);
+                if (or == null) return;
+                AddReceipt(or);
+                dlg.Dismiss();
+            };
+            
+            number.AfterTextChanged += (o, args) =>
+            {
+                var or = ParseReceipt(number.Text, date.Text, amount.Text);
+                accept.Enabled = or != null;
+            };
+            date.AfterTextChanged += (o, args) =>
+            {
+                var or = ParseReceipt(number.Text, date.Text, amount.Text);
+                accept.Enabled = or != null;
+            };
+            amount.AfterTextChanged += (o, args) =>
+            {
+                var or = ParseReceipt(number.Text, date.Text, amount.Text);
+                accept.Enabled = or != null;
+            };
+            
+            dlg.SetView(dlgView);
+            dlg.Show();
+        }
+
+        private Receipt ParseReceipt(string number, string date, string amount)
+        {
+            if (string.IsNullOrWhiteSpace(number))
+                return null;
+            var dDate = DateTime.Now;
+            if (!DateTime.TryParse(date, out dDate))
+                return null;
+            var dAmount = 0d;
+            if (!double.TryParse(amount, out dAmount))
+                return null;
+            return new Receipt()
+            {
+                Amount = dAmount,
+                DatePaid = dDate,
+                Number = number
+            };
+        }
+
+        private Receipt NewReceipt = new Receipt() {IsPlaceHolder = true};
+        
+        private void AddReceipt(Receipt receipt)
+        {
+            Receipts.Remove(NewReceipt);
+            Receipts.Add(receipt);
+            Receipts.Add(NewReceipt);
+            _receipts.Adapter = new ReceiptsAdapter(this,Receipts);
         }
 
         protected override void OnResume()
@@ -52,14 +145,18 @@ namespace NORSU.EncodeMe
             base.OnResume();
         }
 
+        private List<Receipt> Receipts = new List<Receipt>();
+        
         private async void SubmitOnClick(object sender, EventArgs eventArgs)
         {
-            if (string.IsNullOrEmpty(_receipt.Text)) return;
+            if (Receipts == null || Receipts.Count == 0)
+                return;
+            
             _progressBar.Indeterminate = true;
-            Client.Receipt = _receipt.Text;
 
-            var res = await Client.StartEnrollment(_receipt.Text);
-
+            Receipts.Remove(NewReceipt);
+            var res = await Client.StartEnrollment(Receipts);
+            Receipts.Add(NewReceipt);
             _progressBar.Indeterminate = false;
             
             if (res?.Success ?? false)
@@ -70,11 +167,25 @@ namespace NORSU.EncodeMe
             else
             {
                 var dlg = new AlertDialog.Builder(this);
-                dlg.SetTitle(res == null ? "Can not find server" : res.ErrorMessage);
-                dlg.SetPositiveButton("Okay", (o, args) =>
+                if (res == null)
                 {
-
-                });
+                    dlg.SetMessage("Disconnected from server");
+                    dlg.SetMessage("Please make sure you are connected to the server and try again.");
+                    dlg.SetPositiveButton("EXIT", (o, args) =>
+                    {
+                        FinishAffinity();
+                    });
+                }
+                else
+                {
+                    dlg.SetMessage("Unable to process request");
+                    dlg.SetMessage(res.ErrorMessage);
+                    dlg.SetPositiveButton("OKAY", (o, args) =>
+                    {
+                    
+                    });
+                }
+                
                 
                 dlg.Show();
             }

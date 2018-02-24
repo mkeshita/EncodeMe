@@ -14,7 +14,7 @@ namespace NORSU.EncodeMe.Network
         public List<ClassSchedule> ClassSchedules { get; set; }
         
         [ProtoMember(3)]
-        public string ReceiptNumber { get; set; }
+        public List<Receipt> Receipts { get; set; } = new List<Receipt>();
     }
 }
 #endif

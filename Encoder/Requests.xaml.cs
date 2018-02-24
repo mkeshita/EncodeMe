@@ -102,7 +102,6 @@ namespace NORSU.EncodeMe
             ButtonProgressAssist.SetIsIndeterminate(NextButton, true);
             var work = await Client.GetNextWork();
             CurrentWork = work;
-            Student.DataContext = work.Student;
             ButtonProgressAssist.SetIsIndicatorVisible(NextButton, false);
             ButtonProgressAssist.SetIsIndeterminate(NextButton, false);
             //_encoderMagic.IsGenieOut = false;
@@ -111,12 +110,13 @@ namespace NORSU.EncodeMe
             {
                 case ResultCodes.Success:
                     WorkDataGrid.ItemsSource = work.ClassSchedules;
-                    //_workMagic.IsGenieOut = true;
+                    Student.DataContext = work.Student;
+                    ReceiptsListBox.ItemsSource = work.Receipts;
                     MainTransitioner.SelectedIndex = 3;
                     Content.SelectedIndex = 2;
                     LoginLamp.Visibility = Visibility.Collapsed;
-                    StudentId.Text = work.StudentId;
-                    StudentName.Text = work.StudentName;
+                    StudentId.Text = work.Student.FirstName + work.Student.LastName;
+                    StudentName.Text = work.Student.Course;
                     break;
                 case ResultCodes.NotFound:
                     //MessageBox.Show("No more pending items.");
@@ -292,7 +292,7 @@ namespace NORSU.EncodeMe
             
             var work = new SaveWork()
             {
-                StudentId = CurrentWork.StudentId,
+                RequestId = CurrentWork.RequestId,
                 ClassSchedules = CurrentWork.ClassSchedules,
             };
 

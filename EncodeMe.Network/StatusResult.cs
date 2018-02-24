@@ -28,8 +28,6 @@ namespace NORSU.EncodeMe.Network
         public long StudentId { get; set; }
         [ProtoMember(2)]
         public long RequestId { get; set; }
-        [ProtoMember(3)]
-        public string Receipt { get; set; }
     }
 }
 #endif

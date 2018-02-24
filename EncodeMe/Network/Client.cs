@@ -190,8 +190,7 @@ namespace NORSU.EncodeMe.Network
         
         public static Student CurrentStudent { get; set; }
         public static RequestStatus RequestStatus { get; set; }
-        public static string Receipt { get; set; }
-        
+       
         private async Task<StudentInfoResult> _GetStudentInfo(string studentId,string password)
         {
             if (Server == null) await FindServer();
@@ -235,15 +234,15 @@ namespace NORSU.EncodeMe.Network
         public static List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
         public static bool EnrollmentCommited { get; set; }
 
-        public static async Task<StartEnrollmentResult> StartEnrollment(string receipt)
+        public static async Task<StartEnrollmentResult> StartEnrollment(List<Receipt> receipt)
         {
             return await Instance._StartEnrollment(receipt);
         }
         
-        private async Task<StartEnrollmentResult> _StartEnrollment(string receipt)
+        private async Task<StartEnrollmentResult> _StartEnrollment(List<Receipt> receipt)
         {
             if (CurrentStudent == null) return null;
-            if (string.IsNullOrWhiteSpace(receipt)) return null;
+            if (receipt==null || receipt.Count==0) return null;
 
             if(Server == null)
                 await FindServer();
@@ -264,8 +263,8 @@ namespace NORSU.EncodeMe.Network
 
             await new StartEnrollment()
             {
-                Receipt = receipt,
-                StudentId = CurrentStudent.StudentId
+                Receipts = receipt,
+                StudentId = CurrentStudent.Id,
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
@@ -311,8 +310,8 @@ namespace NORSU.EncodeMe.Network
             await new CommitEnrollment()
             {
                 ClassIds = ClassSchedules.Select(x=>x.ClassId).ToList(),
-                StudentId = CurrentStudent.StudentId,
-                TransactionId = TransactionId
+                StudentId = CurrentStudent.Id,
+                TransactionId = TransactionId,
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
@@ -409,7 +408,7 @@ namespace NORSU.EncodeMe.Network
             await new AddSchedule()
             {
                 ClassId = schedule.ClassId,
-                StudentId = CurrentStudent.StudentId,
+                StudentId = CurrentStudent.Id,
                 TransactionId = TransactionId
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
@@ -561,7 +560,6 @@ namespace NORSU.EncodeMe.Network
             var request = new StatusRequest()
             {
                 StudentId = CurrentStudent?.Id??0,
-                Receipt = RequestStatus?.Receipt,
                 RequestId = RequestStatus?.Id??0,
             };
             

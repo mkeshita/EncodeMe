@@ -91,7 +91,7 @@ namespace NORSU.EncodeMe.Network
             };
 
             var req = Models.Request.Cache.FirstOrDefault(x =>
-                x.StudentId.ToLower() == incomingobject.StudentId.ToLower());
+                x.Student.StudentId.ToLower() == incomingobject.StudentId.ToLower());
             if (req != null)
             {
                 result.RequestStatus = new RequestStatus()
@@ -99,8 +99,16 @@ namespace NORSU.EncodeMe.Network
                     Id=req.Id,
                     IsSubmitted = req.Submitted,
                     QueueNumber = req.GetQueueNumber(),
-                    Receipt = req.ReceiptNumber
                 };
+                foreach (var reqReceipt in req.Receipts)
+                {
+                    result.RequestStatus.Receipts.Add(new Receipt()
+                    {
+                        Amount = reqReceipt.AmountPaid,
+                        DatePaid = reqReceipt.DatePaid,
+                        Number = reqReceipt.Number
+                    });
+                }
             }
             
             SendStudentInfoResult(result,connection);
@@ -186,11 +194,18 @@ namespace NORSU.EncodeMe.Network
             if (dev == null) return;
 
             var ep = new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port);
+            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId.ToLower() == incomingobject.StudentId.ToLower());
+            if (student == null)
+            {
+                new EnrollResult(ResultCodes.Error).Send(ep);
+                return;
+            }
             
-            var req = Request.Cache.FirstOrDefault(x => x.StudentId == incomingobject.StudentId);
+            var req = Request.Cache.FirstOrDefault(x => x.StudentId == student.Id);
+            
             if(req==null) req = new Request()
             {
-                StudentId = incomingobject.StudentId,
+                StudentId = student.Id,
             };
 
             if (req.Status == Request.Statuses.Proccessing)
@@ -207,8 +222,18 @@ namespace NORSU.EncodeMe.Network
             
             req.DateSubmitted = DateTime.Now;
             req.Status = Request.Statuses.Pending;
-            req.ReceiptNumber = incomingobject.ReceiptNumber;
             req.Save();
+            
+            foreach (var or in incomingobject.Receipts)
+            {
+                new Models.Receipt()
+                {
+                    AmountPaid = or.Amount,
+                    DatePaid = or.DatePaid,
+                    Number = or.Number,
+                    RequestId = req.Id,
+                }.Save();
+            }
             
             //RequestDetail.DeleteWhere(nameof(RequestDetail.RequestId),req.Id);
 
@@ -286,24 +311,24 @@ namespace NORSU.EncodeMe.Network
             if (dev == null)
                 return;
 
+
+            var  request = Models.Request.Cache.FirstOrDefault(x=>!x.Submitted && x.Student.Id==req.StudentId);
             
-            var request = Models.Request.GetByOR(req.Receipt);
-            
-            //Fail if OR number was already used by someone else
-            if(request!=null && request.StudentId.ToLower()!=req.StudentId.ToLower() && request.Submitted)
+            foreach (var or in req.Receipts)
             {
-                await new StartEnrollmentResult()
+                var r = Models.Receipt.Cache.FirstOrDefault(x => x.Number?.ToLower() == or.Number?.ToLower());
+                
+                if (r != null && r.Request.Submitted && r?.Request.Student.Id != req.StudentId)
                 {
-                    Success = false,
-                    ErrorMessage = "Invalid OR number"
-                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
-                return;
+                    await new StartEnrollmentResult()
+                    {
+                        Success = false,
+                        ErrorMessage = "Invalid OR number"
+                    }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                    return;
+                }
             }
             
-            //Try looking for initiated request by StudentId and create new if nothing exists
-            if(request==null)
-                request = Models.Request.Cache.FirstOrDefault(x => x.StudentId.ToLower() == req.StudentId.ToLower() && !x.Submitted);
-
             if (request == null)
             {
                 request = new Request()
@@ -315,8 +340,18 @@ namespace NORSU.EncodeMe.Network
             if(request.IsDeleted)
                 request.Undelete();
             
-            request.ReceiptNumber = req.Receipt;
             request.Save();
+            
+            foreach (var or in req.Receipts)
+            {
+                new Models.Receipt()
+                {
+                    AmountPaid = or.Amount,
+                    DatePaid = or.DatePaid,
+                    RequestId = request.Id,
+                    Number = or.Number,
+                }.Save();
+            }
             
             var result = new StartEnrollmentResult()
             {
@@ -407,6 +442,18 @@ namespace NORSU.EncodeMe.Network
             request.DateSubmitted = DateTime.Now;
             request.Save();
             var qn = request.GetQueueNumber();
+
+            var receipts = new List<Network.Receipt>();
+            foreach (var or in request.Receipts)
+            {
+                receipts.Add(new Receipt()
+                {
+                    Amount = or.AmountPaid,
+                    DatePaid = or.DatePaid,
+                    Number = or.Number,
+                });
+            }
+            
             await new CommitEnrollmentResult()
             {
                 Success = true,
@@ -416,8 +463,8 @@ namespace NORSU.EncodeMe.Network
                     Id = request.Id,
                     IsSubmitted = request.Submitted,
                     QueueNumber = request.GetQueueNumber(),
-                    Receipt = request.ReceiptNumber,
                     Status = EnrollmentStatus.Pending,
+                    Receipts = receipts
                 }
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
 
@@ -453,7 +500,8 @@ namespace NORSU.EncodeMe.Network
                 return;
 
             var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.StudentId);
-            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.RequestId && x.ReceiptNumber == req.Receipt);
+            
+            var request = Models.Request.Cache.FirstOrDefault(x => x.Id == req.RequestId && x.StudentId==req.StudentId);
 
             if (student == null || request == null)
             {
@@ -465,6 +513,17 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
 
+            var receipts = new List<Network.Receipt>();
+            foreach (var or in request.Receipts)
+            {
+                receipts.Add(new Receipt()
+                {
+                    Amount = or.AmountPaid,
+                    DatePaid = or.DatePaid,
+                    Number = or.Number,
+                });
+            }
+
             var res = new StatusResult()
             {
                 Success = true,
@@ -473,7 +532,7 @@ namespace NORSU.EncodeMe.Network
                     Id = request.Id,
                     IsSubmitted = request.Submitted,
                     QueueNumber = request.GetQueueNumber(),
-                    Receipt = request.ReceiptNumber,
+                    Receipts = receipts,
                     Status = GetStatus(request.Status),
                 },
             };

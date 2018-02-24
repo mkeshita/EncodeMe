@@ -164,6 +164,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ReceiptsAdapter.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleBrowserActivity.cs" />
@@ -211,6 +212,12 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\EnterOR.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\OrDialog.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ReceiptRow.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
