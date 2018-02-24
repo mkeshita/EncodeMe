@@ -141,9 +141,9 @@ namespace NORSU.EncodeMe.Network
             }
         }
 
-        private string _Status;
+        private int _Status;
         [ProtoMember(11)]
-        public string Status
+        public int Status
         {
             get => _Status;
             set
@@ -239,22 +239,7 @@ namespace NORSU.EncodeMe.Network
                 OnPropertyChanged(nameof(YearLevel));
             }
         }
-
-
-        private bool _IsNew;
-        [ProtoMember(18)]
-        public bool IsNew
-        {
-            get => _IsNew;
-            set
-            {
-                if (value == _IsNew)
-                    return;
-                _IsNew = value;
-                OnPropertyChanged(nameof(IsNew));
-            }
-        }
-
+        
         public string this[string columnName] => GetErrorInfo(columnName);
 
         private string GetErrorInfo(string prop)

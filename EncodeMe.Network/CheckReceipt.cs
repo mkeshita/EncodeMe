@@ -9,9 +9,10 @@ namespace NORSU.EncodeMe.Network
     class StartEnrollment : Message<StartEnrollment>
     {
         [ProtoMember(1)]
-        public string Receipt { get; set; }
+        public List<Receipt> Receipts { get; set; } = new List<Receipt>();
+        
         [ProtoMember(2)]
-        public string StudentId { get; set; }
+        public long StudentId { get; set; }
     }
 
     [ProtoContract]

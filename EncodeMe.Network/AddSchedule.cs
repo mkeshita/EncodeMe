@@ -13,7 +13,7 @@ namespace NORSU.EncodeMe.Network
         [ProtoMember(2)]
         public long TransactionId { get; set; }
         [ProtoMember(3)]
-        public string StudentId { get; set; }
+        public long StudentId { get; set; }
     }
 
     [ProtoContract]

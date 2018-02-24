@@ -9,10 +9,10 @@ namespace NORSU.EncodeMe.Network
     class SaveWork : Message<SaveWork>
     {
         [ProtoMember(1)]
-        public string StudentId { get; set; }
-        
-        [ProtoMember(2)]
         public List<ClassSchedule> ClassSchedules { get; set; }
+
+        [ProtoMember(2)]
+        public long RequestId { get; set; }
     }
 
     [ProtoContract]
