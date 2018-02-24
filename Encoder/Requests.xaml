@@ -597,7 +597,7 @@
                            Style="{StaticResource MaterialDesignTitleTextBlock}" />
 
                 <TextBlock Text="Status" />
-                <TextBlock Text="{Binding Status}"
+                <TextBlock Text="{Binding Status,Converter={converters:StudentStatusConverter}}"
                            Style="{StaticResource MaterialDesignTitleTextBlock}"
                            Margin="0 0 0 7" />
 

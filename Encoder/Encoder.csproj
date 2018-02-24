@@ -138,6 +138,7 @@
     </Compile>
     <Compile Include="Converters\BirthToAge.cs" />
     <Compile Include="Converters\ScheduleStatusConverter.cs" />
+    <Compile Include="Converters\StudentStatusConverter.cs" />
     <Compile Include="Converters\YearLevelConverter.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="LoginView.xaml.cs">
