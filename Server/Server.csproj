@@ -55,6 +55,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>norsu.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FastMember, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FastMember.1.1.0\lib\net40\FastMember.dll</HintPath>
@@ -314,6 +317,9 @@
     <Resource Include="Lego\7.jpg" />
     <Resource Include="Lego\8.jpg" />
     <Resource Include="Lego\9.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="norsu.ico" />
   </ItemGroup>
   <Import Project="..\EncodeMe.Network\EncodeMe.Network.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

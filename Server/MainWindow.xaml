@@ -21,6 +21,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         MinWidth="666" MinHeight="555"
         WindowState="Maximized"
+        Icon="pack://application:,,,/norsu_64.png"
         DataContext="{Binding Source={x:Static viewModels:MainViewModel.Instance}}"
         Title="EncodeMe Server" Height="471" Width="555">
     <Window.Resources>
