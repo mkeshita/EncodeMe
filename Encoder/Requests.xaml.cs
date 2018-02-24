@@ -340,7 +340,7 @@ namespace NORSU.EncodeMe
         private void Enroll_Click(object sender, RoutedEventArgs e)
         {
             MainTransitioner.SelectedIndex = 5;
-            Content.SelectedIndex = 4;
+            Content.SelectedIndex = 3;
         }
 
         private void CancelEnrollment_Click(object sender, RoutedEventArgs e)

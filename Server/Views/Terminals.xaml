@@ -49,7 +49,9 @@
                         <DataTemplate>
                             <StackPanel>
                                 <TextBlock Text="{Binding Hostname}" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding IP}"/>
+                <TextBlock>
+                  <Run Text="{Binding IpAddress}"/>:<Run Text="{Binding Port}"/>
+                </TextBlock>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

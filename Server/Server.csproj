@@ -12,6 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -19,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SERVER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -32,15 +34,71 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SERVER</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FastMember, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.1.0\lib\net40\FastMember.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.3.3.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\protobuf-net.2.3.5\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.106.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.106.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Runtime, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks, Version=2.6.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Words.NET, Version=1.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocX.1.1.0\lib\Xceed.Words.NET.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -50,25 +108,68 @@
     <Compile Include="Converters\BooleanToObject.cs" />
     <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Converters\BytesToImage.cs" />
+    <Compile Include="Converters\CategoryConverter.cs" />
     <Compile Include="Converters\Compare.cs" />
     <Compile Include="Converters\ConverterBase.cs" />
     <Compile Include="Converters\EnumDescription.cs" />
     <Compile Include="Converters\EqualityToVisibility.cs" />
     <Compile Include="Converters\Inverter.cs" />
     <Compile Include="Converters\IsNullConverter.cs" />
+    <Compile Include="Converters\IsOnlineToColorZone.cs" />
+    <Compile Include="Converters\IsTypeConverter.cs" />
+    <Compile Include="Converters\LogTypeConverter.cs" />
+    <Compile Include="Converters\LogTypeToBrushConverter.cs" />
     <Compile Include="Converters\PathToBitmapConverter.cs" />
     <Compile Include="Converters\SizeConverter.cs" />
     <Compile Include="Converters\StringToColor.cs" />
+    <Compile Include="EnumBinding.cs" />
+    <Compile Include="ImageProcessor.cs" />
+    <Compile Include="Network\AndroidDevice.cs" />
+    <Compile Include="Network\AndroidHandler.cs" />
+    <Compile Include="Network\EncoderHandler.cs" />
+    <Compile Include="NotEmptyValidationRule.cs" />
+    <Compile Include="Network\Server.cs" />
+    <Compile Include="ViewModels\Courses.cs" />
     <Compile Include="ViewModels\Encoders.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MessageDialog.cs" />
+    <Compile Include="ViewModels\NewUserDialog.cs" />
+    <Compile Include="ViewModels\Prospectus.cs" />
+    <Compile Include="ViewModels\Requests.cs" />
+    <Compile Include="ViewModels\Schedules.cs" />
     <Compile Include="ViewModels\Screen.cs" />
+    <Compile Include="ViewModels\ScreenMenu.cs" />
+    <Compile Include="ViewModels\Students.cs" />
     <Compile Include="ViewModels\Subjects.cs" />
+    <Compile Include="ViewModels\Terminals.cs" />
+    <Compile Include="ViewModels\Users.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\Encoders.xaml.cs">
       <DependentUpon>Encoders.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NewUserDialog.xaml.cs">
+      <DependentUpon>NewUserDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Requests.xaml.cs">
+      <DependentUpon>Requests.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SideBar.xaml.cs">
+      <DependentUpon>SideBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Students.xaml.cs">
+      <DependentUpon>Students.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Subjects.xaml.cs">
       <DependentUpon>Subjects.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Terminals.xaml.cs">
+      <DependentUpon>Terminals.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Users.xaml.cs">
+      <DependentUpon>Users.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -78,19 +179,57 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands.cs" />
-    <Compile Include="DelegateCommand.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Encoders.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Themes\MessageDialog.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\RightDrawers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ScreenToolbars.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Encoders.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NewUserDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Requests.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SideBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Students.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Subjects.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Terminals.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Users.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -111,17 +250,83 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Templates\TerminalLog.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MaterialDesignInXamlToolkit\MaterialDesignColors.Wpf\MaterialDesignColors.Wpf.csproj">
+      <Project>{90b53209-c60c-4655-b28d-a1b3e1044ba3}</Project>
+      <Name>MaterialDesignColors.Wpf</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MaterialDesignInXamlToolkit\MaterialDesignThemes.Wpf\MaterialDesignThemes.Wpf.csproj">
       <Project>{f079fb0a-a8ed-4216-b6a5-345756751a04}</Project>
       <Name>MaterialDesignThemes.Wpf</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NetworkComms\Platforms\Net40\NetworkCommsDotNet\NetworkCommsDotNet.csproj">
+      <Project>{b0fd9f50-a375-44dd-aaae-ccc2f94a99d1}</Project>
+      <Name>NetworkCommsDotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetworkComms\Platforms\Net40\ProtobufSerializer\ProtobufSerializer.csproj">
+      <Project>{62977be8-428b-4683-a098-4e3f588b3f7e}</Project>
+      <Name>ProtobufSerializer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NORSU.EncodeMe.Data\Data.csproj">
+      <Project>{c379b931-a20b-4391-8609-7e3d5f882b88}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\Resources\norsu.png">
+      <Link>norsu.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\Resources\norsu_64.png">
+      <Link>norsu_64.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="..\Resources\SplashScreen.png">
+      <Link>SplashScreen.png</Link>
+    </SplashScreen>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pc-off.png" />
+    <Resource Include="pc-on.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Lego\1.jpg" />
+    <Resource Include="Lego\2.jpg" />
+    <Resource Include="Lego\3.jpg" />
+    <Resource Include="Lego\4.jpg" />
+    <Resource Include="Lego\5.jpg" />
+    <Resource Include="Lego\6.jpg" />
+    <Resource Include="Lego\7.jpg" />
+    <Resource Include="Lego\8.jpg" />
+    <Resource Include="Lego\9.jpg" />
+  </ItemGroup>
+  <Import Project="..\EncodeMe.Network\EncodeMe.Network.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.106.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.106.0\build\net40\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.106.0\build\net40\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.106.0\build\net40\System.Data.SQLite.Core.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
 </Project>

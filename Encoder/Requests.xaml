@@ -35,20 +35,13 @@
         </Storyboard>
     </Window.Resources>
 
-    <Grid Width="333" MaxHeight="555">
-
-        <Grid.RowDefinitions>
+  <Grid Width="333" MaxHeight="555">
+    <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Rectangle Height="20" Width="20"
-                       x:Name="Lamp"
-                       VerticalAlignment="Bottom"
-                       HorizontalAlignment="Right"
-                       Margin="0 0 20 20"/>
-
-        <md:ColorZone Mode="Light" CornerRadius="0 0 7 7"
+        <md:ColorZone CornerRadius="0 0 7 7"
                       Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -305,6 +298,7 @@
       </Grid>
         </md:ColorZone>
 
+
     <md:Transitioner Grid.Row="0" x:Name="Content" SelectedIndex="0"
                      VerticalAlignment="Bottom">
       <md:Transitioner.ItemContainerStyle>
@@ -324,6 +318,7 @@
       <!-- LOGIN VIEW -->
       <Border   x:Name="Genie"
                 Grid.Row="0"
+                BorderBrush="{StaticResource MaterialDesignDivider}"
                 VerticalAlignment="Bottom"
                 Margin="0 0 0 0">
         <Grid >
@@ -372,6 +367,7 @@
                 VerticalAlignment="Bottom"
                 x:Name="EncoderGenie"
                 Grid.Row="0"
+                BorderBrush="{StaticResource MaterialDesignDivider}"
                 CornerRadius="4 4 0 0"
                 Mode="PrimaryDark"
                 Margin="0 0 0 0">
@@ -479,9 +475,7 @@
       </md:ColorZone>
 
       <!-- WORK VIEW -->
-      <Border x:Name="WorkGenie"
-                    Grid.Row="0"
-                Background="White"
+      <Border   Background="White"
                 BorderThickness="0 0 0 1"
                 BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                 CornerRadius="4 4 0 0"
@@ -571,7 +565,7 @@
                 <TextBlock Text="{Binding LastName}"
                            Style="{StaticResource MaterialDesignTitleTextBlock}"
                            Margin="0 0 0 7" />
-                
+
                 <TextBlock Text="Date of Birth"/>
                 <TextBlock Text="{Binding BirthDate,StringFormat=MMMM\ d\, yyyy}"
                              Style="{StaticResource MaterialDesignTitleTextBlock}"
@@ -603,15 +597,9 @@
                            Style="{StaticResource MaterialDesignTitleTextBlock}" />
 
                 <TextBlock Text="Status" />
-                <TextBlock Text="NEW STUDENT"
-                           Visibility="{Binding IsNew,Converter={converters:BooleanToVisibility}}"
+                <TextBlock Text="{Binding Status}"
                            Style="{StaticResource MaterialDesignTitleTextBlock}"
                            Margin="0 0 0 7" />
-                <TextBlock Text="RETURNEE"
-                           Visibility="{Binding IsNew,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
-                           Style="{StaticResource MaterialDesignTitleTextBlock}"
-                           Margin="0 0 0 7" />
-
 
                 <TextBlock Text="Major" />
                 <TextBlock Text="{Binding Major}" TextWrapping="Wrap"
@@ -698,7 +686,7 @@
               </ListBox.ItemTemplate>
             </ListBox>
           </md:Transitioner>
-        
+
           <ProgressBar x:Name="SubmitProgress" Grid.Row="1"
                        Grid.RowSpan="2"
                              VerticalAlignment="Center"
@@ -708,7 +696,7 @@
                              Height="64"
                              Width="64"
                              Style="{StaticResource MaterialDesignCircularProgressBar}"/>
-          
+
           <md:PackIcon Kind="CheckCircle"
                        Grid.Row="1"
                        x:Name="SubmitResult"
@@ -720,38 +708,35 @@
                        Width="64" />
         </Grid>
       </Border>
-      
-      <Grid/>
 
       <!--ENROLLMENT-->
-      
-        <Grid DataContext="{Binding Source={x:Static vm:EnrollmentViewModel.Instance}}">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="*" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Border CornerRadius="4 4 0 0"
+      <Grid DataContext="{Binding Source={x:Static vm:EnrollmentViewModel.Instance}}">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Border CornerRadius="4 4 0 0"
                     Background="{StaticResource PrimaryHueDarkBrush}">
-              <Grid VerticalAlignment="Top"
+            <Grid VerticalAlignment="Top"
                           HorizontalAlignment="Left">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto"/>
-                  <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Image Source="norsu_74.png"
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Image Source="norsu_74.png"
                        Margin="7"
                        Height="48" Width="48" />
-                <TextBlock Text="Enroll Student"
+              <TextBlock Text="Enroll Student"
                            Grid.Column="1"
                            Foreground="White"
                            VerticalAlignment="Center"
                            Margin="10 0 0 0"
                            TextAlignment="Center"
                            Style="{StaticResource MaterialDesignTitleTextBlock}" />
-              </Grid>
-            </Border>
+            </Grid>
+          </Border>
           <ScrollViewer Background="White"
                         IsEnabled="{Binding IsProcessing,Converter={converters:Inverter}}"
                         HorizontalScrollBarVisibility="Disabled"
@@ -764,7 +749,7 @@
                        Margin="4"
                        Text="{Binding StudentId,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}"
                        md:HintAssist.IsFloating="True"/>
-            <TextBox md:HintAssist.Hint="FIRST NAME"
+              <TextBox md:HintAssist.Hint="FIRST NAME"
                      Margin="4"
                      Text="{Binding FirstName,UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                      md:HintAssist.IsFloating="True" />
@@ -798,7 +783,7 @@
                        Text="{Binding Address,UpdateSourceTrigger=PropertyChanged,ValidatesOnDataErrors=True}"
                        md:HintAssist.IsFloating="True" />
               <Grid>
-              <ComboBox ItemsSource="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=Courses}"
+                <ComboBox ItemsSource="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=Courses}"
                         IsEnabled="{Binding Source={x:Static vm:EnrollmentViewModel.Instance},Path=CoursesDownloaded}"
                         Margin="4"
                         md:HintAssist.Hint="COURSE"
@@ -818,14 +803,14 @@
               <ComboBox Margin="4"
                         md:HintAssist.Hint="YEAR LEVEL"
                         md:HintAssist.IsFloating="True"
-                        SelectedValuePath="Id" SelectedIndex="{Binding YearLevel}" >
+                        SelectedIndex="{Binding YearLevel}" >
                 <ComboBoxItem Content="First Year"/>
                 <ComboBoxItem Content="Second Year" />
                 <ComboBoxItem Content="Third Year" />
                 <ComboBoxItem Content="Fourth Year" />
                 <ComboBoxItem Content="Fifth Year" />
               </ComboBox>
-              
+
               <TextBox md:HintAssist.Hint="MAJOR"
                        Margin="4"
                        Text="{Binding Major,UpdateSourceTrigger=PropertyChanged}"
@@ -838,7 +823,7 @@
                        Margin="4"
                        Text="{Binding Scholarship,UpdateSourceTrigger=PropertyChanged}"
                        md:HintAssist.IsFloating="True" />
-              
+
               <ComboBox md:HintAssist.Hint="STATUS"
                         Margin="4"
                         SelectedIndex="{Binding Status}"
@@ -850,7 +835,7 @@
               </ComboBox>
             </StackPanel>
           </ScrollViewer>
-            <Grid Grid.Row="1"
+          <Grid Grid.Row="1"
                   Visibility="{Binding IsProcessing,Converter={converters:BooleanToVisibility}}">
             <Grid VerticalAlignment="Center" HorizontalAlignment="Center"
                   Visibility="{Binding EnrollmentSuccess,Converter={converters:BooleanToVisibility Collapsed,Visible}}">
@@ -858,7 +843,7 @@
                            Visibility="{Binding EnrollmentError,Converter={converters:BooleanToVisibility Collapsed,Visible}}"
                            IsIndeterminate="True"/>
             </Grid>
-              <md:PackIcon Kind="CheckCircle" Height="147" Width="147" Foreground="{StaticResource PrimaryHueDarkBrush}"
+            <md:PackIcon Kind="CheckCircle" Height="147" Width="147" Foreground="{StaticResource PrimaryHueDarkBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            Visibility="{Binding EnrollmentSuccess,Converter={converters:BooleanToVisibility}}"/>
             <StackPanel Background="#77ffffff"
@@ -872,9 +857,10 @@
             </StackPanel>
           </Grid>
         </Grid>
-        </Grid>
+      </Grid>
     </md:Transitioner>
-      
-     
-    </Grid>
+
+
+  </Grid>
+  
 </Window>
