@@ -63,7 +63,7 @@ namespace NORSU.EncodeMe.Network
             }
 
             if (string.IsNullOrEmpty(student.Password))
-                student.Password = incomingobject.Password;
+                student.Update(nameof(Models.Student.Password), incomingobject.Password);
 
             if (student.Password != incomingobject.Password)
             {
