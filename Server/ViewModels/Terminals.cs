@@ -55,6 +55,7 @@ namespace NORSU.EncodeMe.ViewModels
             Server.SendCommand(d, Network.Commands.CloseEncoder);
             d.IsOnline = false;
             d.Encoder = null;
+            d.CancelRequest();
             TerminalLog.Add(d.Id, $"Terminal disabled by {MainViewModel.Instance.CurrentUser?.Username}");
         }));
 
@@ -73,6 +74,7 @@ namespace NORSU.EncodeMe.ViewModels
             Server.SendCommand(d, Network.Commands.CloseEncoder);
             d.IsOnline = false;
             d.Encoder = null;
+            d.CancelRequest();
             TerminalLog.Add(d.Id, $"Remotely closed by {MainViewModel.Instance.CurrentUser?.Username}");
         }, d => d?.IsOnline ?? false));
 

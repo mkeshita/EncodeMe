@@ -160,10 +160,7 @@ namespace NORSU.EncodeMe
             }
             else
             {
-                var dlg = new AlertDialog.Builder(this);
-                dlg.SetMessage(result?.ErrorMessage??"Request timeout");
-                dlg.SetPositiveButton("OK", (o, a) => { });
-                dlg.Show();
+                Client.ShowDisconnectedDialog(this);
             }
             
         }

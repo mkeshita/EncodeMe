@@ -82,5 +82,17 @@ namespace NORSU.EncodeMe.Properties {
                 this["LoginAttemptTimeout"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AllowEncoderCancel {
+            get {
+                return ((bool)(this["AllowEncoderCancel"]));
+            }
+            set {
+                this["AllowEncoderCancel"] = value;
+            }
+        }
     }
 }

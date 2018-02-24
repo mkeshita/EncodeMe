@@ -74,12 +74,12 @@ namespace NORSU.EncodeMe
             }
             else
             {
-                var dlg = new AlertDialog.Builder(this);
+                var dlg = new AlertDialog.Builder(this).Create();
                 if (result!=null)
                 {
                     dlg.SetMessage(result.ErrorMessage);
                     dlg.SetTitle("Request Failed");
-                    dlg.SetPositiveButton("Okay", (o, args) =>
+                    dlg.SetButton("Okay", (o, args) =>
                     {
                         
                     });
@@ -88,13 +88,13 @@ namespace NORSU.EncodeMe
                 {
                     dlg.SetTitle("Request Timeout");
                     dlg.SetMessage("Please make sure you are connected to the network.");
-                    dlg.SetPositiveButton("Retry", (o, args) =>
+                    dlg.SetButton("Retry", (o, args) =>
                     {
                         NextOnClick(sender, eventArgs);
                     });
 
                     dlg.SetCancelable(true);
-                    dlg.SetNegativeButton("Cancel", (o, args) =>
+                    dlg.SetButton2("Cancel", (o, args) =>
                     {
                         edit = pref.Edit();
                         edit.PutBoolean("submitted", false);

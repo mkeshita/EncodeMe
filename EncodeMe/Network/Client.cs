@@ -63,6 +63,30 @@ namespace NORSU.EncodeMe.Network
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
         }
 
+        private static bool _quitDialogShown;
+        public static void ShowDisconnectedDialog(Activity activity)
+        {
+            if (_quitDialogShown) return;
+            _quitDialogShown = true;
+            var dlg = new AlertDialog.Builder(activity).Create();
+            dlg.SetTitle("Request Timeout");
+            dlg.SetMessage("You are not connected to the server.");
+            dlg.SetCancelable(false);
+            dlg.SetButton("QUIT", (sender, args) =>
+            {
+                Android.OS.Process.KillProcess(Process.MyPid());
+            });
+            dlg.CancelEvent += (sender, args) =>
+            {
+                _quitDialogShown = false;
+            };
+            dlg.DismissEvent += (sender, args) =>
+            {
+                _quitDialogShown = false;
+            };
+            dlg.Show();
+        }
+
         public static void Stop()
         {
             Connection.StopListening();
@@ -229,7 +253,7 @@ namespace NORSU.EncodeMe.Network
             return null;
         }
 
-        public static long TransactionId { get; set; }
+        private static long TransactionId { get; set; }
 
         public static List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
         public static bool EnrollmentCommited { get; set; }

@@ -58,6 +58,7 @@ namespace NORSU.EncodeMe.Network
                     await new Logout() {Reason = $"You were logged in at another terminal ({cl.Hostname})."}
                         .Send(new IPEndPoint(ip.Address, cl.Port));
                     cl.Encoder = null;
+                    cl.CancelRequest();
                 }
                 
 
@@ -100,7 +101,10 @@ namespace NORSU.EncodeMe.Network
                 await new Ping().Send(new IPEndPoint(IPAddress.Parse(client.IpAddress), client.Port));
                 await TaskEx.Delay(1111);
                 if (!client.IsOnline)
+                {
                     client.Encoder = null;
+                    client.CancelRequest();
+                }
             }
         }
 
@@ -111,7 +115,7 @@ namespace NORSU.EncodeMe.Network
             _handshakeTasks.Enqueue(new Task(async () =>
             {
                 //Get known client or create new one.
-                var client = Client.GetByName(ep.Hostname);
+                var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ep.IP); //.GetByName(ep.Hostname);
                 if (client == null)
                 {
                     client = new Client()
@@ -125,7 +129,7 @@ namespace NORSU.EncodeMe.Network
                 {
                     client.Undelete();
                 }
-                client.IpAddress = ep.IP;
+                //client.IpAddress = ep.IP;
                 client.Hostname = ep.Hostname;
                 client.Port = ep.Port;
                 client.LastHeartBeat = DateTime.Now;
@@ -215,7 +219,7 @@ namespace NORSU.EncodeMe.Network
             client.LastHeartBeat = DateTime.Now;
             TerminalLog.Add(client.Id, "Work item requested.");
             
-            var work = Request.GetNextRequest(false); //also closes #41
+            var work = Request.GetNextRequest(); 
             if (work == null)
             {
                 await new GetWorkResult(ResultCodes.NotFound).Send(ip);//(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
@@ -285,6 +289,8 @@ namespace NORSU.EncodeMe.Network
 
             client.Encoder.StartWork();
             work.StartWorking();
+            client.Request?.Update(nameof(Models.Request.Status),Request.Statuses.Pending);
+            client.Request = work;
         }
 
         private static async void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)
@@ -308,7 +314,12 @@ namespace NORSU.EncodeMe.Network
             
             TerminalLog.Add(client.Id, $"Enrollment request completed. Encoder: {client.Encoder.Username}");
 
-            var req = Request.GetById(i.RequestId);
+            var req = client.Request;
+            if (req != null && req.Id != i.RequestId)
+            {
+                client.CancelRequest();
+                req = Request.GetById(i.RequestId);
+            }
             if (req == null) return;
             
             foreach (var sched in i.ClassSchedules)
@@ -328,9 +339,27 @@ namespace NORSU.EncodeMe.Network
                         stat = Request.Statuses.Closed;
                         break;
                 }
-                if (stat > req.Status) req.Status = stat;
                 s.Update(nameof(s.Status), stat);
             }
+
+            if (i.ClassSchedules.Any(x => x.EnrollmentStatus == ScheduleStatuses.Closed))
+            {
+                req.Status = Request.Statuses.Closed;
+            }
+            else if (i.ClassSchedules.Any(x => x.EnrollmentStatus == ScheduleStatuses.Conflict))
+            {
+                req.Status = Request.Statuses.Conflict;
+            }
+            else if (i.ClassSchedules.All(x => x.EnrollmentStatus == ScheduleStatuses.Accepted))
+            {
+                req.Status = Request.Statuses.Accepted;
+            }
+            else if (i.ClassSchedules.All(x => x.EnrollmentStatus == ScheduleStatuses.Pending))
+            {
+                req.Status = Request.Statuses.Pending;
+            }
+            
+            
             req.EncoderId = client.Encoder.Id;
             req.Save();
 
@@ -360,6 +389,7 @@ namespace NORSU.EncodeMe.Network
             
             TerminalLog.Add(client.Id, $"{client.Encoder.Username} has logged out.");
             client.Encoder = null;
+            client.CancelRequest();
         }
 
         private static void PongHandler(PacketHeader packetheader, Connection connection, Pong incomingobject)

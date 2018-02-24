@@ -100,13 +100,7 @@ namespace NORSU.EncodeMe
 
                     if (res == null)
                     {
-                        dlg.SetTitle("Request Timeout");
-                        dlg.SetMessage("You are not connected to the server.");
-                        dlg.SetPositiveButton("QUIT", (sender, args) =>
-                        {
-                            FinishAffinity();
-                            return;
-                        });
+                        Client.ShowDisconnectedDialog(this);
                     }
                     else
                     {
@@ -135,9 +129,10 @@ namespace NORSU.EncodeMe
             if (_requestingStatus) return;
             _requestingStatus = true;
             var status = await Client.Instance.GetStatus();
-            _requestingStatus = false;
+          
             if (status?.Success ?? false)
             {
+                _requestingStatus = false;
                 RefreshStatus();
             }
             else
@@ -146,29 +141,26 @@ namespace NORSU.EncodeMe
                 {
                     try
                     {
-                        var dlg = new AlertDialog.Builder(this);
-
+                        
                         if (status == null)
                         {
-                            dlg.SetTitle("Request Timeout");
-                            dlg.SetMessage("You are not connected to the server.");
-                            dlg.SetPositiveButton("QUIT", (sender, args) =>
-                            {
-                                FinishAffinity();
-                            });
+                            Client.ShowDisconnectedDialog(this);
                         }
                         else
                         {
+                            var dlg = new AlertDialog.Builder(this).Create();
                             dlg.SetTitle("Request Failed");
                             dlg.SetMessage(status.ErrorMessage);
-                            dlg.SetPositiveButton("OKAY", (sender, args) =>
+                            dlg.SetButton("OKAY", (sender, args) =>
                             {
+                                _requestingStatus = false;
                             });
+                            dlg.Show();
                         }
 
 
 
-                        dlg.Show();
+                        
                     }
                     catch (Exception e)
                     {
@@ -207,20 +199,29 @@ namespace NORSU.EncodeMe
                     case EnrollmentStatus.Processing:
                         _statusButton.Visibility = ViewStates.Gone;
                         _statusImage.Visibility = ViewStates.Visible;
+                        _statusImage.SetImageResource(Resource.Drawable.status_processing);
                         _messageText.Text = "You request is now being processed.";
                         _cancelButton.Visibility = ViewStates.Gone;
                         return;
                     case EnrollmentStatus.Accepted:
                         _progress.Indeterminate = false;
+                        _statusButton.Visibility = ViewStates.Gone;
+                        _statusImage.Visibility = ViewStates.Visible;
+                        _statusImage.SetImageResource(Resource.Drawable.status_accepted);
                         _progress.Progress = 1;
                         _title.Text = "OFFICIALLY ENROLLED";
                         _messageText.Text =
                             "Congratulations! Your are now officially enrolled. Please proceed to the PRINTING AREA and present your Official Receipt and ID.";
                         _cancelButton.Visibility = ViewStates.Gone;
+                        
                         break;
                     case EnrollmentStatus.Closed:
                         _progress.Indeterminate = false;
                         _progress.Progress = 0;
+                        _statusButton.Visibility = ViewStates.Gone;
+                        _statusImage.Visibility = ViewStates.Visible;
+                        _statusImage.SetImageResource(Resource.Drawable.status_failed);
+                        _title.SetTextColor(Color.Red);
                         _title.Text = "ENROLLMENT FAILED";
                         _messageText.Text = "Problem occured during the process. Some class schedules are closed.";
                         _cancelButton.Visibility = ViewStates.Visible;
@@ -229,7 +230,11 @@ namespace NORSU.EncodeMe
                     case EnrollmentStatus.Conflict:
                         _progress.Indeterminate = false;
                         _progress.Progress = 0;
+                        _statusButton.Visibility = ViewStates.Gone;
+                        _statusImage.Visibility = ViewStates.Visible;
+                        _statusImage.SetImageResource(Resource.Drawable.status_failed);
                         _title.Text = "ENROLLMENT FAILED";
+                        _title.SetTextColor(Color.Red);
                         _messageText.Text = "Problem occured during the process. Some class schedules are in conflict.";
                         _cancelButton.Visibility = ViewStates.Visible;
                         _cancelButton.Text = "VIEW SUBJECTS";

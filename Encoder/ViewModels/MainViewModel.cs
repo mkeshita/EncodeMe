@@ -50,9 +50,7 @@ namespace NORSU.EncodeMe.ViewModels
                 OnPropertyChanged(nameof(OnlineEncoderCount));
             }
         }
-
         
-
         private int? _PendingRequestCount;
 
         public int? PendingRequestCount
