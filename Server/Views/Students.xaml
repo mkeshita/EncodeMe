@@ -47,6 +47,8 @@
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
         <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+        <DataGridTextColumn Header="Middle Name" Binding="{Binding MiddleName}"
+                            EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
         <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}"
                             EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
         <DataGridTemplateColumn Header="Birth Date" SortMemberPath="BirthDate">
