@@ -78,7 +78,7 @@ namespace NORSU.EncodeMe
                     MainTransitioner.SelectedIndex = 3;
                     Content.SelectedIndex = 2;
                     LoginLamp.Visibility = Visibility.Collapsed;
-                    StudentId.Text = work.Student.FirstName + work.Student.LastName;
+                    StudentId.Text = work.Student.FirstName + " " + work.Student.LastName;
                     StudentName.Text = work.Student.Course;
                     break;
                 case ResultCodes.NotFound:
