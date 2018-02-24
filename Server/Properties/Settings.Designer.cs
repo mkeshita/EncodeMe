@@ -94,5 +94,17 @@ namespace NORSU.EncodeMe.Properties {
                 this["AllowEncoderCancel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ResetQueueOnFailure {
+            get {
+                return ((bool)(this["ResetQueueOnFailure"]));
+            }
+            set {
+                this["ResetQueueOnFailure"] = value;
+            }
+        }
     }
 }

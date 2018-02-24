@@ -5,6 +5,7 @@ using System.Net;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections;
 using NORSU.EncodeMe.Models;
+using NORSU.EncodeMe.Properties;
 
 namespace NORSU.EncodeMe.Network
 {
@@ -438,8 +439,15 @@ namespace NORSU.EncodeMe.Network
                 return;
             }
             request.Submitted = true;
+            
+            if(Settings.Default.ResetQueueOnFailure)
+                request.DateSubmitted = DateTime.Now;
+            else
+            if(!request.Details.Any(x=>x.Status==Request.Statuses.Closed || x.Status == Request.Statuses.Conflict))
+                request.DateSubmitted = DateTime.Now;
+
             request.Status = Request.Statuses.Pending;
-            request.DateSubmitted = DateTime.Now;
+            
             request.Save();
             var qn = request.GetQueueNumber();
 
