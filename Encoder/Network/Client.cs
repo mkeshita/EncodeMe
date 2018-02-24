@@ -18,7 +18,7 @@ namespace NORSU.EncodeMe.Network
     static class Client
     {
         private static bool _started;
-        
+        public const int TIMEOUT = 7;
         public static void Start()
         {
             if (_started) return;
@@ -170,10 +170,10 @@ namespace NORSU.EncodeMe.Network
             Start();
             var start = DateTime.Now;
             PeerDiscovery.DiscoverPeersAsync(PeerDiscovery.DiscoveryMethod.UDPBroadcast);
-            while ((DateTime.Now-start).TotalSeconds<7)
+            while ((DateTime.Now-start).TotalSeconds<TIMEOUT)
             {
                 if(Server!=null) break;
-                await TaskEx.Delay(TimeSpan.FromMilliseconds(777));
+                await TaskEx.Delay(TimeSpan.FromMilliseconds(111));
             }
         }
         
@@ -199,7 +199,7 @@ namespace NORSU.EncodeMe.Network
                 await login.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
-            while ((DateTime.Now-start).TotalSeconds<17)
+            while ((DateTime.Now-start).TotalSeconds<TIMEOUT)
                 {
                     if (result != null) return result;
                     await TaskEx.Delay(TimeSpan.FromSeconds(1));
@@ -231,7 +231,7 @@ namespace NORSU.EncodeMe.Network
             await work.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 17)
+            while ((DateTime.Now - start).TotalSeconds < TIMEOUT)
             {
                 if (result != null) return result;
                 await TaskEx.Delay(TimeSpan.FromSeconds(1));
@@ -259,7 +259,7 @@ namespace NORSU.EncodeMe.Network
             await new EnrollStudent(){Student = student}.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 17)
+            while ((DateTime.Now - start).TotalSeconds < TIMEOUT)
             {
                 if (result != null) return result;
                 await TaskEx.Delay(TimeSpan.FromSeconds(1));
@@ -288,11 +288,11 @@ namespace NORSU.EncodeMe.Network
             await new GetCoursesDesktop().Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 7)
+            while ((DateTime.Now - start).TotalSeconds < TIMEOUT)
             {
                 if (result != null)
                     return result;
-                await TaskEx.Delay(TimeSpan.FromMilliseconds(111));
+                await TaskEx.Delay(TimeSpan.FromMilliseconds(777));
             }
 
             Server = null;
@@ -318,7 +318,7 @@ namespace NORSU.EncodeMe.Network
             await request.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 17)
+            while ((DateTime.Now - start).TotalSeconds < TIMEOUT)
             {
                 if (result != null) return result;
                 await TaskEx.Delay(TimeSpan.FromSeconds(1));
