@@ -67,38 +67,6 @@ namespace NORSU.EncodeMe.ViewModels
             }
         }
         
-        private ICommand _getNextRequest;
-
-        public ICommand GetNextRequest => _getNextRequest ?? (_getNextRequest = new DelegateCommand<Requests>(async win =>
-        {
-            if (IsProcessing) return;
-          //  IsProcessing = true;
-          //  await TaskEx.Delay(2000);
-          //  IsProcessing = false;
-          
-            return;
-            if (Encoder == null)
-            {
-                var result = await LoginViewModel.ShowDialog(new LoginView());
-                Encoder = result.Result == ResultCodes.Success ? result.Encoder : null;
-            }
-            
-            if (Encoder != null)
-            {
-                IsProcessing = true;
-                var res = await Client.GetNextWork(Encoder.Username);
-                IsProcessing = false;
-                if (res.Result == ResultCodes.Success)
-                {
-                    await WorkViewModel.ShowDialog(res);
-                }
-                else
-                    MessageBox.Show("Something went wrong while trying to fetch the next work item.",
-                        "Request Timeout", MessageBoxButton.OK, MessageBoxImage.Error);
-                
-            }
-        }));
-
         private bool _IsProcessing;
 
         public bool IsProcessing

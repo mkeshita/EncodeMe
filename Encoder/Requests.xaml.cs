@@ -6,8 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using GenieLib;
 using MaterialDesignThemes.Wpf;
 using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Network;
@@ -20,47 +18,12 @@ namespace NORSU.EncodeMe
     /// </summary>
     public partial class Requests : Window
     {
-       // private Magic _loginMagic, _encoderMagic, _workMagic;
-        
         public Requests()
         {
             InitializeComponent();
-
-          //  _loginMagic = new Magic(LoginLamp, Genie, false);
-          //  _loginMagic.Duration = new Duration(TimeSpan.FromMilliseconds(200));
-          //  _loginMagic.Collapsed += MagicCollapsed;
-
-          //  _loginMagic.Expanding += GenieExpanding;
-
-          //  _loginMagic.Expanded += (sender, args) =>
-          //  {
-          //      MainTransitioner.SelectedIndex = 1;
-         //   };
             
-          //  _loginMagic.IsGenieOut = false;
-
-
-          //  _encoderMagic = new Magic(LoginLamp, EncoderGenie, true);
-         //   _encoderMagic.Duration = new Duration(TimeSpan.FromMilliseconds(200));
-          //  _encoderMagic.Expanding += GenieExpanding;
-          //  _encoderMagic.Collapsed += MagicCollapsed;
-
-          //  _workMagic = new Magic(NextButton, WorkGenie, true);
-          //  _workMagic.Duration = new Duration(TimeSpan.FromMilliseconds(200));
-          //  _workMagic.Collapsed += MagicCollapsed;
-          //  _workMagic.Expanding += GenieExpanding;
         }
-
-        private void MagicCollapsed(object o, EventArgs eventArgs)
-        {
-            ((Magic)o).Genie.Visibility = Visibility.Hidden;
-            MainTransitioner.SelectedIndex = 0;
-        }
-
-        private void GenieExpanding(object o, EventArgs eventArgs)
-        {
-            ((Magic)o).Genie.Visibility = Visibility.Visible;
-        }
+        
 
         private void Requests_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
