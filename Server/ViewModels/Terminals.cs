@@ -27,7 +27,7 @@ namespace NORSU.EncodeMe.ViewModels
             
             Messenger.Default.AddListener<Client>(Messages.ModelDeleted, m =>
             {
-                MainViewModel.EnqueueMessage($"Encoding Station [{m.Hostname}:{m.IP}] deleted","UNDO",
+                MainViewModel.EnqueueMessage($"Encoding Station [{m.Hostname}:{m.IpAddress}] deleted","UNDO",
                     d=>d.Undelete(),m);
             });
         }
@@ -196,7 +196,7 @@ namespace NORSU.EncodeMe.ViewModels
                         doc.InsertTable(tbl);
 
                     doc.ReplaceText("[NAME]", client.Hostname);
-                    doc.ReplaceText("[IP]", client.IP);
+                    doc.ReplaceText("[IP]", client.IpAddress);
 
                     var border = new Xceed.Words.NET.Border(BorderStyle.Tcbs_single, BorderSize.one, 0,
                         System.Drawing.Color.Black);

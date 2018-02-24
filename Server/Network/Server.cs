@@ -70,7 +70,7 @@ namespace NORSU.EncodeMe.Network
             var list = Client.Cache.Where(x => x.IsOnline)?.ToList();
             foreach (var client in list)
             {
-                new Disconnected().Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                new Disconnected().Send(new IPEndPoint(IPAddress.Parse(client.IpAddress), client.Port));
                 TerminalLog.Add(client.Id, "Disconnected");
             }
             
@@ -88,7 +88,7 @@ namespace NORSU.EncodeMe.Network
             var clients = Client.Cache.OrderByDescending(x => x.IsOnline).ToList();
             Parallel.ForEach(clients,async client =>
             {
-                var ep = new IPEndPoint(IPAddress.Parse(client.IP), client.Port);
+                var ep = new IPEndPoint(IPAddress.Parse(client.IpAddress), client.Port);
                 client.IsOnline = await Ping(ep);
             });
             
@@ -142,7 +142,7 @@ namespace NORSU.EncodeMe.Network
             {
                 Command = command,
                 Parameter = param
-            }.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            }.Send(new IPEndPoint(IPAddress.Parse(client.IpAddress), client.Port));
         }
         
         public static Task SendEncoderUpdates(List<Client> clients)
@@ -154,7 +154,7 @@ namespace NORSU.EncodeMe.Network
                 update.Encoders = clients.Count(x => x.IsOnline);
                 //Parallel.ForEach(Client.Cache, c => update.Send(new IPEndPoint(IPAddress.Parse(c.IP), c.Port)));
                 
-                foreach (var c in clients) update.Send(new IPEndPoint(IPAddress.Parse(c.IP), c.Port));
+                foreach (var c in clients) update.Send(new IPEndPoint(IPAddress.Parse(c.IpAddress), c.Port));
             });
         }
     }

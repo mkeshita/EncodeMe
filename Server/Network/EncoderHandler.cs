@@ -17,8 +17,8 @@ namespace NORSU.EncodeMe.Network
     {
         public static async void LoginHandler(PacketHeader packetheader, Connection connection, Login login)
         {
-            var ip = ((IPEndPoint)connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint)connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
             if (!(client?.IsEnabled ?? false))
             {
                 Activity.Log(
@@ -56,7 +56,7 @@ namespace NORSU.EncodeMe.Network
                 if (cl != null)
                 {
                     await new Logout() {Reason = $"You were logged in at another terminal ({cl.Hostname})."}
-                        .Send(new IPEndPoint(IPAddress.Parse(cl.IP), cl.Port));
+                        .Send(new IPEndPoint(ip.Address, cl.Port));
                     cl.Encoder = null;
                 }
                 
@@ -97,7 +97,7 @@ namespace NORSU.EncodeMe.Network
             {
                 await TaskEx.Delay(5555);
                 client.IsOnline = false;
-                await new Ping().Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                await new Ping().Send(new IPEndPoint(IPAddress.Parse(client.IpAddress), client.Port));
                 await TaskEx.Delay(1111);
                 if (!client.IsOnline)
                     client.Encoder = null;
@@ -111,19 +111,21 @@ namespace NORSU.EncodeMe.Network
             _handshakeTasks.Enqueue(new Task(async () =>
             {
                 //Get known client or create new one.
-                var client = Client.GetByIp(ep.IP);
+                var client = Client.GetByName(ep.Hostname);
                 if (client == null)
                 {
                     client = new Client()
                     {
-                        IP = ep.IP
+                        IpAddress = ep.IP
                     };
                         
                 }
+                
                 if (client.IsDeleted && client.Id>0)
                 {
                     client.Undelete();
                 }
+                client.IpAddress = ep.IP;
                 client.Hostname = ep.Hostname;
                 client.Port = ep.Port;
                 client.LastHeartBeat = DateTime.Now;
@@ -196,8 +198,8 @@ namespace NORSU.EncodeMe.Network
         
         public static async void GetWorkHandler(PacketHeader packetheader, Connection connection, GetWork req)
         {
-            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
             if (!(client?.IsEnabled ?? false))
             {
                 Activity.Log(
@@ -216,20 +218,24 @@ namespace NORSU.EncodeMe.Network
             var work = Request.GetNextRequest(false); //also closes #41
             if (work == null)
             {
-                await new GetWorkResult(ResultCodes.NotFound).Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                await new GetWorkResult(ResultCodes.NotFound).Send(ip);//(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
                 return;
             }
             
             //work.Update(nameof(work.Status),Request.Statuses.Proccessing);
             work.Status = Request.Statuses.Proccessing;
 
-            var student = Models.Student.Cache.FirstOrDefault(x => x.StudentId == work.StudentId);
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == work.StudentId);
+            if (student == null)
+            {
+                await new GetWorkResult(ResultCodes.NotFound).Send(ip); //(new IPEndPoint(IPAddress.Parse(client.IP),client.Port));
+                return;
+                
+            }
             
             var result = new GetWorkResult(ResultCodes.Success)
             {
                 RequestId = work.Id,
-                StudentId = work.StudentId?.ToUpper(),
-                StudentName = $"{student?.FirstName} {student?.LastName}",
                 Student = new Student()
                 {
                     Address = student.Address,
@@ -244,9 +250,20 @@ namespace NORSU.EncodeMe.Network
                     Id = student.Id,
                     Scholarship = student.Scholarship,
                     StudentId = student.StudentId,
-                    
-                }
+                },
+                Receipts = new List<Receipt>(),
             };
+            
+            foreach(var or in work.Receipts)
+            {
+                result.Receipts.Add(
+                    new Receipt()
+                    {
+                        Amount = or.AmountPaid,
+                        DatePaid = or.DatePaid,
+                        Number = or.Number,
+                    });
+            }
 
             var items = RequestDetail.Cache.Where(x => x.RequestId == work.Id).ToList();
             foreach (var item in items)
@@ -262,7 +279,7 @@ namespace NORSU.EncodeMe.Network
                 });
             }
 
-            await result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            await result.Send(ip);
             
             await SendEncoderUpdates(Client.Cache.ToList());
 
@@ -272,8 +289,8 @@ namespace NORSU.EncodeMe.Network
 
         private static async void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)
         {
-            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
             if (!(client?.IsEnabled ?? false))
                 return;
 
@@ -285,13 +302,13 @@ namespace NORSU.EncodeMe.Network
                 var res = new SaveWorkResult();
                 res.Success = false;
                 res.ErrorMessage = "Request Denied";
-                await res.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                await res.Send(ip);// (new IPEndPoint(IPAddress.Parse(client.IpAddress), client.Port));
                 return;
             }
             
             TerminalLog.Add(client.Id, $"Enrollment request completed. Encoder: {client.Encoder.Username}");
 
-            var req = Request.Cache.FirstOrDefault(x => string.Equals(x.StudentId, i.StudentId, StringComparison.CurrentCultureIgnoreCase));
+            var req = Request.GetById(i.RequestId);
             if (req == null) return;
             
             foreach (var sched in i.ClassSchedules)
@@ -330,15 +347,15 @@ namespace NORSU.EncodeMe.Network
                 AverageTime = TimeSpan.FromSeconds(client.Encoder.AverageTime).ToString()
             };
 
-            await result.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            await result.Send(ip); //(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
             
             await SendEncoderUpdates(Client.Cache.ToList());
         }
 
         private static void LogoutHandler(PacketHeader packetheader, Connection connection, Logout incomingobject)
         {
-            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
             if (client?.Encoder == null) return;
             
             TerminalLog.Add(client.Id, $"{client.Encoder.Username} has logged out.");
@@ -347,8 +364,8 @@ namespace NORSU.EncodeMe.Network
 
         private static void PongHandler(PacketHeader packetheader, Connection connection, Pong incomingobject)
         {
-            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
             if (client == null) return;
             client.IsOnline = true;
             
@@ -356,8 +373,8 @@ namespace NORSU.EncodeMe.Network
 
         private static void GetCoursesHandler(PacketHeader packetheader, Connection connection, GetCoursesDesktop incomingobject)
         {
-            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
 
             //Maybe do not ignore this on production
             if (client == null)
@@ -374,13 +391,13 @@ namespace NORSU.EncodeMe.Network
                 });
             }
             var rep = (IPEndPoint) connection.ConnectionInfo.RemoteEndPoint;
-            result.Send(new IPEndPoint(IPAddress.Parse(client.IP), rep.Port));
+            result.Send(ip);// (new IPEndPoint(IPAddress.Parse(client.IP), rep.Port));
         }
 
         private static async void EnrollStudentHandler(PacketHeader packetheader, Connection connection, EnrollStudent req)
         {
-            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString();
-            var client = Client.Cache.FirstOrDefault(x => x.IP == ip);
+            var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
+            var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
 
             //Maybe do not ignore this on production
             if (client == null)
@@ -392,7 +409,7 @@ namespace NORSU.EncodeMe.Network
                 {
                     Success = false,
                     ErrorMessage = "Student ID Taken"
-                }.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+                }.Send(ip);// (new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
                 return;
             }
             var stud = new Models.Student()
@@ -408,7 +425,7 @@ namespace NORSU.EncodeMe.Network
                 Scholarship = req.Student.Scholarship,
                 Sex = req.Student.Male?Sexes.Male:Sexes.Female,
                 YearLevel = (YearLevels) req.Student.YearLevel,
-                Status = req.Student.IsNew?StudentStatus.NewStudent:StudentStatus.Returnee,
+                Status = (StudentStatus)req.Student.Status,
             };
             stud.Save();
 
@@ -416,7 +433,7 @@ namespace NORSU.EncodeMe.Network
             {
                 Success = true,
                 Id = stud.Id
-            }.Send(new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
+            }.Send(ip);// (new IPEndPoint(IPAddress.Parse(client.IP), client.Port));
         }
     }
 }
