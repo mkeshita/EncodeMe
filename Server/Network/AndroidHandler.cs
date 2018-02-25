@@ -167,7 +167,7 @@ namespace NORSU.EncodeMe.Network
                 }
                 else
                 {
-                    var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code == subject.Code);
+                    var schedules = Models.ClassSchedule.Cache.Where(x => x.Subject.Code.ToLower() == subject.Code.ToLower() && Models.ClassSchedule.GetEnrolled(x.Id)<x.Slots);
                     result.Success = true;
                     result.Schedules = new List<ClassSchedule>();
                     foreach (var sched in schedules)
