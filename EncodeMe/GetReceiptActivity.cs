@@ -139,6 +139,9 @@ namespace NORSU.EncodeMe
         
         private void AddReceipt(Receipt receipt)
         {
+            var r = Receipts.FirstOrDefault(x => x.Number?.ToLower() == receipt.Number?.ToLower());
+            if (r != null)
+                Receipts.Remove(r);
             Receipts.Remove(NewReceipt);
             Receipts.Add(receipt);
             if(!(Client.Server.MaxReceipts>0 && Receipts.Count >= Client.Server.MaxReceipts))
