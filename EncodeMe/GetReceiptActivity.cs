@@ -51,6 +51,17 @@ namespace NORSU.EncodeMe
 
             _submit.Click += SubmitOnClick;
             _receipts.ItemClick += ReceiptsOnItemClick;
+            _receipts.ItemLongClick += ReceiptsOnItemLongClick;
+        }
+
+        private void ReceiptsOnItemLongClick(object sender, AdapterView.ItemLongClickEventArgs i)
+        {
+            Receipts.RemoveAt(i.Position);
+            Receipts.Remove(NewReceipt);
+            if (!(Client.Server.MaxReceipts > 0 && Receipts.Count >= Client.Server.MaxReceipts))
+                Receipts.Add(NewReceipt);
+
+            _receipts.Adapter = new ReceiptsAdapter(this, Receipts);
         }
 
         private void ReceiptsOnItemClick(object sender, AdapterView.ItemClickEventArgs e)
