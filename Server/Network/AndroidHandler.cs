@@ -39,7 +39,8 @@ namespace NORSU.EncodeMe.Network
 
                 if (lEp == null) continue;
                 if (!ip.Address.IsInSameSubnet(lEp.Address)) continue;
-
+                
+                serverInfo.MaxReceipts = Settings.Default.MaxOR;
                 serverInfo.IP = lEp.Address.ToString();
                 serverInfo.Port = lEp.Port;
                 serverInfo.Send(ip);

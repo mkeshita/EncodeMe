@@ -28,6 +28,9 @@ namespace NORSU.EncodeMe.Network
 
         [ProtoMember(5)]
         public bool TakePicture { get; set; }
+
+        [ProtoMember(6)]
+        public int MaxReceipts { get; set; }
         
     }
 }

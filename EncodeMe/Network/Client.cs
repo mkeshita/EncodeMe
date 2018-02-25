@@ -95,13 +95,13 @@ namespace NORSU.EncodeMe.Network
 
         private static ServerInfo _server;
 
-        private static ServerInfo Server
+        public static ServerInfo Server
         {
             get
             {
                 return _server;
             }
-            set
+            private set
             {
                 _server = value;
             }

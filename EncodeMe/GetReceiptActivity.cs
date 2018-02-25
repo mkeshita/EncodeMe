@@ -130,7 +130,9 @@ namespace NORSU.EncodeMe
         {
             Receipts.Remove(NewReceipt);
             Receipts.Add(receipt);
-            Receipts.Add(NewReceipt);
+            if(!(Client.Server.MaxReceipts>0 && Receipts.Count >= Client.Server.MaxReceipts))
+                Receipts.Add(NewReceipt);
+            
             _receipts.Adapter = new ReceiptsAdapter(this,Receipts);
         }
 
