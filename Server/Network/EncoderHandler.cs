@@ -163,7 +163,8 @@ namespace NORSU.EncodeMe.Network
                     if (lEp == null) continue;
                     if(lEp.AddressFamily != AddressFamily.InterNetwork) continue;
                     if (!ip.Address.IsInSameSubnet(lEp.Address)) continue;
-
+                    serverInfo.CanClose = Settings.Default.EncoderCanClose;
+                    serverInfo.CanMinimize = Settings.Default.EncoderCanMinimize;
                     serverInfo.IP = lEp.Address.ToString();
                     serverInfo.Port = lEp.Port;
                     await serverInfo.Send(ip);

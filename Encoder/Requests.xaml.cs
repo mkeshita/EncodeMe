@@ -311,5 +311,23 @@ namespace NORSU.EncodeMe
             MainTransitioner.SelectedIndex = 2;
             Content.SelectedIndex = 1;
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            Client.Logout();
+            Application.Current.Shutdown();
+        }
+
+        private void Minimize_Clicked(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+
+            ShowInTaskbar = WindowState == WindowState.Minimized;
+        }
     }
 }

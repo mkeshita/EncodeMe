@@ -31,6 +31,13 @@ namespace NORSU.EncodeMe.Network
 
         [ProtoMember(6)]
         public int MaxReceipts { get; set; }
+
+        [ProtoMember(7)]
+        public bool CanClose { get; set; }
+
+        [ProtoMember(8)]
+        public bool CanMinimize { get; set; }
+
         
     }
 }

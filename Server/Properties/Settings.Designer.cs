@@ -118,5 +118,29 @@ namespace NORSU.EncodeMe.Properties {
                 this["MaxOR"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EncoderCanMinimize {
+            get {
+                return ((bool)(this["EncoderCanMinimize"]));
+            }
+            set {
+                this["EncoderCanMinimize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EncoderCanClose {
+            get {
+                return ((bool)(this["EncoderCanClose"]));
+            }
+            set {
+                this["EncoderCanClose"] = value;
+            }
+        }
     }
 }
