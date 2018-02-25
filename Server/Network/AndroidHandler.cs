@@ -89,27 +89,35 @@ namespace NORSU.EncodeMe.Network
                 Major = student.Major,
                 Minor = student.Minor,
                 Scholarship = student.Scholarship,
+                YearLevel = (int)student.YearLevel,
+                Status = (int)student.Status,
             };
 
             var req = Models.Request.Cache.FirstOrDefault(x =>
                 x.Student.StudentId.ToLower() == incomingobject.StudentId.ToLower());
-            if (req != null)
+            if (req == null)
             {
-                result.RequestStatus = new RequestStatus()
+                req = new Models.Request()
                 {
-                    Id=req.Id,
-                    IsSubmitted = req.Submitted,
-                    QueueNumber = req.GetQueueNumber(),
+                    StudentId = student.Id,
                 };
-                foreach (var reqReceipt in req.Receipts)
+                req.Save();
+            }
+            
+            result.RequestStatus = new RequestStatus()
+            {
+                Id=req.Id,
+                IsSubmitted = req.Submitted,
+                QueueNumber = req.GetQueueNumber(),
+            };
+            foreach (var reqReceipt in req.Receipts)
+            {
+                result.RequestStatus.Receipts.Add(new Receipt()
                 {
-                    result.RequestStatus.Receipts.Add(new Receipt()
-                    {
-                        Amount = reqReceipt.AmountPaid,
-                        DatePaid = reqReceipt.DatePaid,
-                        Number = reqReceipt.Number
-                    });
-                }
+                    Amount = reqReceipt.AmountPaid,
+                    DatePaid = reqReceipt.DatePaid,
+                    Number = reqReceipt.Number
+                });
             }
             
             SendStudentInfoResult(result,connection);
@@ -633,6 +641,39 @@ namespace NORSU.EncodeMe.Network
             reqDetail.Delete(false);
 
             await new RemoveScheduleResult()
+            {
+                Success = true,
+            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
+
+        public static async void UpdateStudentHandler(PacketHeader packetheader, Connection connection, UpdateStudent req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.Id);
+            
+            if (student==null)
+            {
+                await new UpdateStudentResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid request"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+
+            student.Address = req.Address;
+            student.Scholarship = req.Scholarship;
+            student.YearLevel = (YearLevels) req.YearLevel;
+            student.Status = (StudentStatus) req.Status;
+            student.Save();
+
+            await new UpdateStudentResult()
             {
                 Success = true,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));

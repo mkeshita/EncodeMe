@@ -8,9 +8,9 @@
       android:src="@drawable/norsu"
       android:layout_width="match_parent"
       android:scaleType="fitEnd"
-    android:layout_marginLeft="111dp"
-    android:layout_marginRight="-111dp"
-    android:layout_marginBottom="-111dp"
+      android:layout_marginLeft="111dp"
+      android:layout_marginRight="-111dp"
+      android:layout_marginBottom="-111dp"
       android:layout_height="444dp" />
   <LinearLayout
       android:background="#EEFFFFFF"
@@ -21,7 +21,7 @@
         android:scrollbars="vertical"
         android:layout_weight="7"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
       <LinearLayout
           android:orientation="vertical"
           android:layout_width="match_parent"
@@ -98,8 +98,8 @@
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <TextView
-            android:text="ADDRESS"
+        <EditText
+            android:hint="ADDRESS"
             android:id="@+id/Address"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
@@ -111,9 +111,21 @@
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <TextView
-            android:text="SCHOLARSHIP"
+        <EditText
+            android:hint="SCHOLARSHIP"
             android:id="@+id/Scholarship"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:text="STATUS"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/Status"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -127,6 +139,18 @@
         <TextView
             android:text="COURSE"
             android:id="@+id/Course"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:text="YearLevel"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/YearLevel"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -171,17 +195,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
       <Button
+          android:id="@+id/SaveButton"
+          android:text="SAVE"
+          android:layout_weight="7"
+          android:layout_margin="10dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content" />
+      <Button
           android:text="ENROLL"
+          android:layout_weight="7"
+          android:visibility="gone"
           android:id="@+id/EnrollButton"
-          android:layout_width="match_parent"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_margin="10dp" />
       <Button
-        android:text="ENROLLMENT STATUS"
-        android:id="@+id/StatusButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp" />
+                
+          android:layout_weight="7"
+          android:text="STATUS"
+          android:id="@+id/StatusButton"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="10dp" />
     </LinearLayout>
 
   </LinearLayout>

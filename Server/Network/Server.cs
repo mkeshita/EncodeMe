@@ -50,7 +50,7 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.AppendGlobalIncomingPacketHandler<StatusRequest>(StatusRequest.GetHeader(),AndroidHandler.StatusRequestHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<CancelEnrollment>(CancelEnrollment.GetHeader(),AndroidHandler.CancelEnrollmentHandler);
             NetworkComms.AppendGlobalIncomingPacketHandler<RemoveSchedule>(RemoveSchedule.GetHeader(),AndroidHandler.RemoveScheduleHandler);
-            
+            NetworkComms.AppendGlobalIncomingPacketHandler<UpdateStudent>(UpdateStudent.GetHeader(),AndroidHandler.UpdateStudentHandler);
             
           //  try
            // {

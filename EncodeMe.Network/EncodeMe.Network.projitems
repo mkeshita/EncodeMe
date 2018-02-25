@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)StudentInfoRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StudentInfoResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Subject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UpdateStudent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility.cs" />
   </ItemGroup>
 </Project>

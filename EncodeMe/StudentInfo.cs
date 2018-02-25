@@ -19,9 +19,28 @@ namespace NORSU.EncodeMe
         ConfigurationChanges = ConfigChanges.Orientation, ScreenOrientation = ScreenOrientation.Portrait)]
     public class StudentInfo : Activity
     {
-        private TextView _fullname, _studentId, _birthDate, _gender, _address, _course, _major, _minor, _scholarship;
+        private TextView _fullname, _studentId, _birthDate, _gender, _course, _major, _minor;
+        private EditText _address, _scholarship;
+        private Spinner _yearLevel, _studentStatus;
         private ImageView _picture;
-        private Button _enroll,_status;
+        private Button _enroll,_status,_save;
+
+        private string[] YearLevels = new[]
+        {
+            "First Year",
+            "Second Year",
+            "Third Year",
+            "Fourth Year",
+            "Fifth Year"
+        };
+
+        private string[] Statuses = new[]
+        {
+            "Ongoing",
+            "Returnee",
+            "Shiftee",
+            "Transferee"
+        };
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -40,18 +59,84 @@ namespace NORSU.EncodeMe
             _studentId = FindViewById<TextView>(Resource.Id.StudentId);
             _birthDate = FindViewById<TextView>(Resource.Id.BirthDate);
             _gender = FindViewById<TextView>(Resource.Id.Gender);
-            _address = FindViewById<TextView>(Resource.Id.Address);
+            _address = FindViewById<EditText>(Resource.Id.Address);
             _course = FindViewById<TextView>(Resource.Id.Course);
             _major = FindViewById<TextView>(Resource.Id.Major);
             _minor = FindViewById<TextView>(Resource.Id.Minor);
-            _scholarship = FindViewById<TextView>(Resource.Id.Scholarship);
+            _scholarship = FindViewById<EditText>(Resource.Id.Scholarship);
             _picture = FindViewById<ImageView>(Resource.Id.Picture);
+            _yearLevel = FindViewById<Spinner>(Resource.Id.YearLevel);
+            _studentStatus = FindViewById<Spinner>(Resource.Id.Status);
             _enroll = FindViewById<Button>(Resource.Id.EnrollButton);
             _status = FindViewById<Button>(Resource.Id.StatusButton);
+            _save = FindViewById<Button>(Resource.Id.SaveButton);
+            
+            _yearLevel.Adapter = new ArrayAdapter<string>(this,Android.Resource.Layout.SimpleListItem1, YearLevels);
+            _studentStatus.Adapter = new ArrayAdapter<string>(this,Android.Resource.Layout.SimpleListItem1, Statuses);
+
+            _studentStatus.ItemSelected += (sender, args) =>
+            {
+                RefreshSaveButton();
+            };
+            _yearLevel.ItemSelected += (sender, args) =>
+            {
+                RefreshSaveButton();
+            };
+            _address.AfterTextChanged += (sender, args) =>
+            {
+                RefreshSaveButton();
+            };
+            _scholarship.AfterTextChanged += (sender, args) =>
+            {
+                RefreshSaveButton();
+            };
+            
             SetupValues();
             
             _enroll.Click+= EnrollOnClick;
             _status.Click += StatusOnClick;
+            _save.Click += SaveOnClick;
+        }
+
+        private async void SaveOnClick(object o, EventArgs eventArgs)
+        {
+            _enroll.Enabled = false;
+            _save.Enabled = false;
+
+            var res = await Client.UpdateStudent(_address.Text, _scholarship.Text, _yearLevel.SelectedItemPosition,
+                _studentStatus.SelectedItemPosition);
+
+            _enroll.Enabled = true;
+            _save.Enabled = true;
+
+            if (res?.Success ?? false)
+            {
+                Toast.MakeText(this, "Information changes saved", ToastLength.Short).Show();
+            }
+            else
+            {
+                Toast.MakeText(this, "Action failed", ToastLength.Short).Show();
+            }
+        }
+
+        private void RefreshSaveButton()
+        {
+            if (Client.RequestStatus == null || Client.RequestStatus.IsSubmitted)
+            {
+                _save.Visibility = ViewStates.Gone;
+                return;
+            }
+            
+            _save.Visibility = ViewStates.Visible;
+            _save.Enabled = false;
+            
+            if (_studentStatus.SelectedItemPosition != Client.CurrentStudent.Status) _save.Enabled = true;
+            if (_yearLevel.SelectedItemPosition != Client.CurrentStudent.YearLevel)
+                _save.Enabled = true;
+            if (_address.Text.ToLower() != Client.CurrentStudent.Address.ToLower())
+                _save.Enabled = true;
+            if (_scholarship.Text.ToLower() != Client.CurrentStudent.Scholarship.ToLower())
+                _save.Enabled = true;
         }
 
         private void StatusOnClick(object sender, EventArgs eventArgs)
@@ -92,6 +177,8 @@ namespace NORSU.EncodeMe
             _minor.Text = Client.CurrentStudent.Minor;
             _scholarship.Text = Client.CurrentStudent.Scholarship;
             _picture.SetImageResource(Resource.Drawable.profile);
+            _yearLevel.SetSelection(Client.CurrentStudent.YearLevel);
+            _studentStatus.SetSelection(Client.CurrentStudent.Status);
         }
     }
 }

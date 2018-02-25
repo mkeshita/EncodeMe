@@ -1901,8 +1901,8 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060092
 			public const int AddReceipt = 2131099794;
 			
-			// aapt resource value: 0x7f0600b1
-			public const int AddSubjectButton = 2131099825;
+			// aapt resource value: 0x7f0600b3
+			public const int AddSubjectButton = 2131099827;
 			
 			// aapt resource value: 0x7f0600a5
 			public const int Address = 2131099813;
@@ -1928,11 +1928,11 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f06008d
 			public const int DatePaid = 2131099789;
 			
-			// aapt resource value: 0x7f0600a9
-			public const int EnrollButton = 2131099817;
+			// aapt resource value: 0x7f0600ac
+			public const int EnrollButton = 2131099820;
 			
-			// aapt resource value: 0x7f0600ad
-			public const int Enrolled = 2131099821;
+			// aapt resource value: 0x7f0600b0
+			public const int Enrolled = 2131099824;
 			
 			// aapt resource value: 0x7f060026
 			public const int FUNCTION = 2131099686;
@@ -1958,20 +1958,20 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060027
 			public const int META = 2131099687;
 			
-			// aapt resource value: 0x7f0600a7
-			public const int Major = 2131099815;
+			// aapt resource value: 0x7f0600a9
+			public const int Major = 2131099817;
 			
 			// aapt resource value: 0x7f06009b
 			public const int MessageText = 2131099803;
 			
-			// aapt resource value: 0x7f0600a8
-			public const int Minor = 2131099816;
+			// aapt resource value: 0x7f0600aa
+			public const int Minor = 2131099818;
 			
 			// aapt resource value: 0x7f060071
 			public const int NextButton = 2131099761;
 			
-			// aapt resource value: 0x7f0600aa
-			public const int Password = 2131099818;
+			// aapt resource value: 0x7f0600ad
+			public const int Password = 2131099821;
 			
 			// aapt resource value: 0x7f0600a1
 			public const int Picture = 2131099809;
@@ -1997,8 +1997,11 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060029
 			public const int SYM = 2131099689;
 			
-			// aapt resource value: 0x7f0600ac
-			public const int Schedule = 2131099820;
+			// aapt resource value: 0x7f0600ab
+			public const int SaveButton = 2131099819;
+			
+			// aapt resource value: 0x7f0600af
+			public const int Schedule = 2131099823;
 			
 			// aapt resource value: 0x7f060096
 			public const int ScheduleText = 2131099798;
@@ -2012,8 +2015,8 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f060099
 			public const int Slots = 2131099801;
 			
-			// aapt resource value: 0x7f0600ae
-			public const int Status = 2131099822;
+			// aapt resource value: 0x7f0600a7
+			public const int Status = 2131099815;
 			
 			// aapt resource value: 0x7f06009d
 			public const int StatusButton = 2131099805;
@@ -2024,23 +2027,26 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f0600a2
 			public const int StudentId = 2131099810;
 			
-			// aapt resource value: 0x7f0600ab
-			public const int SubjectCode = 2131099819;
+			// aapt resource value: 0x7f0600ae
+			public const int SubjectCode = 2131099822;
 			
 			// aapt resource value: 0x7f060093
 			public const int SubjectText = 2131099795;
 			
-			// aapt resource value: 0x7f0600af
-			public const int SubjectsLayout = 2131099823;
+			// aapt resource value: 0x7f0600b1
+			public const int SubjectsLayout = 2131099825;
 			
-			// aapt resource value: 0x7f0600b0
-			public const int SubjectsListView = 2131099824;
+			// aapt resource value: 0x7f0600b2
+			public const int SubjectsListView = 2131099826;
 			
 			// aapt resource value: 0x7f060073
 			public const int SubmitButton = 2131099763;
 			
 			// aapt resource value: 0x7f06009a
 			public const int TitleText = 2131099802;
+			
+			// aapt resource value: 0x7f0600a8
+			public const int YearLevel = 2131099816;
 			
 			// aapt resource value: 0x7f060077
 			public const int action0 = 2131099767;
@@ -2240,8 +2246,8 @@ namespace NORSU.EncodeMe
 			// aapt resource value: 0x7f06007a
 			public const int media_actions = 2131099770;
 			
-			// aapt resource value: 0x7f0600b2
-			public const int message = 2131099826;
+			// aapt resource value: 0x7f0600b4
+			public const int message = 2131099828;
 			
 			// aapt resource value: 0x7f060023
 			public const int middle = 2131099683;

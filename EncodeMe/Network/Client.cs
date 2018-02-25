@@ -253,7 +253,7 @@ namespace NORSU.EncodeMe.Network
             return null;
         }
 
-        private static long TransactionId { get; set; }
+        //private static long TransactionId { get; set; }
 
         public static List<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
         public static bool EnrollmentCommited { get; set; }
@@ -280,7 +280,6 @@ namespace NORSU.EncodeMe.Network
                 {
                     NetworkComms.RemoveGlobalIncomingPacketHandler(StartEnrollmentResult.GetHeader());
                     ClassSchedules = i.ClassSchedules;
-                    TransactionId = i.TransactionId;
                     EnrollmentCommited = i.Submitted;
                     result = i;
                 });
@@ -313,7 +312,7 @@ namespace NORSU.EncodeMe.Network
             if (CurrentStudent == null)
                 return null;
 
-            if (TransactionId == 0) return null;
+            if (RequestStatus == null) return null;
 
             if (Server == null)
                 await FindServer();
@@ -335,7 +334,7 @@ namespace NORSU.EncodeMe.Network
             {
                 ClassIds = ClassSchedules.Select(x=>x.ClassId).ToList(),
                 StudentId = CurrentStudent.Id,
-                TransactionId = TransactionId,
+                TransactionId = RequestStatus.Id,
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
@@ -363,11 +362,20 @@ namespace NORSU.EncodeMe.Network
             if (CurrentStudent == null)
                 return null;
 
+            if(RequestStatus == null)
+                return new RemoveScheduleResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid Request"
+                };
+
             if (Server == null)
                 await FindServer();
 
             if (Server == null)
                 return null;
+
+           
 
             RemoveScheduleResult result = null;
             NetworkComms.AppendGlobalIncomingPacketHandler<RemoveScheduleResult>(RemoveScheduleResult.GetHeader(),
@@ -389,7 +397,7 @@ namespace NORSU.EncodeMe.Network
             {
                 ClassId = id,
                 StudentId = CurrentStudent.Id,
-                TransactionId = TransactionId,
+                TransactionId = RequestStatus.Id,
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
@@ -404,6 +412,54 @@ namespace NORSU.EncodeMe.Network
             NetworkComms.RemoveGlobalIncomingPacketHandler(RemoveScheduleResult.GetHeader());
             return null;
         }
+        
+        public static async Task<UpdateStudentResult> UpdateStudent(string address, string scholarship, int yearlevel,
+            int status)
+        {
+            return await Instance._UpdateStudent(address, scholarship,  yearlevel,  status);
+        }
+
+        private async Task<UpdateStudentResult> _UpdateStudent(string address, string scholarship, int yearlevel,
+            int status)
+        {
+            if (CurrentStudent == null)
+                return null;
+
+            if (Server == null)
+                await FindServer();
+
+            if (Server == null)
+                return null;
+
+            UpdateStudentResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<UpdateStudentResult>(UpdateStudentResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(UpdateStudentResult.GetHeader());
+                    result = i;
+                });
+
+            await new UpdateStudent()
+            {
+                Address = address,
+                Scholarship = scholarship,
+                YearLevel = yearlevel,
+                Status = status,
+                Id = CurrentStudent.Id,
+            }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(UpdateStudentResult.GetHeader());
+            return null;
+        }
 
         public static async Task<AddScheduleResult> AddSchedule(ClassSchedule schedule)
         {
@@ -414,7 +470,14 @@ namespace NORSU.EncodeMe.Network
         {
             if (CurrentStudent == null)
                 return null;
-            
+
+            if(RequestStatus == null)
+                return new AddScheduleResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid Request"
+                };
+
             if (Server == null)
                 await FindServer();
 
@@ -433,7 +496,7 @@ namespace NORSU.EncodeMe.Network
             {
                 ClassId = schedule.ClassId,
                 StudentId = CurrentStudent.Id,
-                TransactionId = TransactionId
+                TransactionId = RequestStatus.Id
             }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
 
             var start = DateTime.Now;
