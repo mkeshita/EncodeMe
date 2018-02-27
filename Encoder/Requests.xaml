@@ -225,6 +225,7 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal"
+                        Visibility="{Binding IsSubjectsTabSelected, Converter={converters:BooleanToVisibility}}"
                                     VerticalAlignment="Center">
               <Button Style="{StaticResource MaterialDesignToolButton}"
                                     Click="AcceptSelected"
@@ -532,9 +533,18 @@
             <StackPanel VerticalAlignment="Top"
                                     Orientation="Horizontal"
                                     HorizontalAlignment="Left">
-              <Image Source="norsu_74.png"
+
+              <Grid>
+                <Image Source="norsu_74.png"
+                       x:Name="NorsuLogo"
+                       Margin="7"
+                       Height="48" Width="48" />
+              <Image Visibility="Collapsed"
+                     x:Name="StudentPicture"
                                    Margin="7"
                                    Height="48" Width="48"/>
+              </Grid>
+
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="STUDENT ID" 
                                        x:Name="StudentId"
@@ -567,7 +577,7 @@
           </StackPanel>
 
           <ListBox Grid.Row="1" x:Name="ListBox"
-                   SelectedIndex="0"
+                   SelectedIndex="{Binding SelectedWorkTab}"
                    HorizontalContentAlignment="Center">
             <ListBox.ItemContainerStyle>
               <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
@@ -596,7 +606,7 @@
                          FontSize="14pt"
                          TextAlignment="Center" />
             </ListBoxItem>
-            <ListBoxItem>
+            <ListBoxItem >
               <TextBlock Text="SUBJECTS" VerticalAlignment="Center" Margin="4"
                          FontSize="14pt"
                          TextAlignment="Center" />

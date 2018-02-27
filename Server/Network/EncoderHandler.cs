@@ -200,9 +200,13 @@ namespace NORSU.EncodeMe.Network
                 _handshakeTasksRunning = false;
             });
         }
-        
+        private static Queue<Task> _getWorkTasks = new Queue<Task>();
         public static async void GetWorkHandler(PacketHeader packetheader, Connection connection, GetWork req)
         {
+            _getWorkTasks.Enqueue(new Task(async ()=>
+            {
+                
+            
             var ip = ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint);
             var client = Client.Cache.FirstOrDefault(x => x.IpAddress == ip.Address.ToString());
             if (!(client?.IsEnabled ?? false))
@@ -228,7 +232,7 @@ namespace NORSU.EncodeMe.Network
             }
             
             //work.Update(nameof(work.Status),Request.Statuses.Proccessing);
-            work.Status = Request.Statuses.Proccessing;
+            work.Update(nameof(Request.Status), Request.Statuses.Proccessing);
 
             var student = Models.Student.Cache.FirstOrDefault(x => x.Id == work.StudentId);
             if (student == null)
@@ -255,6 +259,7 @@ namespace NORSU.EncodeMe.Network
                     Id = student.Id,
                     Scholarship = student.Scholarship,
                     StudentId = student.StudentId,
+                    Picture = student.Picture,
                 },
                 Receipts = new List<Receipt>(),
             };
@@ -289,9 +294,31 @@ namespace NORSU.EncodeMe.Network
             await SendEncoderUpdates(Client.Cache.ToList());
 
             client.Encoder.StartWork();
-            work.StartWorking();
+            
             client.Request?.Update(nameof(Models.Request.Status),Request.Statuses.Pending);
             client.Request = work;
+            }));
+
+            ProcessGetWorkRequests();
+        }
+
+        private static bool _isProcessingRequests;
+        private static void ProcessGetWorkRequests()
+        {
+            if (_isProcessingRequests) return;
+            _isProcessingRequests = true;
+            Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    if(_getWorkTasks.Count==0) break;
+                    var task = _getWorkTasks.Dequeue();
+                    if(task==null) continue;
+                    task.Start();
+                    task.Wait();
+                }
+                _isProcessingRequests = false;
+            });
         }
 
         private static async void SaveWorkHandler(PacketHeader packetheader, Connection connection, SaveWork i)

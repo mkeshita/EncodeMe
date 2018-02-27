@@ -116,6 +116,35 @@ namespace NORSU.EncodeMe.ViewModels
             }
         }
 
+        private int _SelectedWorkTab;
+
+        public int SelectedWorkTab
+        {
+            get => _SelectedWorkTab;
+            set
+            {
+                if(value == _SelectedWorkTab)
+                    return;
+                _SelectedWorkTab = value;
+                OnPropertyChanged(nameof(SelectedWorkTab));
+                OnPropertyChanged(nameof(IsSubjectsTabSelected));
+            }
+        }
+
+        private bool _IsSubjectsTabSelected;
+
+        public bool IsSubjectsTabSelected
+        {
+            get => SelectedWorkTab==2;
+            set
+            {
+                if(value == _IsSubjectsTabSelected)
+                    return;
+                _IsSubjectsTabSelected = value;
+                OnPropertyChanged(nameof(IsSubjectsTabSelected));
+            }
+        }
+
         
     }
 }

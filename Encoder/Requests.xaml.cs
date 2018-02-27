@@ -1,11 +1,13 @@
 ﻿
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using MaterialDesignThemes.Wpf;
 using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Network;
@@ -39,7 +41,7 @@ namespace NORSU.EncodeMe
             Left = System.Windows.SystemParameters.WorkArea.Width - ActualWidth;
             Top = SystemParameters.WorkArea.Bottom - ActualHeight;
         }
-
+        
         private GetWorkResult CurrentWork;
         private bool workFetched;
         private async void Button_OnClick(object sender, RoutedEventArgs e)
@@ -80,6 +82,17 @@ namespace NORSU.EncodeMe
                     LoginLamp.Visibility = Visibility.Collapsed;
                     StudentId.Text = work.Student.FirstName + " " + work.Student.LastName;
                     StudentName.Text = work.Student.Course;
+                    if (work.Student.Picture?.Length > 0)
+                    {
+                        StudentPicture.Source = BytesToBitmap(work.Student.Picture);
+                        StudentPicture.Visibility = Visibility.Visible;
+                        NorsuLogo.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        StudentPicture.Visibility = Visibility.Collapsed;
+                        NorsuLogo.Visibility = Visibility.Visible;
+                    }
                     break;
                 case ResultCodes.NotFound:
                     //MessageBox.Show("No more pending items.");
@@ -101,6 +114,24 @@ namespace NORSU.EncodeMe
             
             
             workFetched = false;           
+        }
+
+        private static BitmapImage BytesToBitmap(byte[] data)
+        {
+            var bmp = new BitmapImage();
+
+
+            bmp.BeginInit();
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+
+            using (var mem = new MemoryStream(data))
+            {
+                bmp.StreamSource = mem;
+                bmp.EndInit();
+                bmp.Freeze();
+            }
+
+            return bmp;
         }
 
 
