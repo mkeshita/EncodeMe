@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AddSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AndroidInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangePicture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CheckReceipt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ClassSchedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CommitEnrollment.cs" />

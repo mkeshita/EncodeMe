@@ -679,5 +679,33 @@ namespace NORSU.EncodeMe.Network
                 Success = true,
             }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
         }
+
+        public static async void ChangePictureHandler(PacketHeader packetheader, Connection connection, ChangePicture req)
+        {
+            var dev = AndroidDevice.Cache.FirstOrDefault(
+                d => d.IP == ((IPEndPoint) connection.ConnectionInfo.RemoteEndPoint).Address.ToString());
+
+            //Maybe do not ignore this on production
+            if (dev == null)
+                return;
+            var student = Models.Student.Cache.FirstOrDefault(x => x.Id == req.Id);
+
+            if (student == null)
+            {
+                await new ChangePictureResult()
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid request"
+                }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+                return;
+            }
+            
+            student.Update(nameof(Models.Student.Picture),req.Data);
+
+            await new ChangePictureResult()
+            {
+                Success = true,
+            }.Send(new IPEndPoint(IPAddress.Parse(dev.IP), dev.Port));
+        }
     }
 }

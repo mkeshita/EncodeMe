@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Graphics;
 using Android.OS;
+using Android.Provider;
 using Android.Runtime;
 using Android.Support.V4.App;
 using Android.Views;
 using Android.Widget;
+using NetworkCommsDotNet.Tools;
 using NORSU.EncodeMe.Network;
+using Environment = Android.OS.Environment;
+using Uri = Android.Net.Uri;
+using File = Java.IO.File;
 
 namespace NORSU.EncodeMe
 {
@@ -70,6 +77,17 @@ namespace NORSU.EncodeMe
             _enroll = FindViewById<Button>(Resource.Id.EnrollButton);
             _status = FindViewById<Button>(Resource.Id.StatusButton);
             _save = FindViewById<Button>(Resource.Id.SaveButton);
+
+            Directory = new File(
+                Environment.GetExternalStoragePublicDirectory(
+                    Environment.DirectoryPictures), "EncodeMe");
+            if (!Directory.Exists())
+            {
+                Directory.Mkdirs();
+            }
+
+            _picture.Clickable = true;
+            _picture.Click += PictureOnClick;
             
             _yearLevel.Adapter = new ArrayAdapter<string>(this,Android.Resource.Layout.SimpleListItem1, YearLevels);
             _studentStatus.Adapter = new ArrayAdapter<string>(this,Android.Resource.Layout.SimpleListItem1, Statuses);
@@ -96,6 +114,84 @@ namespace NORSU.EncodeMe
             _enroll.Click+= EnrollOnClick;
             _status.Click += StatusOnClick;
             _save.Click += SaveOnClick;
+        }
+
+        private void PictureOnClick(object o, EventArgs eventArgs)
+        {
+            Intent intent = new Intent(MediaStore.ActionImageCapture);
+
+            File = new File(Directory, $"EncodeMe_{Guid.NewGuid()}.jpg");
+
+            intent.PutExtra(MediaStore.ExtraOutput, Uri.FromFile(File));
+
+            StartActivityForResult(intent, 0);
+        }
+        private static File Directory { get; set; }
+        private static File File { get; set; }
+        public static Bitmap bitmap;
+        
+        protected override async void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+
+            // Make it available in the gallery
+
+            Intent mediaScanIntent = new Intent(Intent.ActionMediaScannerScanFile);
+            Uri contentUri = Uri.FromFile(File);
+            mediaScanIntent.SetData(contentUri);
+            SendBroadcast(mediaScanIntent);
+
+            // Display in ImageView. We will resize the bitmap to fit the display
+            // Loading the full sized image will consume to much memory 
+            // and cause the application to crash.
+
+            int height = Resources.DisplayMetrics.HeightPixels;
+            int width = _picture.Height;
+            bitmap = LoadAndResizeBitmap(File.Path, width, height);
+            
+            if (bitmap != null)
+            {
+                
+                _picture.SetImageBitmap(bitmap);
+                using (var mem = new MemoryStream())
+                {
+                    bitmap.Compress(Bitmap.CompressFormat.Jpeg, 4, mem);
+                    var res = await Client.ChangePicture(mem.ToArray());
+                    if (!(res?.Success ?? false))
+                        await Client.ChangePicture(mem.ToArray());
+                }
+                bitmap = null;
+            }
+
+            // Dispose of the Java side bitmap.
+            GC.Collect();
+        }
+
+        public static Bitmap LoadAndResizeBitmap(string fileName, int width, int height)
+        {
+            // First we get the the dimensions of the file on disk
+            BitmapFactory.Options options = new BitmapFactory.Options {InJustDecodeBounds = true};
+            BitmapFactory.DecodeFile(fileName, options);
+
+            // Next we calculate the ratio that we need to resize the image by
+            // in order to fit the requested dimensions.
+            int outHeight = options.OutHeight;
+            int outWidth = options.OutWidth;
+            int inSampleSize = 1;
+
+            if (outHeight > height || outWidth > width)
+            {
+                inSampleSize = outWidth > outHeight
+                    ? outHeight / height
+                    : outWidth / width;
+            }
+
+            // Now we will load the image and have BitmapFactory resize it for us.
+            options.InSampleSize = inSampleSize;
+            options.InJustDecodeBounds = false;
+            Bitmap resizedBitmap = BitmapFactory.DecodeFile(fileName, options);
+
+            return resizedBitmap;
         }
 
         private async void SaveOnClick(object o, EventArgs eventArgs)
@@ -176,9 +272,15 @@ namespace NORSU.EncodeMe
             _major.Text = Client.CurrentStudent.Major;
             _minor.Text = Client.CurrentStudent.Minor;
             _scholarship.Text = Client.CurrentStudent.Scholarship;
-            _picture.SetImageResource(Resource.Drawable.profile);
+          //  _picture.SetImageResource(Resource.Drawable.profile);
             _yearLevel.SetSelection(Client.CurrentStudent.YearLevel);
             _studentStatus.SetSelection(Client.CurrentStudent.Status);
+
+            if (Client.CurrentStudent.Picture?.Length > 0)
+            {
+                _picture.SetImageBitmap(BitmapFactory.DecodeByteArray(Client.CurrentStudent.Picture, 0,
+                    Client.CurrentStudent.Picture.Length));
+            }
         }
     }
 }

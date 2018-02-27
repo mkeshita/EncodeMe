@@ -461,6 +461,49 @@ namespace NORSU.EncodeMe.Network
             return null;
         }
 
+        public static async Task<ChangePictureResult> ChangePicture(byte[] picture)
+        {
+            return await Instance._ChangePicture(picture);
+        }
+
+        private async Task<ChangePictureResult> _ChangePicture(byte[] picture)
+        {
+            if (CurrentStudent == null)
+                return null;
+
+            if (Server == null)
+                await FindServer();
+
+            if (Server == null)
+                return null;
+
+            ChangePictureResult result = null;
+            NetworkComms.AppendGlobalIncomingPacketHandler<ChangePictureResult>(ChangePictureResult.GetHeader(),
+                (h, c, i) =>
+                {
+                    NetworkComms.RemoveGlobalIncomingPacketHandler(ChangePictureResult.GetHeader());
+                    result = i;
+                });
+
+            await new ChangePicture()
+            {
+                Data = picture,
+                Id = CurrentStudent.Id,
+            }.Send(new IPEndPoint(IPAddress.Parse(Server.IP), Server.Port));
+
+            var start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 17)
+            {
+                if (result != null)
+                    return result;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+
+            Server = null;
+            NetworkComms.RemoveGlobalIncomingPacketHandler(ChangePictureResult.GetHeader());
+            return null;
+        }
+
         public static async Task<AddScheduleResult> AddSchedule(ClassSchedule schedule)
         {
             return await Instance._AddSchedule(schedule);

@@ -46,6 +46,7 @@
             android:layout_height="wrap_content">
           <ImageView
               android:id="@+id/Picture"
+              android:src="@drawable/profile"
               android:layout_marginRight="20dp"
               android:adjustViewBounds="true"
               android:scaleType="fitCenter"
